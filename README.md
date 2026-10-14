@@ -21,7 +21,11 @@ de l'ancienne application NadsPDF (Electron, conservée dans [`legacy-electron/`
 **Lire** — rendu fidèle, recherche, sélection et copie de texte, signets, miniatures, calques,
 pièces jointes, mode lecture et plein écran, onglets multiples, pages sombres (Ctrl+Maj+D).
 
-**Ranger** — *groupes d'onglets* à la Chrome : clic droit sur un onglet ▸ « Ajouter l'onglet à
+**Ranger** — *onglets* : Ctrl+Tab et Ctrl+Maj+Tab passent à l'onglet suivant ou précédent ; on
+glisse un onglet le long de la barre pour le déplacer, ou hors de la barre (vers un autre écran
+par exemple) pour l'ouvrir dans une nouvelle fenêtre (aussi : clic droit ▸ « Ouvrir dans une
+nouvelle fenêtre »).
+*Groupes d'onglets* à la Chrome — clic droit sur un onglet ▸ « Ajouter l'onglet à
 un nouveau groupe » (ou Ctrl+Maj+K), un nom, une couleur ; un clic sur la pastille replie le
 groupe. Rien n'est groupé automatiquement ; avec « Rouvrir les fichiers de la dernière session »
 (Préférences), les groupes reviennent au lancement suivant.

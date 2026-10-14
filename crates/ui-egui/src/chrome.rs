@@ -124,6 +124,7 @@ pub fn tab_strip(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                 let mut group_action = None;
                 let mut tear = None;
                 let mut drag_start = None;
+                let mut tab_rects = Vec::new();
                 ui.scope(|ui| {
                     ui.style_mut().always_scroll_the_only_direction = true;
                     let mut area = egui::ScrollArea::horizontal().id_salt("document_tabs").max_width(tabs_width).auto_shrink([true, true]);
@@ -162,6 +163,7 @@ pub fn tab_strip(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                                     tab_h,
                                     true,
                                 );
+                                tab_rects.push((i, response.rect));
                                 if response.drag_started() {
                                     drag_start = Some(view_id);
                                 }
@@ -224,6 +226,7 @@ pub fn tab_strip(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                                 Some(action) => app.tab_action(action),
                                 None => {}
                             }
+                            app.tab_rects = std::mem::take(&mut tab_rects);
                             if let Some(id) = drag_start.take() {
                                 app.start_tab_drag(id);
                             }

@@ -489,6 +489,8 @@ pub struct PdfCraftApp {
     pub(crate) strip_rect: egui::Rect,
     /// A document tab being dragged (see `tear_off`).
     pub(crate) tab_drag: Option<tear_off::TabDrag>,
+    /// The strip's document tabs this frame, as (view index, rect), for dropping a dragged tab.
+    pub(crate) tab_rects: Vec<(usize, egui::Rect)>,
     /// Opens a saved PDF in a new window (the desktop app sets it; see `tear_off`).
     pub open_in_new_window: Option<tear_off::NewWindow>,
     /// This window was opened for a tab torn off another one: it doesn't save settings or the session.
@@ -942,6 +944,7 @@ impl PdfCraftApp {
             update_installer: None,
             updates_from_store: false,
             tab_drag: None,
+            tab_rects: Vec::new(),
             open_in_new_window: None,
             secondary_window: false,
             place_window_at: None,
@@ -1933,6 +1936,19 @@ impl PdfCraftApp {
         ctx.send_viewport_cmd(egui::ViewportCommand::OuterPosition(egui::pos2(x / ppp, y / ppp)));
     }
 
+    /// Show the next (or previous) tab in the strip, wrapping around. Bubbles are skipped: they
+    /// aren't in the strip.
+    pub fn cycle_tab(&mut self, forward: bool) {
+        let docked: Vec<usize> = (0..self.views.len()).filter(|&i| self.views.get(i).is_some_and(|v| !self.bubbles.contains(v.id))).collect();
+        let Some(&first) = docked.first() else { return };
+        let next = match self.active.and_then(|a| docked.iter().position(|&i| i == a)) {
+            Some(at) if forward => docked.get(at + 1).copied().unwrap_or(first),
+            Some(at) => at.checked_sub(1).and_then(|p| docked.get(p).copied()).or(docked.last().copied()).unwrap_or(first),
+            None => first,
+        };
+        self.active = Some(next);
+    }
+
     pub fn notify(&mut self, msg: impl Into<String>) {
         self.toast = Some((msg.into(), 0.0));
     }
@@ -2739,6 +2755,20 @@ impl PdfCraftApp {
             return;
         }
         self.registry_shortcuts(ctx);
+        // Ctrl+Tab / Ctrl+Shift+Tab: next / previous tab, as in browsers (Ctrl on macOS too).
+        // Shift first: a pattern without Shift also matches a press with it.
+        let step = ctx.input_mut(|i| {
+            if i.consume_shortcut(&egui::KeyboardShortcut::new(egui::Modifiers::CTRL | egui::Modifiers::SHIFT, Key::Tab)) {
+                Some(false)
+            } else if i.consume_shortcut(&egui::KeyboardShortcut::new(egui::Modifiers::CTRL, Key::Tab)) {
+                Some(true)
+            } else {
+                None
+            }
+        });
+        if let Some(forward) = step {
+            self.cycle_tab(forward);
+        }
         // (Esc closes a Combine file shown large first.)
         if self.full_screen && self.combine_tab.preview.is_none() && ctx.input(|i| i.key_pressed(Key::Escape)) {
             self.set_full_screen(ctx, false);

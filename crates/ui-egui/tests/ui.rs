@@ -1362,3 +1362,48 @@ fn unsaved_or_never_saved_documents_stay_and_ask_to_be_saved() {
     assert!(log.lock().unwrap().is_empty());
     assert_eq!(h.state().views.len(), 2);
 }
+
+#[test]
+fn ctrl_tab_moves_between_tabs_and_wraps() {
+    let mut h = harness(|app| {
+        for name in ["a.pdf", "b.pdf", "c.pdf"] {
+            app.open_bytes(name, None, FIXTURE.to_vec()).unwrap();
+        }
+    });
+    h.state_mut().active = Some(0);
+    h.run_steps(2);
+    let press = |h: &mut Harness<'static, PdfCraftApp>, shift: bool| {
+        let m = if shift { egui::Modifiers::CTRL | egui::Modifiers::SHIFT } else { egui::Modifiers::CTRL };
+        h.key_press_modifiers(m, egui::Key::Tab);
+        h.run_steps(2);
+        h.state().active
+    };
+    assert_eq!(press(&mut h, false), Some(1));
+    assert_eq!(press(&mut h, false), Some(2));
+    assert_eq!(press(&mut h, false), Some(0), "wraps to the first");
+    assert_eq!(press(&mut h, true), Some(2), "Ctrl+Shift+Tab wraps back to the last");
+    assert_eq!(press(&mut h, true), Some(1));
+}
+
+#[test]
+fn a_tab_dragged_along_the_strip_moves_among_the_others() {
+    let mut h = harness(|app| {
+        for name in ["a.pdf", "b.pdf", "c.pdf"] {
+            app.open_bytes(name, None, FIXTURE.to_vec()).unwrap();
+        }
+    });
+    h.state_mut().active = Some(1);
+    h.run_steps(2);
+    let names =
+        |h: &Harness<'static, PdfCraftApp>| h.state().views.iter().map(|v| h.state().session.get(v.id).unwrap().name.clone()).collect::<Vec<_>>();
+    // c.pdf dropped on the left half of a.pdf goes first; b.pdf still shows.
+    let a = h.get_by_label("a.pdf").rect();
+    drag_tab(&mut h, "c.pdf", egui::pos2(a.left() + 10.0, a.center().y));
+    assert_eq!(names(&h), ["c.pdf", "a.pdf", "b.pdf"]);
+    assert_eq!(h.state().active, Some(2), "the tab showing stays the one showing");
+    // And back to the end, past the last tab's middle.
+    let b = h.get_by_label("b.pdf").rect();
+    drag_tab(&mut h, "c.pdf", egui::pos2(b.right() - 5.0, b.center().y));
+    assert_eq!(names(&h), ["a.pdf", "b.pdf", "c.pdf"]);
+    assert_eq!(h.state().active, Some(1));
+}
