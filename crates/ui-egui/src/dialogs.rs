@@ -61,6 +61,7 @@ fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
     let mut revert_now = false;
     let mut summarize_now = false;
     let mut optimize_now = false;
+    let mut rasterize_now = None;
     let mut duplicate_now: Option<Edit> = None;
     let mut replace_now = false;
     let mut open_revision: Option<usize> = None;
@@ -700,6 +701,14 @@ fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
                 }
                 return;
             }
+            Dialog::Rasterize => {
+                let mut level = app.raster_level;
+                let (run, done) = crate::optimize_ui::rasterize_body(ui, &mut level, &t);
+                app.raster_level = level;
+                rasterize_now = run;
+                close = done;
+                return;
+            }
             Dialog::CertificateViewer => {
                 ui.set_width(700.0);
                 let trusted = app.session.trusted_certificates().to_vec();
@@ -1007,7 +1016,7 @@ fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
                     ui.label(egui::RichText::new(tl!("Recover unsaved documents?")).font(theme::semibold(18.0)));
                 });
                 ui.add_space(6.0);
-                ui.label(tl!("PdfCraft didn't shut down normally. These documents had changes that were autosaved:"));
+                ui.label(tl!("NadsPDF didn't shut down normally. These documents had changes that were autosaved:"));
                 ui.add_space(8.0);
                 let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
                 egui::Grid::new("recoverable").num_columns(2).spacing([18.0, 6.0]).show(ui, |ui| {
@@ -1096,9 +1105,9 @@ fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
                     2 => crate::credits::models_ui(ui),
                     _ => {
                         ui.horizontal(|ui| {
-                            widgets::artcraft_mark(ui, 40.0);
+                            widgets::nads_logo(ui, 48.0);
                             ui.vertical(|ui| {
-                                ui.label(egui::RichText::new("PdfCraft").font(theme::semibold(20.0)));
+                                ui.label(egui::RichText::new("NadsPDF").font(theme::semibold(20.0)));
                                 ui.label(crate::i18n::fmt(tl!("Version {v}"), &[("v", &pdfcraft_engine::build_info::version())]));
                             });
                         });
@@ -1111,12 +1120,12 @@ fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
                             .color(t.text_muted)
                             .small(),
                         );
+                        ui.label(
+                            egui::RichText::new("NadsPDF, a fork of PdfCraft (github.com/storytold/pdfcraft, MIT OR Apache-2.0).")
+                                .color(t.text_muted)
+                                .small(),
+                        );
                         ui.add_space(12.0);
-                        ui.horizontal(|ui| {
-                            ui.label(egui::RichText::new(tl!("Part of")).color(t.text_muted));
-                            widgets::artcraft_logo(ui, 16.0);
-                        });
-                        ui.add_space(6.0);
                         if let Some(cmd) = widgets::community_links(ui) {
                             link_command = Some(cmd);
                         }
@@ -1198,6 +1207,9 @@ fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
     }
     if optimize_now {
         app.optimize_with_draft();
+    }
+    if let Some(level) = rasterize_now {
+        app.start_rasterize(level);
     }
     if let Some(e) = duplicate_now {
         app.duplicate_draft = None;

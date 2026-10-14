@@ -1,4 +1,4 @@
-//! pdfcraft-ui-egui — the first PdfCraft shell (L7).
+//! pdfcraft-ui-egui — the first NadsPDF shell (L7).
 //!
 //! Layout grammar follows plan/acrobat/02-ui-ux.md §1: tab strip, mode bar, left tool panel,
 //! floating quick-action bar, document area, right panel + right rail with page navigation.
@@ -25,6 +25,7 @@ macro_rules! tl_ctx {
 mod a11y_ui;
 mod actions_ui;
 mod appearance;
+pub mod bubbles;
 pub mod canvas;
 mod chrome;
 mod combine_grid;
@@ -33,6 +34,7 @@ mod tags_ui;
 pub use combine_grid::ThumbState as CombineThumb;
 mod combine_ui;
 pub mod docking;
+pub mod explorer_menu;
 pub use combine_ui::{Columns as CombineColumns, CombineView, Lock as CombineLock, SortKey};
 mod camera_ui;
 mod commands;
@@ -45,6 +47,7 @@ mod create_multiple_ui;
 mod create_ui;
 mod credits;
 mod crop;
+mod dark_pages;
 mod drag_pointer;
 mod export_ui;
 mod js_ui;
@@ -126,9 +129,12 @@ pub mod scroll_speed;
 #[cfg(not(target_arch = "wasm32"))]
 mod system_fonts;
 mod tab_context;
+pub mod tab_groups;
 pub mod theme;
 pub mod ui_scale;
 pub mod updates;
+pub mod vaults;
+pub mod vaults_ui;
 mod wheel_pager;
 mod widgets;
 pub mod window_controls;
@@ -310,6 +316,8 @@ pub enum Dialog {
     Sign,
     /// Optimize PDF ▸ Advanced optimization.
     Optimize,
+    /// Compress ▸ Rasterize pages (strong compression): choose a level.
+    Rasterize,
     /// Prepare a form ▸ right-click a field ▸ Duplicate.
     DuplicateField,
     /// Check for accessibility ▸ Accessibility Checker Options.
@@ -379,6 +387,8 @@ pub type FailedInbox = std::sync::Arc<std::sync::Mutex<Vec<(String, String)>>>;
 pub enum OsEvent {
     /// Open these files.
     Open(Vec<String>),
+    /// Add these files to the Combine files list (File Explorer's "Combine with NadsPDF").
+    Combine(Vec<String>),
     /// Quit (the Dock's Quit, logging out), asking about unsaved changes first.
     Quit,
 }
@@ -386,7 +396,7 @@ pub enum OsEvent {
 /// Returns the [`OsEvent`]s that arrived since it was last called (set by the desktop app).
 pub type OsEventsFn = Box<dyn FnMut() -> Vec<OsEvent>>;
 
-/// Hands a saved PDF to the page embedding PdfCraft (web): `(name, bytes, save_as)`. `save_as`
+/// Hands a saved PDF to the page embedding NadsPDF (web): `(name, bytes, save_as)`. `save_as`
 /// is `true` for Save As. Set by the web app when a host page (such as a Nextcloud app) asked
 /// for saves; without it the browser downloads the file.
 pub type HostSaveFn = Box<dyn Fn(&str, &[u8], bool) -> Result<(), String>>;
@@ -470,6 +480,14 @@ pub struct PdfCraftApp {
     pub(crate) pending_panel_reveals: Vec<docking::Panel>,
     pub session: Session,
     pub views: Vec<DocView>,
+    /// The user's tab groups (chips in the tab strip).
+    pub tab_groups: tab_groups::TabGroups,
+    /// Tabs floating over the window (tab menu ▸ Float as a bubble).
+    pub bubbles: bubbles::Bubbles,
+    /// The tab strip's rectangle last frame: a bubble dropped there docks.
+    pub(crate) strip_rect: egui::Rect,
+    /// A bubble's document view is being drawn (it has no tool bar of its own).
+    pub(crate) in_bubble: bool,
     pub(crate) closed_tabs: Vec<String>,
     /// `None` shows the Home tab.
     pub active: Option<usize>,
@@ -538,6 +556,10 @@ pub struct PdfCraftApp {
     pub dialog: Option<Dialog>,
     /// How to ask for the latest release (the desktop app sets it; see `updates`).
     pub update_source: Option<updates::UpdateSource>,
+    /// How to download and start a release's installer (the desktop app sets it where it can; see `updates`).
+    pub update_installer: Option<updates::UpdateInstaller>,
+    /// This copy comes from the Microsoft Store, which updates it: NadsPDF doesn't check.
+    pub updates_from_store: bool,
     pub(crate) updates: updates::Updates,
     /// Lists the Print dialog's printers in the background (the desktop app sets it; see
     /// [`PrinterSource`]).
@@ -548,10 +570,12 @@ pub struct PdfCraftApp {
     pub palette_open: bool,
     pub palette_query: String,
     pub all_tools_expanded: bool,
+    /// What is typed into All tools' filter field.
+    pub tools_filter: String,
     pub recent: Vec<RecentFile>,
-    /// Preferences: reopen the files that were open when PdfCraft last closed (#442).
+    /// Preferences: reopen the files that were open when NadsPDF last closed (#442).
     pub reopen_last_session: bool,
-    /// The files open when PdfCraft last closed, read from the settings for
+    /// The files open when NadsPDF last closed, read from the settings for
     /// [`PdfCraftApp::reopen_last_files`].
     pub last_session: last_session::LastSession,
     /// Quitting closes unsaved tabs one by one: what was open when the quit began.
@@ -572,6 +596,8 @@ pub struct PdfCraftApp {
     open_prepare_gate: Option<std::sync::Arc<open_worker::PrepareGate>>,
     /// Folders pinned to Home, and what they held when last listed.
     pub pinned: folders_ui::PinnedFolders,
+    /// Vaults: named groups of files from anywhere on the computer (Home ▸ Vaults).
+    pub vaults: vaults_ui::VaultState,
     pub toast: Option<(String, f64)>,
     /// Whether the macOS title bar is drawn by us (traffic lights over our tab strip).
     pub integrated_titlebar: bool,
@@ -686,6 +712,8 @@ pub struct PdfCraftApp {
     pub stamp_draft: stamps_ui::StampDraft,
     /// PDF Optimizer choices.
     pub optimize_draft: OptimizeDraft,
+    /// The level last chosen in Compress ▸ Rasterize pages.
+    pub raster_level: pdfcraft_engine::rasterize::RasterLevel,
     /// The running optimization (Optimize PDF ▸ Advanced optimization).
     pub optimize_run: Option<optimize_ui::OptimizeRun>,
     /// A background job's progress card (see [`widgets::progress_notice`]).
@@ -860,6 +888,10 @@ impl PdfCraftApp {
         Self {
             session: Session::new(),
             views: Vec::new(),
+            tab_groups: Default::default(),
+            bubbles: Default::default(),
+            strip_rect: egui::Rect::NOTHING,
+            in_bubble: false,
             closed_tabs: Vec::new(),
             active: None,
             mode: Mode::AllTools,
@@ -879,8 +911,8 @@ impl PdfCraftApp {
             quick_tool: QuickTool::Select,
             space_hand: None,
             comment_prefs: Default::default(),
-            theme: ThemeKind::Light,
-            theme_preference: ThemePreference::Light,
+            theme: ThemeKind::Dark,
+            theme_preference: ThemePreference::Dark,
             reading_colors: Default::default(),
             #[cfg(target_os = "linux")]
             desktop_theme: None,
@@ -897,12 +929,15 @@ impl PdfCraftApp {
             fill_text_size: fill_sign::TEXT_SIZE,
             dialog: None,
             update_source: None,
+            update_installer: None,
+            updates_from_store: false,
             updates: updates::Updates::default(),
             printer_source: None,
             print_tasks: print_ui::PrintTasks::default(),
             palette_open: false,
             palette_query: String::new(),
             all_tools_expanded: false,
+            tools_filter: String::new(),
             recent: Vec::new(),
             reopen_last_session: false,
             last_session: Default::default(),
@@ -919,6 +954,7 @@ impl PdfCraftApp {
             #[cfg(all(test, not(target_arch = "wasm32")))]
             open_prepare_gate: None,
             pinned: Default::default(),
+            vaults: Default::default(),
             toast: None,
             integrated_titlebar: false,
             window_controls: None,
@@ -984,6 +1020,7 @@ impl PdfCraftApp {
             custom_stamps: Vec::new(),
             stamp_draft: Default::default(),
             optimize_draft: OptimizeDraft::default(),
+            raster_level: Default::default(),
             optimize_run: None,
             progress_notice: None,
             page_clipboard: None,
@@ -1686,6 +1723,13 @@ impl PdfCraftApp {
 
     #[cfg(not(target_arch = "wasm32"))]
     pub fn open_path(&mut self, path: &str) {
+        self.open_path_then(path, None);
+    }
+
+    /// [`Self::open_path`], with `then` for the worker to run once it delivers the document. An
+    /// inline open ignores it: the caller sees the new tab and runs the command itself.
+    #[cfg(not(target_arch = "wasm32"))]
+    fn open_path_then(&mut self, path: &str, then: Option<&'static str>) {
         let name = std::path::Path::new(path).file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_else(|| path.to_string());
         // Taken before reading: a build that rewrites the file meanwhile still counts as a change.
         let stamp = file_watch::Stamp::at(path);
@@ -1718,7 +1762,7 @@ impl PdfCraftApp {
             activate: true,
             after_open: None,
             recovered: None,
-            then: None,
+            then,
         }) {
             self.notify_fmt("Couldn't open {name}: {e}", &[("name", &name), ("e", &error)]);
         }
@@ -1727,7 +1771,9 @@ impl PdfCraftApp {
     /// The File ▸ Open picker: PDFs, and images and text that become PDFs.
     #[cfg(not(target_arch = "wasm32"))]
     fn open_picker() -> rfd::AsyncFileDialog {
-        rfd::AsyncFileDialog::new().add_filter("PDF", &["pdf"]).add_filter(tl!("Images and text (converted to PDF)"), &create_ui::CONVERTIBLE)
+        rfd::AsyncFileDialog::new()
+            .add_filter("PDF", &["pdf"])
+            .add_filter(tl!("Images, text and documents (converted to PDF)"), &create_ui::CONVERTIBLE)
     }
 
     pub fn open_dialog(&mut self) {
@@ -1735,7 +1781,9 @@ impl PdfCraftApp {
         #[cfg(not(target_arch = "wasm32"))]
         self.pick(
             pickers::PickFor::Open,
-            rfd::AsyncFileDialog::new().add_filter("PDF", &["pdf"]).add_filter(tl!("Images and text (converted to PDF)"), &create_ui::CONVERTIBLE),
+            rfd::AsyncFileDialog::new()
+                .add_filter("PDF", &["pdf"])
+                .add_filter(tl!("Images, text and documents (converted to PDF)"), &create_ui::CONVERTIBLE),
             true,
         );
         // Browsers pick files asynchronously; the bytes arrive through `inbox`.
@@ -1746,7 +1794,7 @@ impl PdfCraftApp {
             wasm_bindgen_futures::spawn_local(async move {
                 if let Some(h) = rfd::AsyncFileDialog::new()
                     .add_filter("PDF", &["pdf"])
-                    .add_filter(tl!("Images and text"), &create_ui::CONVERTIBLE)
+                    .add_filter(tl!("Images, text and documents (converted to PDF)"), &create_ui::CONVERTIBLE)
                     .pick_file()
                     .await
                 {
@@ -1809,7 +1857,7 @@ impl PdfCraftApp {
         client
     }
 
-    /// Open a web link in the system browser (a new tab on the web). Only for PdfCraft's own
+    /// Open a web link in the system browser (a new tab on the web). Only for NadsPDF's own
     /// links; an address that came from a document goes through [`Self::request_document_url`].
     pub fn open_url(&mut self, url: &str) {
         if let Some(ctx) = &self.ctx {
@@ -1832,9 +1880,9 @@ impl PdfCraftApp {
             Err(e) => {
                 use pdfcraft_engine::links::BlockedLink;
                 let template = if matches!(e, BlockedLink::MailFile | BlockedLink::MailEncodedWord) {
-                    "{who} in this document tried to open an address PdfCraft won't open: {e}."
+                    "{who} in this document tried to open an address NadsPDF won't open: {e}."
                 } else {
-                    "{who} in this document tried to open an address PdfCraft won't open: {e}. Only web (http, https) and email (mailto) links open from documents."
+                    "{who} in this document tried to open an address NadsPDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents."
                 };
                 self.notify_fmt(template, &[("who", tl!(origin.noun())), ("e", &e.to_string())]);
             }
@@ -1876,7 +1924,7 @@ impl PdfCraftApp {
             self.sync_theme(&ctx);
             theme::apply(&ctx, self.theme);
         } else {
-            self.theme = preference.resolve(None, ThemeKind::Light);
+            self.theme = preference.resolve(None, ThemeKind::Dark);
         }
     }
 
@@ -1924,7 +1972,7 @@ impl PdfCraftApp {
                 system = desktop.get().map(|appearance| appearance == pdfcraft_platform::desktop_theme::DesktopAppearance::Dark);
             }
         }
-        let kind = self.theme_preference.resolve(system, ThemeKind::Light);
+        let kind = self.theme_preference.resolve(system, ThemeKind::Dark);
         if kind != self.theme {
             self.theme = kind;
             theme::apply(ctx, kind);
@@ -1973,7 +2021,8 @@ impl PdfCraftApp {
         self.ask_one(pickers::Ask::File(dialog), None, move |app, path| {
             let path = path.to_string_lossy().into_owned();
             let before = app.views.len();
-            app.open_path(&path);
+            // Off the UI thread, the tool runs when the document arrives (`then`).
+            app.open_path_then(&path, Some(command));
             if let Some(prompt) = app.password_prompt.as_mut().filter(|p| p.path.as_deref() == Some(path.as_str())) {
                 // Encrypted: the tool runs once the password is in.
                 prompt.then = Some(command);
@@ -2074,7 +2123,7 @@ impl PdfCraftApp {
     /// Serialize the user's persistent state (recent files, theme). Local only.
     pub fn persist(&self) -> String {
         let trusted: Vec<String> = self.session.trusted_certificates().iter().map(pdfcraft_engine::sign::x509::to_pem).collect();
-        serde_json::json!({
+        let mut settings = serde_json::json!({
             "docking": self.docking,
             "docking_left_open": self.left_open,
             "docking_right": self.right,
@@ -2133,8 +2182,16 @@ impl PdfCraftApp {
             "combine_zoom": self.combine_zoom,
             "comments_panel_closed": self.comments_panel_closed,
             "right_panel_closed": self.right_panel_closed,
-        })
-        .to_string()
+        });
+        // Outside the literal above, which is at `json!`'s recursion limit.
+        if let Some(map) = settings.as_object_mut() {
+            map.insert("vaults".into(), self.vaults.data.to_json());
+            map.insert("dark_pages".into(), self.view_defaults.dark.pages.into());
+            map.insert("dark_thumbnails".into(), self.view_defaults.dark.thumbnails.into());
+            map.insert("raster_level".into(), self.raster_level.id().into());
+            map.insert("updates".into(), self.updates.persist());
+        }
+        settings.to_string()
     }
 
     /// Restore state written by `persist`. Unknown or malformed data is ignored.
@@ -2169,10 +2226,12 @@ impl PdfCraftApp {
         if let Some(on) = v["system_title_bar"].as_bool() {
             self.system_title_bar = on;
         }
+        self.updates.restore(&v["updates"]);
         if let Some(on) = v["reload_changed_files"].as_bool() {
             self.reload_changed_files = on;
         }
         self.pinned.restore(&v["pinned_folders"]);
+        self.vaults.restore(&v["vaults"]);
         if let Ok(preference) = serde_json::from_value::<ThemePreference>(v["theme"].clone()) {
             self.set_theme_preference(preference);
         }
@@ -2191,6 +2250,7 @@ impl PdfCraftApp {
         if let Ok(units) = serde_json::from_value::<units::Unit>(v["units"].clone()) {
             self.units = units;
         }
+        self.restore_view_extras(&v);
         if let Some(on) = v["highlight_fields"].as_bool() {
             self.view_defaults.highlight_fields = on;
         }
@@ -2355,6 +2415,27 @@ impl PdfCraftApp {
             }
             ("left", _) => self.left_open = value != "closed",
             ("home", _) => self.active = None,
+            // `--vault "Name=/abs/a.pdf|/abs/b.pdf"`: create (or extend) a vault and select it on Home.
+            ("vault", _) => {
+                let (name, files) = value.split_once('=').unwrap_or((value, ""));
+                let id = match self.vaults.data.find_by_name(name) {
+                    Some(id) => id,
+                    None => {
+                        let color = vaults::COLORS.get(self.vaults.data.list.len() % vaults::COLORS.len()).copied().unwrap_or(vaults::COLORS[0]);
+                        let icon = vaults::ICONS.get(self.vaults.data.list.len() % vaults::ICONS.len()).copied().unwrap_or("folder");
+                        self.vaults.data.create(name, color, icon).map_err(|e| format!("can't create vault: {e:?}"))?
+                    }
+                };
+                let files: Vec<&str> = files.split('|').filter(|f| !f.trim().is_empty()).collect();
+                self.vaults.data.add_files(id, &files).map_err(|e| format!("can't add files: {e:?}"))?;
+                self.vaults.selected = Some(id);
+                self.vaults.refresh();
+            }
+            ("vault-dialog", _) => match value {
+                "new" => self.new_vault_dialog(Vec::new()),
+                "none" => self.vaults.dialog = None,
+                _ => return Err("vault-dialog must be new or none".into()),
+            },
             ("dialog", _) => {
                 self.dialog = match value {
                     "properties" => Some(Dialog::Properties(PropsTab::Description)),
@@ -2381,6 +2462,7 @@ impl PdfCraftApp {
                     "pdfa" => Some(Dialog::PdfA),
                     "signature" => Some(Dialog::Signature),
                     "optimize" => Some(Dialog::Optimize),
+                    "rasterize" => Some(Dialog::Rasterize),
                     "sign" | "certify" => {
                         // Sign with a Digital ID for an invisible signature on the current page.
                         let page = self.active.map_or(0, |i| self.views[i].current);
@@ -2407,6 +2489,7 @@ impl PdfCraftApp {
                 let (layout, continuous) = canvas::parse_display_token(value).ok_or("layout must be single, continuous, two-up or two-page")?;
                 v.set_display(layout, continuous);
             }
+            ("dark-pages" | "dark-thumbnails", _) => self.set_dark_option(key, value)?,
             ("continuous", Some(v)) => match value {
                 "on" => v.set_continuous(true),
                 "off" => v.set_continuous(false),
@@ -2790,6 +2873,8 @@ impl eframe::App for PdfCraftApp {
         let dropped = self.drop_on_signature_pad(dropped);
         #[cfg(not(target_arch = "wasm32"))]
         let dropped = self.drop_on_grid(dropped, ctx);
+        #[cfg(not(target_arch = "wasm32"))]
+        let dropped = self.drop_on_vault(dropped, ctx);
         for f in dropped {
             // Files dropped on the Combine files tab join its list instead of opening.
             if self.combine_showing() {
@@ -2830,8 +2915,10 @@ impl eframe::App for PdfCraftApp {
             match e {
                 #[cfg(not(target_arch = "wasm32"))]
                 OsEvent::Open(paths) => paths.iter().for_each(|p| self.open_path(p)),
+                #[cfg(not(target_arch = "wasm32"))]
+                OsEvent::Combine(paths) => self.combine_paths(&paths),
                 #[cfg(target_arch = "wasm32")]
-                OsEvent::Open(_) => {}
+                OsEvent::Open(_) | OsEvent::Combine(_) => {}
                 // Like closing the window: `guard_quit` asks about unsaved changes.
                 OsEvent::Quit => ctx.send_viewport_cmd(egui::ViewportCommand::Close),
             }
@@ -2906,7 +2993,7 @@ impl eframe::App for PdfCraftApp {
             .and_then(|i| self.session.get(self.views[i].id))
             .map(|d| d.display_name())
             .or_else(|| self.combine_showing().then(|| tl!("Combine files").to_owned()))
-            .map_or_else(|| "PdfCraft".to_owned(), |name| format!("{name} — PdfCraft"));
+            .map_or_else(|| "NadsPDF".to_owned(), |name| format!("{name} — NadsPDF"));
         if title != self.window_title {
             ctx.send_viewport_cmd(egui::ViewportCommand::Title(title.clone()));
             self.window_title = title;
@@ -2929,10 +3016,14 @@ impl eframe::App for PdfCraftApp {
             self.finish_render_frame(&ctx);
             return;
         }
+        // nads.site's base: the near-black socle the rounded panels float on.
+        let base = theme::Tokens::get(&ctx).titlebar;
+        ui.painter().rect_filled(ctx.content_rect(), 0.0, base);
         self.sync_window_frame(&ctx);
         if self.draws_window_frame() {
             window_controls::resize_edges(&ctx);
         }
+        bubbles::dock_active(self);
         chrome::tab_strip(self, ui);
         chrome::mode_bar(self, ui);
         if self.active.is_some() {
@@ -2950,7 +3041,14 @@ impl eframe::App for PdfCraftApp {
             }
         }
         let t = theme::Tokens::get(&ctx);
-        egui::CentralPanel::default().frame(egui::Frame::NONE.fill(t.pasteboard)).show(ui, |ui| {
+        let right = if self.active.is_some() { 6 } else { 8 };
+        let floating = egui::Frame::NONE.fill(t.pasteboard).corner_radius(14).stroke(egui::Stroke::new(1.0, t.border)).outer_margin(egui::Margin {
+            left: 8,
+            right,
+            top: 0,
+            bottom: 8,
+        });
+        egui::CentralPanel::default().frame(floating).show(ui, |ui| {
             if self.mode == Mode::Read {
                 match self.active {
                     None if self.combine_showing() => combine_ui::page(self, ui),
@@ -2961,9 +3059,11 @@ impl eframe::App for PdfCraftApp {
                 docking::show(self, ui);
             }
         });
+        bubbles::show(self, &ctx, self.strip_rect);
         self.process_pending_edits();
         palette::show(self, &ctx);
         dialogs::show(self, &ctx);
+        vaults_ui::dialogs(self, &ctx);
         self.show_progress(&ctx);
         widgets::toast(self, &ctx);
         self.finish_render_frame(&ctx);
@@ -2976,17 +3076,21 @@ impl PdfCraftApp {
         self.combine_thumbs_frame(ctx);
         // Retire hidden documents before admitting the visible document's textures, so the
         // three cache limits apply to the application, regardless of how many tabs are open.
+        // An open bubble's pages are on screen too.
+        let shown = |i: usize, id| Some(i) == self.active || self.bubbles.is_open(id);
         for (i, view) in self.views.iter_mut().enumerate() {
-            if Some(i) != self.active
+            if !shown(i, view.id)
                 && let Some(doc) = self.session.get(view.id)
             {
                 view.suspend_rendering(&doc.renderer);
             }
         }
-        if let Some(view) = self.active.and_then(|i| self.views.get_mut(i))
-            && let Some(doc) = self.session.get(view.id)
-        {
-            view.finish_render_frame(ctx, &doc.info, &doc.renderer);
+        for (i, view) in self.views.iter_mut().enumerate() {
+            if shown(i, view.id)
+                && let Some(doc) = self.session.get(view.id)
+            {
+                view.finish_render_frame(ctx, &doc.info, &doc.renderer);
+            }
         }
     }
 }

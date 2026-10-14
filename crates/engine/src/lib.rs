@@ -29,6 +29,7 @@ pub mod links;
 pub mod ocr;
 pub mod optimizer;
 pub mod printcheck;
+pub mod rasterize;
 mod scan_colours;
 pub mod signature_image;
 pub mod signature_scan;
@@ -47,8 +48,39 @@ pub use pdfcraft_organize::{BoxSpec, FieldConflicts, PageBox, SplitBy, split_ran
 pub use pdfcraft_organize::LabelStyle;
 pub use pdfcraft_organize::view::{InitialView, Layout as InitialLayout, Magnification, Navigation};
 
+pub use pdfcraft_convert::{ConvertError, Report as ConvertReport};
 pub use pdfcraft_cos::Algorithm;
-pub use pdfcraft_create::{CONVERTIBLE, CreateError, ImageResolution, SourceKind, decode_text, source_kind};
+pub use pdfcraft_create::{CreateError, ImageResolution, decode_text};
+
+/// What a file picked for Create (or opened, or dropped) is.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SourceKind {
+    Pdf,
+    Image,
+    /// A plain-text file (`.txt`, `.text`).
+    Text,
+    /// An Office or structured document `pdfcraft-convert` handles: Word, Excel, OpenDocument
+    /// spreadsheet, CSV/TSV or HTML (`.xls` and `.doc` are recognised and refused with an
+    /// explanation).
+    Document,
+}
+
+/// File extensions Create converts to PDF: images and plain text (`pdfcraft-create`), and Office,
+/// spreadsheet and HTML documents (`pdfcraft-convert`).
+pub const CONVERTIBLE: [&str; 20] = [
+    "png", "jpg", "jpeg", "tif", "tiff", "gif", "bmp", "jp2", "j2k", "jpx", "txt", "text", "docx", "xlsx", "xlsm", "ods", "csv", "tsv", "html", "htm",
+];
+
+/// Whether `bytes` named `name` is a PDF, an image, plain text or a document Create converts;
+/// `None` for anything else.
+pub fn source_kind(name: &str, bytes: &[u8]) -> Option<SourceKind> {
+    match pdfcraft_create::source_kind(name, bytes) {
+        Some(pdfcraft_create::SourceKind::Pdf) => Some(SourceKind::Pdf),
+        Some(pdfcraft_create::SourceKind::Image) => Some(SourceKind::Image),
+        Some(pdfcraft_create::SourceKind::Text) => Some(SourceKind::Text),
+        None => pdfcraft_convert::handles(name).then_some(SourceKind::Document),
+    }
+}
 pub use pdfcraft_edit::{
     Added, AddedImage, AddedText, Align as TextAlign, Background, Content as AddedContent, Family as FontFamily, HeaderFooter, MarkKind, Watermark,
 };
@@ -335,7 +367,7 @@ pub struct Document {
     /// What field scripts printed or asked for (see [`Session::take_js_output`]).
     js_output: js::JsOutput,
     /// Dynamic XFA forms: what laying the template out produced (pages and fields are
-    /// PdfCraft's; Adobe's viewers draw the form from the XFA packets themselves).
+    /// NadsPDF's; Adobe's viewers draw the form from the XFA packets themselves).
     pub xfa: Option<XfaLayout>,
     /// The parsed template of a laid-out XFA form, for its scripts.
     xfa_template: Option<Arc<pdfcraft_xfa::model::Template>>,
@@ -354,7 +386,7 @@ pub struct Document {
 
 /// Text an edit stored as typed but drew with `?` in place of `ch`, because the font it is drawn
 /// with (a form field's, or the standard fonts for comments) can't draw that character. Acrobat
-/// keeps such text too, drawing it with fonts PdfCraft can't embed yet.
+/// keeps such text too, drawing it with fonts NadsPDF can't embed yet.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct TextNotice {
     /// The form field's full name, or `None` for a comment.
@@ -374,7 +406,7 @@ impl std::fmt::Display for TextNotice {
         match (&self.field, self.redrawn_elsewhere) {
             (Some(name), true) => write!(
                 f,
-                "form field {name:?} (page {page}) holds {ch}, which its font can't draw: the value is saved, PdfCraft shows ? in its place, and other PDF viewers redraw the field from the value"
+                "form field {name:?} (page {page}) holds {ch}, which its font can't draw: the value is saved, NadsPDF shows ? in its place, and other PDF viewers redraw the field from the value"
             ),
             (Some(name), false) => write!(
                 f,
@@ -765,7 +797,7 @@ fn is_placeholder_title(title: &str) -> bool {
 }
 
 /// What is displayed: the working file, plus (in memory only, never saved) the appearances
-/// PdfCraft draws for comments that have none ([`pdfcraft_annot::with_missing_appearances`]).
+/// NadsPDF draws for comments that have none ([`pdfcraft_annot::with_missing_appearances`]).
 /// The working file is unchanged, and so is everything that reads it (saving, signatures, …).
 fn display_bytes(editor: Option<&mut Editor>, bytes: &Arc<Vec<u8>>) -> Arc<Vec<u8>> {
     let Some(display) = editor.and_then(|e| pdfcraft_annot::with_missing_appearances_cached(&e.cos, &mut e.appearances)) else {
@@ -1758,7 +1790,7 @@ impl Edit {
             Edit::ReplacePages { pages, .. } => plural("Replace page", "Replace pages", pages.len()),
             Edit::SetPageBox { pages, which: PageBox::Crop, .. } => plural("Crop page", "Crop pages", pages.len()),
             Edit::SetPageBox { .. } => Label::of("Set page boxes"),
-            // The four `/Info` keys PdfCraft itself offers get a wording of their own, so each can
+            // The four `/Info` keys NadsPDF itself offers get a wording of their own, so each can
             // be said in another language; any other key is the document's and goes in as it stands.
             Edit::SetInfo { key, .. } => match key.as_str() {
                 "Title" => Label::of("Change Title"),
@@ -2641,6 +2673,8 @@ pub enum EditError {
     Edit(#[from] pdfcraft_edit::EditError),
     #[error("{0}")]
     Create(#[from] pdfcraft_create::CreateError),
+    #[error("{0}")]
+    Convert(#[from] pdfcraft_convert::ConvertError),
     #[error("the edited document could not be written: {0}")]
     Write(String),
     #[error("the edited document could not be reopened: {0}")]
@@ -2736,7 +2770,7 @@ pub(crate) fn xfa_redraw(doc: &mut pdfcraft_cos::Document) -> Result<(), String>
     Ok(())
 }
 
-/// A warning for each field whose appearance PdfCraft drew with `?` for a character its font
+/// A warning for each field whose appearance NadsPDF drew with `?` for a character its font
 /// can't draw (laying out an XFA form's own values).
 fn undrawn_field_warnings(doc: &pdfcraft_cos::Document) -> Vec<String> {
     pdfcraft_forms::undrawn_fields(doc)
@@ -3867,7 +3901,15 @@ impl Session {
         self.write_new(&pdfcraft_create::from_text(title, text, pdfcraft_create::LETTER, 11.0)?)
     }
 
-    /// [`Self::create_from_text`] for a report PdfCraft writes from documents (comment summaries,
+    /// A new document from an Office, spreadsheet, CSV, HTML or text file (`name`'s extension
+    /// picks the format; see `pdfcraft-convert`): A4 pages in the standard Helvetica faces.
+    /// Characters Helvetica can't draw are written as `[U+XXXX]` and counted in the report.
+    pub fn create_from_document(&self, name: &str, bytes: &[u8]) -> Result<(Arc<Vec<u8>>, ConvertReport), EditError> {
+        let (doc, report) = pdfcraft_convert::convert_with_report(name, bytes)?;
+        Ok((self.write_new(&doc)?, report))
+    }
+
+    /// [`Self::create_from_text`] for a report NadsPDF writes from documents (comment summaries,
     /// compare reports), which can quote any language: characters Helvetica can't draw are written
     /// as `[U+XXXX]`, and the report's first line says so, rather than the report being refused.
     fn create_report(&self, title: &str, text: &str) -> Result<Arc<Vec<u8>>, EditError> {
@@ -3879,7 +3921,9 @@ impl Session {
     /// (it must open and allow copying pages) and returned as it is.
     pub fn convert_to_pdf(&self, name: &str, bytes: &Arc<Vec<u8>>) -> Result<(SourceKind, Arc<Vec<u8>>), EditError> {
         let Some(kind) = source_kind(name, bytes) else {
-            return Err(EditError::Source(format!("{name}: this file type can't be converted; use a PDF, an image or a .txt file")));
+            return Err(EditError::Source(format!(
+                "{name}: this file type can't be converted; use a PDF, an image, a .txt file or a document (.docx, .xlsx, .ods, .csv, .html)"
+            )));
         };
         let title = name.rsplit_once('.').map_or(name, |(s, _)| s);
         // Image decoders read untrusted bytes: a panic in one must not take the app down.
@@ -3887,6 +3931,11 @@ impl Session {
             SourceKind::Pdf => open_source(name, bytes).map(|_| bytes.clone()),
             SourceKind::Image => self.create_from_images(&[(name.to_string(), bytes.to_vec())]),
             SourceKind::Text => self.create_from_text(title, &decode_text(bytes)),
+            // Name the file, as image errors do: Create and Combine list several at once.
+            SourceKind::Document => self.create_from_document(name, bytes).map(|(pdf, _)| pdf).map_err(|e| match e {
+                EditError::Convert(e) => EditError::Source(format!("{name}: {e}")),
+                e => e,
+            }),
         })
         .map_err(|_| EditError::Source(format!("{name}: the file could not be read")))?;
         Ok((kind, created?))
@@ -3898,7 +3947,7 @@ impl Session {
     pub fn as_pdf(&self, name: &str, bytes: &Arc<Vec<u8>>) -> Result<Arc<Vec<u8>>, EditError> {
         let pdf = match source_kind(name, bytes) {
             Some(SourceKind::Pdf) => true,
-            Some(SourceKind::Image | SourceKind::Text) => false,
+            Some(SourceKind::Image | SourceKind::Text | SourceKind::Document) => false,
             None => name.to_ascii_lowercase().ends_with(".pdf"),
         };
         if pdf { Ok(bytes.clone()) } else { self.convert_to_pdf(name, bytes).map(|(_, pdf)| pdf) }

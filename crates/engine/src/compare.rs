@@ -151,6 +151,76 @@ impl OfficeFormat {
     }
 }
 
+/// Word's layout mode draws the page behind the text at this resolution.
+const BACKGROUND_DPI: f64 = 150.0;
+/// And stores the picture with this JPEG quality.
+const BACKGROUND_QUALITY: u8 = 85;
+
+/// Maps PDF user space onto the visible page (points, y up) for export.
+struct View<'a> {
+    info: &'a pdfcraft_render::PageInfo,
+    /// Points per user-space unit on the displayed page (`/UserUnit`, crop scaling).
+    unit: f64,
+}
+
+impl<'a> View<'a> {
+    fn new(info: &'a pdfcraft_render::PageInfo) -> Self {
+        let crop_width = f64::from(info.crop[2] - info.crop[0]);
+        let display_width = f64::from(if info.rotation.is_multiple_of(180) { info.width } else { info.height });
+        let unit = if crop_width > 0.0 && crop_width.is_finite() && display_width.is_finite() { display_width / crop_width } else { 1.0 };
+        Self { info, unit }
+    }
+
+    /// Export uses the visible page in points, y up. Raw PDF coordinates include CropBox offsets
+    /// and precede /Rotate and /UserUnit.
+    fn rect(&self, r: [f64; 4]) -> [f64; 4] {
+        let a = self.info.user_to_view(r[0] as f32, r[1] as f32);
+        let b = self.info.user_to_view(r[2] as f32, r[3] as f32);
+        let h = self.info.height;
+        [a[0].min(b[0]) as f64, (h - a[1].max(b[1])) as f64, a[0].max(b[0]) as f64, (h - a[1].min(b[1])) as f64]
+    }
+
+    fn block(&self, b: &pdfcraft_edit::TextBlock) -> pdfcraft_export::Block {
+        let (bold, italic) = style_of(&b.base_font);
+        pdfcraft_export::Block {
+            text: b.text.clone(),
+            rect: self.rect(b.rect),
+            size: b.size * self.unit,
+            bold: bold || b.bold,
+            italic: italic || b.italic,
+            color: b.color,
+            rotation: b.rotation - f64::from(self.info.rotation),
+        }
+    }
+
+    fn run(&self, l: &pdfcraft_edit::TextLine) -> pdfcraft_export::Run {
+        let (bold, italic) = style_of(&l.base_font);
+        pdfcraft_export::Run {
+            text: l.text.clone(),
+            rect: self.rect(l.rect),
+            size: l.size * self.unit,
+            bold: bold || l.bold,
+            italic: italic || l.italic,
+            color: l.color,
+            font: l.base_font.clone(),
+        }
+    }
+}
+
+/// Bold and italic, as a font's name says them.
+fn style_of(base_font: &str) -> (bool, bool) {
+    let f = base_font.to_ascii_lowercase();
+    (f.contains("bold") || f.contains("black") || f.contains("heavy"), f.contains("italic") || f.contains("oblique"))
+}
+
+/// Whether a rendered page is (nearly) plain white paper: fewer than one pixel in 2,000 differs.
+fn blank(premultiplied: &[u8]) -> bool {
+    let rgb = crate::export::over_white(premultiplied);
+    let px = rgb.as_chunks::<3>().0;
+    let inked = px.iter().filter(|[r, g, b]| *r < 245 || *g < 245 || *b < 245).count();
+    inked.saturating_mul(2000) < px.len()
+}
+
 impl crate::Document {
     /// The pages as paragraphs and images (for Word, HTML and RTF export), including what
     /// form XObjects draw.
@@ -161,32 +231,12 @@ impl crate::Document {
             .iter()
             .enumerate()
             .map(|(i, info)| {
-                // Export uses the visible page in points, y up. Raw PDF coordinates include
-                // CropBox offsets and precede /Rotate and /UserUnit.
-                let visible_rect = |r: [f64; 4]| {
-                    let a = info.user_to_view(r[0] as f32, r[1] as f32);
-                    let b = info.user_to_view(r[2] as f32, r[3] as f32);
-                    [a[0].min(b[0]) as f64, (info.height - a[1].max(b[1])) as f64, a[0].max(b[0]) as f64, (info.height - a[1].min(b[1])) as f64]
-                };
-                let crop_width = f64::from(info.crop[2] - info.crop[0]);
-                let display_width = f64::from(if info.rotation % 180 == 0 { info.width } else { info.height });
-                let unit = if crop_width > 0.0 && crop_width.is_finite() && display_width.is_finite() { display_width / crop_width } else { 1.0 };
+                let view = View::new(info);
                 let blocks = pdfcraft_edit::reading_blocks(cos, i)
                     .unwrap_or_default()
-                    .into_iter()
+                    .iter()
                     .filter(|b| !b.text.trim().is_empty())
-                    .map(|b| {
-                        let f = b.base_font.to_ascii_lowercase();
-                        pdfcraft_export::Block {
-                            text: b.text,
-                            rect: visible_rect(b.rect),
-                            size: b.size * unit,
-                            bold: f.contains("bold") || f.contains("black") || f.contains("heavy"),
-                            italic: f.contains("italic") || f.contains("oblique"),
-                            color: b.color,
-                            rotation: b.rotation - f64::from(info.rotation),
-                        }
-                    })
+                    .map(|b| view.block(b))
                     .collect();
                 let images = pdfcraft_edit::reading_images(cos, i)
                     .unwrap_or_default()
@@ -196,23 +246,72 @@ impl crate::Document {
                         Some(pdfcraft_export::Image {
                             ext: if ext == "jpg" { "jpg" } else { "png" },
                             bytes,
-                            rect: visible_rect(im.rect),
-                            size: [im.matrix[0].hypot(im.matrix[1]) * unit, im.matrix[2].hypot(im.matrix[3]) * unit],
+                            rect: view.rect(im.rect),
+                            size: [im.matrix[0].hypot(im.matrix[1]) * view.unit, im.matrix[2].hypot(im.matrix[3]) * view.unit],
                             rotation: im.matrix[1].atan2(im.matrix[0]).to_degrees() - f64::from(info.rotation),
                         })
                     })
                     .collect();
-                pdfcraft_export::Page { width: info.width as f64, height: info.height as f64, blocks, images }
+                pdfcraft_export::Page { width: info.width as f64, height: info.height as f64, blocks, images, layout: None }
             })
             .collect()
     }
 
+    /// Word's layout mode for `pages`: each page whose artwork shows gets a picture of itself
+    /// without text, and its paragraphs row by row. Plain text pages (nothing but words on white)
+    /// and OCR layers over scans keep flowing.
+    pub fn add_word_layout(&self, pages: &mut [pdfcraft_export::Page]) {
+        let Some(cos) = self.editor.as_ref().map(|e| &e.cos) else { return };
+        let Ok(bytes) = pdfcraft_cos::write_full(&pdfcraft_edit::without_text(cos), &pdfcraft_cos::SaveOptions::default()) else { return };
+        // The copy is written unencrypted; reading colours are a display setting, not the page.
+        let config = pdfcraft_render::RenderConfig { password: None, reading_colors: Default::default(), ..self.config.clone() };
+        let src = crate::export::ExportSource {
+            bytes: Arc::new(bytes),
+            config,
+            pages: self.info.pages.len(),
+            sizes: self.info.pages.iter().map(|p| (p.width, p.height)).collect(),
+        };
+        let mut exporter = crate::export::Exporter::from_source(src);
+        for (i, (page, info)) in pages.iter_mut().zip(&self.info.pages).enumerate() {
+            let Ok((blocks, lines)) = pdfcraft_edit::reading_layout(cos, i) else { continue };
+            let blocks: Vec<&pdfcraft_edit::TextBlock> = blocks.iter().filter(|b| !b.text.trim().is_empty()).collect();
+            if blocks.is_empty() || blocks.iter().all(|b| b.invisible) {
+                continue;
+            }
+            let Ok(r) = exporter.render(i, BACKGROUND_DPI) else { continue };
+            if blank(&r.rgba) {
+                continue;
+            }
+            let Ok(jpeg) = crate::rasterize::encode_page(r.width, r.height, &r.rgba, BACKGROUND_QUALITY) else { continue };
+            let view = View::new(info);
+            let (w, h) = (f64::from(info.width), f64::from(info.height));
+            let paras = blocks
+                .iter()
+                // Invisible words (an OCR layer) are already in the picture.
+                .filter(|b| !b.invisible)
+                .map(|b| pdfcraft_export::Para {
+                    block: view.block(b),
+                    rows: b
+                        .rows
+                        .iter()
+                        .map(|row| row.iter().filter_map(|li| lines.get(*li)).filter(|l| !l.text.is_empty()).map(|l| view.run(l)).collect())
+                        .collect(),
+                })
+                .collect();
+            let background = pdfcraft_export::Image { ext: "jpg", bytes: jpeg, rect: [0.0, 0.0, w, h], size: [w, h], rotation: 0.0 };
+            page.layout = Some(pdfcraft_export::Layout { background, paras });
+        }
+    }
+
     /// The document as a Word, PowerPoint, HTML or RTF file.
     pub fn export_office(&self, format: OfficeFormat) -> Vec<u8> {
-        let pages = self.export_pages();
+        let mut pages = self.export_pages();
         let title = self.info.title.clone().unwrap_or_else(|| self.name.trim_end_matches(".pdf").to_string());
         match format {
-            OfficeFormat::Docx => pdfcraft_export::docx(&pages, &title),
+            OfficeFormat::Docx => {
+                self.add_word_layout(&mut pages);
+                pdfcraft_export::docx(&pages, &title)
+            }
             OfficeFormat::Pptx => pdfcraft_export::pptx(&pages, &title),
             OfficeFormat::Html => pdfcraft_export::html(&pages, &title).into_bytes(),
             OfficeFormat::Rtf => pdfcraft_export::rtf(&pages).into_bytes(),

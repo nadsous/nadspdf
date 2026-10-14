@@ -13,7 +13,7 @@
 # Clean-room: every entry was written from the plain meaning of the English label using ordinary
 # Arabic computing vocabulary. No proprietary localisation resource, string table or product UI
 # (Acrobat's included) was consulted or copied; add entries the same way.
-# Product and technology names (PdfCraft, PDF, Acrobat JavaScript ...) stay in Latin letters;
+# Product and technology names (NadsPDF, PDF, Acrobat JavaScript ...) stay in Latin letters;
 # the trailing "…" of dialog commands is kept. Digits are Western (0-9).
 #
 # Write every entry in logical (typing) order. The interface draws text left to right, so
@@ -159,7 +159,7 @@
 	Next page	الصفحة التالية
 	Previous page	الصفحة السابقة
 	Current page — type a page number or label (such as iv) and press Enter	الصفحة الحالية — اكتب رقم صفحة أو تسميتها (مثل iv) ثم اضغط Enter
-	Welcome to PdfCraft	مرحبًا بك في PdfCraft
+	Welcome to NadsPDF	مرحبًا بك في NadsPDF
 	An open-source PDF workbench — local, private, and scriptable.	منضدة عمل مفتوحة المصدر لملفات PDF — محلية وخاصة وقابلة للبرمجة.
 	Join the ArtCraft community	انضم إلى مجتمع ArtCraft
 	Get help, share feedback and follow development on Discord.	احصل على المساعدة وشارك ملاحظاتك وتابع التطوير على Discord.
@@ -167,9 +167,9 @@
 	Use now	استخدم الآن
 	Open file	فتح ملف
 	Recent	الأخيرة
-	Files you open in PdfCraft appear here. Drop a PDF anywhere to open it.	الملفات التي تفتحها في PdfCraft تظهر هنا. أفلت ملف PDF في أي مكان لفتحه.
+	Files you open in NadsPDF appear here. Drop a PDF anywhere to open it.	الملفات التي تفتحها في NadsPDF تظهر هنا. أفلت ملف PDF في أي مكان لفتحه.
 	Privacy	الخصوصية
-	PdfCraft works offline. No telemetry, no account, and no cloud processing unless you add a provider.	يعمل PdfCraft دون اتصال. لا قياس عن بُعد ولا حساب ولا معالجة سحابية إلا إذا أضفت مزوّدًا.
+	NadsPDF works offline. No telemetry, no account, and no cloud processing unless you add a provider.	يعمل NadsPDF دون اتصال. لا قياس عن بُعد ولا حساب ولا معالجة سحابية إلا إذا أضفت مزوّدًا.
 	Scripts run in a sandbox without file or network access. With JavaScript off, Acrobat's standard format, validate and calculate functions still work.	تعمل السكربتات في بيئة معزولة دون وصول إلى الملفات أو الشبكة. عند إيقاف JavaScript تبقى دوال Acrobat القياسية للتنسيق والتحقق والحساب تعمل.
 	Back to all tools	العودة إلى كل الأدوات
 	Close panel	إغلاق اللوحة
@@ -308,11 +308,11 @@
 	Number pages…	ترقيم الصفحات…
 	Keyboard shortcuts	اختصارات لوحة المفاتيح
 	Join the ArtCraft Discord	انضم إلى خادم ArtCraft على Discord
-	PdfCraft web page	صفحة PdfCraft على الويب
-	PdfCraft on GitHub	PdfCraft على GitHub
+	NadsPDF web page	صفحة NadsPDF على الويب
+	NadsPDF on GitHub	NadsPDF على GitHub
 	ArtCraft website	موقع ArtCraft
 	Check for updates…	التحقق من التحديثات…
-	About PdfCraft	حول PdfCraft
+	About NadsPDF	حول NadsPDF
 	Export a PDF	تصدير ملف PDF
 	Export to	تصدير إلى
 	Microsoft Word (.docx)	Microsoft Word (.docx)
@@ -769,12 +769,11 @@
 	Check for updates	التحقق من التحديثات
 	No check has run yet.	لم يُجرَ أي تحقق بعد.
 	Checking for a newer version…	جارٍ التحقق من وجود إصدار أحدث…
-	PdfCraft {v} is available.	PdfCraft {v} متاح.
+	NadsPDF {v} is available.	NadsPDF {v} متاح.
 	You have version {c}. Download the new version from its release page.	لديك الإصدار {c}. نزّل الإصدار الجديد من صفحة إصداره.
-	PdfCraft {c} is up to date.	PdfCraft {c} محدَّث.
+	NadsPDF {c} is up to date.	NadsPDF {c} محدَّث.
 	Couldn't check for updates: {e}	تعذّر التحقق من التحديثات: {e}
 	You have version {c}. All releases are listed at {page}.	لديك الإصدار {c}. كل الإصدارات مدرجة في {page}.
-	Asks GitHub for the latest release. Nothing is downloaded or installed automatically.	يسأل GitHub عن أحدث إصدار. لا يُنزَّل أو يُثبَّت شيء تلقائيًا.
 	Download	تنزيل
 	Later	لاحقًا
 	none	لا شيء
@@ -885,8 +884,8 @@
 	No changes allowed	لا يُسمح بأي تغييرات
 	Annotations, form fill-in, and digital signatures	التعليقات وتعبئة النماذج والتوقيعات الرقمية
 	Form fill-in and digital signatures	تعبئة النماذج والتوقيعات الرقمية
-	The key is in the macOS Keychain, which may ask to allow PdfCraft to use it.	المفتاح موجود في سلسلة مفاتيح macOS، وقد تطلب الإذن لـ PdfCraft باستخدامه.
-	The key is in the Windows certificate store, which may ask to allow PdfCraft to use it.	المفتاح موجود في مخزن شهادات Windows، وقد يطلب الإذن لـ PdfCraft باستخدامه.
+	The key is in the macOS Keychain, which may ask to allow NadsPDF to use it.	المفتاح موجود في سلسلة مفاتيح macOS، وقد تطلب الإذن لـ NadsPDF باستخدامه.
+	The key is in the Windows certificate store, which may ask to allow NadsPDF to use it.	المفتاح موجود في مخزن شهادات Windows، وقد يطلب الإذن لـ NadsPDF باستخدامه.
 	Digital ID password	كلمة مرور المعرّف الرقمي
 	Back	رجوع
 	Validate all	التحقق من الكل
@@ -1245,7 +1244,7 @@
 	Downsample to	تقليل العينات إلى
 	Also recognize pages that already have text	التعرف على الصفحات التي تحتوي على نص أيضًا
 	Pictures on those pages are recognized too; words already in the page's text are not added again	يُتعرَّف على الصور في هذه الصفحات أيضًا، ولا تُضاف مرة أخرى الكلمات الموجودة بالفعل في نص الصفحة
-	Text recognition isn't installed: its model files are missing. Reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them.	التعرف على النص غير مثبت: ملفات نماذجه مفقودة. أعد تثبيت PdfCraft، أو اضبط PDFCRAFT_MODELS على المجلد الذي يحتويها.
+	Text recognition isn't installed: its model files are missing. Reinstall NadsPDF, or set PDFCRAFT_MODELS to the folder that holds them.	التعرف على النص غير مثبت: ملفات نماذجه مفقودة. أعد تثبيت NadsPDF، أو اضبط PDFCRAFT_MODELS على المجلد الذي يحتويها.
 	Settings	الإعدادات
 	Optional	اختياري
 	Planned · {m}	مخطط له · {m}
@@ -1389,7 +1388,7 @@
 	Anyone opening the document will need this password. It's applied when you save.	كل من يفتح المستند سيحتاج إلى كلمة المرور هذه. تُطبَّق عند الحفظ.
 	The document opens without a password; this password is needed to change the restrictions. It's applied when you save.	يُفتح المستند دون كلمة مرور؛ كلمة المرور هذه لازمة لتغيير القيود. تُطبَّق عند الحفظ.
 	Recover unsaved documents?	استعادة المستندات غير المحفوظة؟
-	PdfCraft didn't shut down normally. These documents had changes that were autosaved:	لم يُغلق PdfCraft بشكل طبيعي. هذه المستندات فيها تغييرات حُفظت تلقائيًا:
+	NadsPDF didn't shut down normally. These documents had changes that were autosaved:	لم يُغلق NadsPDF بشكل طبيعي. هذه المستندات فيها تغييرات حُفظت تلقائيًا:
 	just now	الآن
 	{n} min ago	قبل {n} دقيقة
 	{n} h ago	قبل {n} ساعة
@@ -1547,10 +1546,10 @@
 	On the web, open or drop an image to convert it	على الويب، افتح صورة أو أفلتها لتحويلها
 	Couldn't optimize the file: {e}	تعذّر تحسين الملف: {e}
 	Couldn't write {path}: {e}	تعذّرت الكتابة في {path}: {e}
-	The form asks to be submitted to {u}; PdfCraft doesn't send form data. Save the document to keep your entries.	النموذج يطلب إرساله إلى {u}؛ PdfCraft لا يرسل بيانات النماذج. احفظ المستند للاحتفاظ بما أدخلته.
+	The form asks to be submitted to {u}; NadsPDF doesn't send form data. Save the document to keep your entries.	النموذج يطلب إرساله إلى {u}؛ NadsPDF لا يرسل بيانات النماذج. احفظ المستند للاحتفاظ بما أدخلته.
 	This PDF uses the unsupported {s} action.	يستخدم هذا الملف إجراء {s} غير مدعوم.
 	{name}: the {other} action isn't supported yet	{name}: الإجراء {other} غير مدعوم بعد
-	{name} submits the form to {url}; PdfCraft doesn't send form data. Save the document to keep your entries.	{name} يرسل النموذج إلى {url}؛ PdfCraft لا يرسل بيانات النماذج. احفظ المستند للاحتفاظ بما أدخلته.
+	{name} submits the form to {url}; NadsPDF doesn't send form data. Save the document to keep your entries.	{name} يرسل النموذج إلى {url}؛ NadsPDF لا يرسل بيانات النماذج. احفظ المستند للاحتفاظ بما أدخلته.
 	Export stopped: {e}	توقف التصدير: {e}
 	Exported 1 image	صُدِّرت صورة واحدة
 	Exported {n} images	صُدِّرت {n} صور
@@ -1775,8 +1774,8 @@
 	Signed and all signatures are valid.	موقَّع وكل التوقيعات صالحة.
 	At least one signature has problems.	توقيع واحد على الأقل فيه مشكلات.
 	This document is secured. Some changes are restricted by its security settings.	هذا المستند مؤمَّن. بعض التغييرات مقيدة بإعدادات أمانه.
-	This is a dynamic XFA form, which PdfCraft can't display yet. What you see is the file's placeholder page.	هذا نموذج XFA ديناميكي، لا يستطيع PdfCraft عرضه بعد. ما تراه هو الصفحة البديلة للملف.
-	This form also contains XFA data, which PdfCraft doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	هذا النموذج يحتوي أيضًا على بيانات XFA، لا يقرؤها PdfCraft بعد. يمكنك تعبئة حقوله، لكن Acrobat قد يعرض قيم XFA بدلًا منها.
+	This is a dynamic XFA form, which NadsPDF can't display yet. What you see is the file's placeholder page.	هذا نموذج XFA ديناميكي، لا يستطيع NadsPDF عرضه بعد. ما تراه هو الصفحة البديلة للملف.
+	This form also contains XFA data, which NadsPDF doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	هذا النموذج يحتوي أيضًا على بيانات XFA، لا يقرؤها NadsPDF بعد. يمكنك تعبئة حقوله، لكن Acrobat قد يعرض قيم XFA بدلًا منها.
 	This document contains {n} interactive form fields.	هذا المستند يحتوي على {n} حقول نموذج تفاعلية.
 	This file was damaged and has been repaired. Saving keeps the repaired version.	هذا الملف كان تالفًا وأُصلح. الحفظ يُبقي النسخة المُصلَحة.
 	Dismiss	تجاهل
@@ -1825,7 +1824,7 @@
 	there are no pages to print	لا توجد صفحات للطباعة
 	the document has no tags	المستند لا يحتوي على وسوم
 	{0}: {1}	{0}: {1}
-	the text recognition models are not installed (reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them)	نماذج التعرف على النص غير مثبتة (أعد تثبيت PdfCraft، أو اضبط PDFCRAFT_MODELS على المجلد الذي يحتويها)
+	the text recognition models are not installed (reinstall NadsPDF, or set PDFCRAFT_MODELS to the folder that holds them)	نماذج التعرف على النص غير مثبتة (أعد تثبيت NadsPDF، أو اضبط PDFCRAFT_MODELS على المجلد الذي يحتويها)
 	the image is empty	الصورة فارغة
 	this file isn't XFDF, FDF, XML or text form data	هذا الملف ليس بيانات نموذج بصيغة XFDF أو FDF أو XML أو نص
 	nothing in the file matches this document	لا شيء في الملف يطابق هذا المستند
@@ -1871,6 +1870,8 @@
 	Draw your {what} below.	ارسم {what} أدناه.
 	Your name	اسمك
 	Images and text (converted to PDF)	صور ونص (تُحوَّل إلى PDF)
+	Images, text and documents (converted to PDF)	صور ونص ومستندات (تُحوَّل إلى PDF)
+	PDF, images, text and documents	PDF وصور ونص ومستندات
 	Images and text	صور ونص
 	Check Box Style:	نمط خانة الاختيار:
 	Button Style:	نمط الزر:
@@ -2075,7 +2076,7 @@
 	Couldn't optimize the file	تعذّر تحسين الملف
 	Files are combined in this order. Leave Pages empty to take every page.	تُدمج الملفات بهذا الترتيب. اترك «الصفحات» فارغًا لأخذ كل الصفحات.
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	الوضع المحمول متوقف: تتعذر الكتابة في {folder} ({error}). تُحفظ الإعدادات في مجلد المستخدم بدلًا منه.
-	PdfCraft is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	يرسم PdfCraft دون معالج رسوميات، لذا قد يكون بطيئًا. تحديث تعريف بطاقة الرسوميات قد يفيد.
+	NadsPDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	يرسم NadsPDF دون معالج رسوميات، لذا قد يكون بطيئًا. تحديث تعريف بطاقة الرسوميات قد يفيد.
 	Show	إظهار
 	Sort	فرز
 	Reverse the order	عكس الترتيب
@@ -2133,7 +2134,7 @@ calendar date	September	سبتمبر
 calendar date	October	أكتوبر
 calendar date	November	نوفمبر
 calendar date	December	ديسمبر
-	Reopen the files that were open when PdfCraft last closed	إعادة فتح الملفات التي كانت مفتوحة عند آخر إغلاق لـ PdfCraft
+	Reopen the files that were open when NadsPDF last closed	إعادة فتح الملفات التي كانت مفتوحة عند آخر إغلاق لـ NadsPDF
 	Clear Recent Files	مسح الملفات الأخيرة
 	Remove from Recent	إزالة من الأخيرة
 	Remove {name} from Recent	إزالة {name} من الأخيرة
@@ -2145,8 +2146,8 @@ calendar date	December	ديسمبر
 	A link	رابط
 	A button	زر
 	A script	سكربت
-	{who} in this document tried to open an address PdfCraft won't open: {e}.	{who} في هذا المستند حاول فتح عنوان لن يفتحه PdfCraft: {e}.
-	{who} in this document tried to open an address PdfCraft won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} في هذا المستند حاول فتح عنوان لن يفتحه PdfCraft: {e}. روابط الويب (http, https) والبريد (mailto) وحدها تُفتح من المستندات.
+	{who} in this document tried to open an address NadsPDF won't open: {e}.	{who} في هذا المستند حاول فتح عنوان لن يفتحه NadsPDF: {e}.
+	{who} in this document tried to open an address NadsPDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} في هذا المستند حاول فتح عنوان لن يفتحه NadsPDF: {e}. روابط الويب (http, https) والبريد (mailto) وحدها تُفتح من المستندات.
 	Another file dialog is still open. Finish with it first.	يوجد حوار ملفات آخر ما زال مفتوحًا. أنهِ العمل فيه أولًا.
 	Couldn't show the file picker. Please try again.	تعذّر إظهار منتقي الملفات. حاول مجددًا.
 	The document changed while you were choosing a file, so nothing was changed.	تغيّر المستند أثناء اختيارك ملفًا، فلم يُغيَّر شيء.
@@ -2182,8 +2183,8 @@ calendar date	December	ديسمبر
 	Slash	شرطة مائلة
 	The PDF text fonts can't draw “{c}” ({code}). Choose supported text.	لا تستطيع خطوط نص PDF عرض «{c}» ({code}). اختر نصًا مدعومًا.
 	The standard fonts can't draw “{c}” ({code}). Only Western European characters can be added as text for now.	الخطوط القياسية لا تستطيع رسم «{c}» ({code}). حاليًا يمكن إضافة محارف أوروبا الغربية فقط كنص.
-	This field's font can't draw “{c}” ({code}), so PdfCraft shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	خط هذا الحقل لا يستطيع رسم «{c}» ({code})، لذا يعرض PdfCraft علامة ? مكانه. القيمة محفوظة، وتعيد برامج عرض PDF الأخرى رسم الحقل منها.
-	The fonts PdfCraft writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	الخطوط التي يكتب بها PdfCraft لا تستطيع رسم «{c}» ({code})، لذا يظهر بشكل ? في كل برامج عرض PDF. النص محفوظ.
+	This field's font can't draw “{c}” ({code}), so NadsPDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	خط هذا الحقل لا يستطيع رسم «{c}» ({code})، لذا يعرض NadsPDF علامة ? مكانه. القيمة محفوظة، وتعيد برامج عرض PDF الأخرى رسم الحقل منها.
+	The fonts NadsPDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	الخطوط التي يكتب بها NadsPDF لا تستطيع رسم «{c}» ({code})، لذا يظهر بشكل ? في كل برامج عرض PDF. النص محفوظ.
 	Larger pages	صفحات أكبر
 	Smaller pages	صفحات أصغر
 	Reset page size	إعادة ضبط حجم الصفحة
@@ -2341,7 +2342,7 @@ animation effects	Off	معطّلة
 	no output folder was chosen	لم يتم اختيار مجلد للإخراج
 @plural	Downloaded {n} PDF|Downloaded {n} PDFs	تم تنزيل {n} من ملفات PDF|تم تنزيل ملف PDF واحد ({n})|تم تنزيل ملفي PDF ({n})|تم تنزيل {n} ملفات PDF|تم تنزيل {n} ملف PDF|تم تنزيل {n} من ملفات PDF
 	Scan	مسح ضوئي
-	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: PdfCraft finds the signature and removes the paper.	وقّع على ورقة بيضاء والتقط لها صورة في إضاءة ساطعة ومتساوية (استخدم الفلاش). اختر الصورة أو أفلتها هنا: يعثر PdfCraft على التوقيع ويزيل الورق.
+	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: NadsPDF finds the signature and removes the paper.	وقّع على ورقة بيضاء والتقط لها صورة في إضاءة ساطعة ومتساوية (استخدم الفلاش). اختر الصورة أو أفلتها هنا: يعثر NadsPDF على التوقيع ويزيل الورق.
 	Choose photo…	اختيار صورة…
 	No photo chosen	لم تُختر صورة
 	Photo	صورة
@@ -2373,3 +2374,103 @@ animation effects	Off	معطّلة
 	This document is trying to open a local file:	يحاول هذا المستند فتح ملف محلي:
 	Move tag earlier	نقل العلامة للأعلى
 	Move tag later	نقل العلامة للأسفل
+
+# NadsPDF (nads.site)
+	NadsPDF tools	أدوات NadsPDF
+	PdfCraft (upstream) on GitHub	PdfCraft (المشروع الأصلي) على GitHub
+	Convert to PDF with NadsPDF	التحويل إلى PDF باستخدام NadsPDF
+	Combine with NadsPDF	الدمج باستخدام NadsPDF
+	Open with NadsPDF	الفتح باستخدام NadsPDF
+	Show NadsPDF in the File Explorer right-click menu	إظهار NadsPDF في قائمة النقر بزر الماوس الأيمن في مستكشف الملفات
+	Added for all users when NadsPDF was installed.	أُضيف لجميع المستخدمين عند تثبيت NadsPDF.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	التحويل إلى PDF والدمج والفتح للمستندات والصور وملفات PDF. في Windows 11 ضمن «إظهار المزيد من الخيارات».
+	Couldn't change the File Explorer menu: {e}	تعذّر تغيير قائمة مستكشف الملفات: {e}
+	Couldn't find {name}	تعذّر العثور على {name}
+# Vaults (Home ▸ Vaults)
+@plural	{n} file|{n} files	{n} ملف|{n} ملف|{n} ملفان|{n} ملفات|{n} ملفًا|{n} ملف
+	Give the vault a name	أعطِ الخزنة اسمًا
+	You can have up to {n} vaults. Delete one first.	يمكنك امتلاك {n} خزنة كحد أقصى. احذف واحدة أولًا.
+	That vault no longer exists	لم تعد هذه الخزنة موجودة
+	Added {files} to {vault}	أُضيف إلى {vault}: {files}
+	Already in {vault}	موجود بالفعل في {vault}
+	A vault holds up to {n} files	تتسع الخزنة لـ {n} ملف كحد أقصى
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	تحفظ الخزائن ملفات PDF والملفات التي يستطيع NadsPDF تحويلها، على هذا الحاسوب
+	No files to open in this vault	لا توجد ملفات لفتحها في هذه الخزنة
+	Opening the first {n} files	جارٍ فتح أول {n} ملف
+	Deleted the vault {vault}. Its files were not touched.	حُذفت الخزنة {vault}. لم تُمسّ ملفاتها.
+	Moved {file} to {vault}	نُقل {file} إلى {vault}
+	Vaults need the desktop app	تحتاج الخزائن إلى تطبيق سطح المكتب
+	Locate {file}	تحديد موقع {file}
+	Save this document to a file first, then add it to a vault	احفظ هذا المستند في ملف أولًا، ثم أضفه إلى خزنة
+	Vaults	الخزائن
+	New vault	خزنة جديدة
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	اجمع ملفات PDF من أي مكان على حاسوبك في خزائن لها اسم ولون وأيقونة. تبقى الملفات في أماكنها.
+	Click to show its files. Drag to reorder, or drop files here.	انقر لعرض ملفاتها. اسحب لإعادة الترتيب، أو أفلت الملفات هنا.
+	Open all	فتح الكل
+	Edit vault…	تعديل الخزنة…
+	Move left	نقل لليسار
+	Move right	نقل لليمين
+	Delete vault…	حذف الخزنة…
+	New vault…	خزنة جديدة…
+	No files yet. Drop files here to add them.	لا ملفات بعد. أفلت الملفات هنا لإضافتها.
+	Locate…	تحديد الموقع…
+	Missing	مفقود
+	Remove {name} from this vault	إزالة {name} من هذه الخزنة
+	This file has moved or been deleted. Locate it, or remove it from the vault.	نُقل هذا الملف أو حُذف. حدّد موقعه أو أزله من الخزنة.
+	Move to vault	نقل إلى خزنة
+	Remove from vault	إزالة من الخزنة
+	Show this vault on Home	عرض هذه الخزنة في الرئيسية
+	Vault: {name}	خزنة: {name}
+	Vault	خزنة
+	Edit vault	تعديل الخزنة
+	Vault name	اسم الخزنة
+	Create vault	إنشاء الخزنة
+	Delete the vault {vault}?	حذف الخزنة {vault}؟
+	Its files stay where they are on your computer. Only the vault is deleted.	تبقى الملفات في أماكنها على حاسوبك. تُحذف الخزنة فقط.
+	Delete vault	حذف الخزنة
+	Add to vault	إضافة إلى خزنة
+	Already in it	موجود فيها
+	Add document to vault…	إضافة المستند إلى خزنة…
+	Dark pages	صفحات داكنة
+	Rasterize pages (strong compression)…	تحويل الصفحات إلى صور نقطية (ضغط قوي)…
+	Rasterize pages (strong compression)	تحويل الصفحات إلى صور نقطية (ضغط قوي)
+	Rasterizing… page {d} of {t}	جارٍ التحويل إلى صور… الصفحة {d} من {t}
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	تصبح كل صفحة صورة: أقوى ضغط، وهو الأفضل للمستندات الممسوحة ضوئيًا. لن يعود النص قابلًا للتحديد أو البحث، ولن تُحفظ الروابط والإشارات المرجعية وحقول النماذج. تُحفظ النتيجة كنسخة.
+	{dpi} dpi, JPEG quality {q}	{dpi} نقطة/بوصة، جودة JPEG {q}
+compression level	Light	خفيف
+compression level	Medium	متوسط
+compression level	Strong	قوي
+	Compress	ضغط
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	لن يؤدي التحويل إلى صور إلى تصغير هذا الملف ({size}). لم تُحفظ أي نسخة.
+	Add faint watermark	إضافة علامة مائية باهتة
+	Recognize text if available	التعرّف على النص إن كان متاحًا
+	Prepare for Sending	تجهيز للإرسال
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	ترقيم الصفحات «n / الإجمالي» في أسفل الوسط، ثم تصغير الملف لإرساله بالبريد الإلكتروني.
+	Archive Scans	أرشفة المستندات الممسوحة
+	Make scans searchable (when text recognition is available), then make them smaller.	جعل المستندات الممسوحة قابلة للبحث (إذا كان التعرّف على النص مثبتًا)، ثم تصغيرها.
+	Confidential	سري
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	علامة مائية قطرية باهتة «سري» وأرقام صفحات «n / الإجمالي» في كل صفحة.
+	{name} (copy)	{name} (نسخة)
+watermark text	CONFIDENTIAL	سري
+	Group name	اسم المجموعة
+	Rename Group	إعادة تسمية المجموعة
+	Ungroup	إلغاء التجميع
+	Close Group	إغلاق المجموعة
+	Add Tab to New Group	إضافة علامة التبويب إلى مجموعة جديدة
+	Add Tab to Group	إضافة علامة التبويب إلى مجموعة
+	Remove from Group	إزالة من المجموعة
+	Click to fold or unfold the group	انقر لطي المجموعة أو توسيعها
+	Filter tools	تصفية الأدوات
+	No tool matches	لا توجد أداة مطابقة
+	Essentials	الأساسيات
+	Float as a bubble	تعويم كفقاعة
+	Show this PDF in a small window over the others	عرض ملف PDF هذا في نافذة صغيرة فوق الأخرى
+	Put back as a tab	إعادته كعلامة تبويب
+	Fold into a bubble	طيّ إلى فقاعة
+	Click to open, drag onto the tabs to put it back	انقر للفتح، واسحب إلى علامات التبويب لإعادتها
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	لديك الإصدار {c}. سيُغلق NadsPDF ويثبّت الإصدار الجديد مكان هذا الإصدار ثم يُفتح من جديد. تُحفظ إعداداتك.
+	You have version {c}.	لديك الإصدار {c}.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	هذه النسخة من NadsPDF مصدرها Microsoft Store، الذي يثبّت الإصدارات الجديدة تلقائيًا.
+	Downloading the update…	جارٍ تنزيل التحديث…
+	Couldn't install the update: {e}	تعذّر تثبيت التحديث: {e}
+	Check for updates when NadsPDF starts (once a day)	البحث عن تحديثات عند بدء NadsPDF (مرة يوميًا)

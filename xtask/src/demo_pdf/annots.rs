@@ -81,7 +81,7 @@ impl Kind {
     }
 }
 
-const AUTHOR: &str = "PdfCraft Reviewer";
+const AUTHOR: &str = "NadsPDF Reviewer";
 const AUTHOR_2: &str = "Layout Editor";
 
 /// Builds annotation dictionaries (and their appearance XObjects) for one document.
@@ -269,7 +269,7 @@ impl Annotator {
         reply.set("AP", dictionary! { "N" => icon });
         let reply_id = doc.add_object(reply);
 
-        let mut state = self.base("Text", r, colors::TEAL, AUTHOR, "Accepted set by PdfCraft Reviewer", page);
+        let mut state = self.base("Text", r, colors::TEAL, AUTHOR, "Accepted set by NadsPDF Reviewer", page);
         state.set("F", 30); // hidden: review-state annotations are shown only in the comments list
         state.set("Name", "Comment");
         state.set("IRT", self_id);

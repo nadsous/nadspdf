@@ -6,7 +6,7 @@
 # German computing vocabulary (informal lowercase "du", infinitive for commands). No proprietary
 # localisation resource, string table or product UI (Acrobat's included) was consulted or copied;
 # add entries the same way.
-# Product and technology names (PdfCraft, PDF, Acrobat JavaScript ...) are not translated;
+# Product and technology names (NadsPDF, PDF, Acrobat JavaScript ...) are not translated;
 # the trailing "…" of dialog commands is kept.
 
 	Menu	Menü
@@ -132,7 +132,7 @@
 	Next page	Nächste Seite
 	Previous page	Vorherige Seite
 	Current page — type a page number or label (such as iv) and press Enter	Aktuelle Seite – gib eine Seitenzahl oder -beschriftung ein (z. B. iv) und drücke die Eingabetaste
-	Welcome to PdfCraft	Willkommen bei PdfCraft
+	Welcome to NadsPDF	Willkommen bei NadsPDF
 	An open-source PDF workbench — local, private, and scriptable.	Eine Open-Source-PDF-Werkbank – lokal, privat und skriptfähig.
 	Join the ArtCraft community	Tritt der ArtCraft-Community bei
 	Get help, share feedback and follow development on Discord.	Hol dir Hilfe, gib Feedback und verfolge die Entwicklung auf Discord.
@@ -140,9 +140,9 @@
 	Use now	Jetzt verwenden
 	Open file	Datei öffnen
 	Recent	Zuletzt geöffnet
-	Files you open in PdfCraft appear here. Drop a PDF anywhere to open it.	Dateien, die du in PdfCraft öffnest, erscheinen hier. Zieh ein PDF an eine beliebige Stelle, um es zu öffnen.
+	Files you open in NadsPDF appear here. Drop a PDF anywhere to open it.	Dateien, die du in NadsPDF öffnest, erscheinen hier. Zieh ein PDF an eine beliebige Stelle, um es zu öffnen.
 	Privacy	Datenschutz
-	PdfCraft works offline. No telemetry, no account, and no cloud processing unless you add a provider.	PdfCraft funktioniert offline. Keine Telemetrie, kein Konto und keine Cloud-Verarbeitung, solange du keinen Anbieter hinzufügst.
+	NadsPDF works offline. No telemetry, no account, and no cloud processing unless you add a provider.	NadsPDF funktioniert offline. Keine Telemetrie, kein Konto und keine Cloud-Verarbeitung, solange du keinen Anbieter hinzufügst.
 	Scripts run in a sandbox without file or network access. With JavaScript off, Acrobat's standard format, validate and calculate functions still work.	Skripte laufen in einer Sandbox ohne Datei- oder Netzwerkzugriff. Auch bei deaktiviertem JavaScript funktionieren die Acrobat-Standardfunktionen zum Formatieren, Prüfen und Berechnen weiterhin.
 	Back to all tools	Zurück zu allen Werkzeugen
 	Close panel	Bereich schließen
@@ -281,11 +281,11 @@
 	Number pages…	Seiten nummerieren…
 	Keyboard shortcuts	Tastenkürzel
 	Join the ArtCraft Discord	Dem ArtCraft-Discord beitreten
-	PdfCraft web page	PdfCraft-Webseite
-	PdfCraft on GitHub	PdfCraft auf GitHub
+	NadsPDF web page	NadsPDF-Webseite
+	NadsPDF on GitHub	NadsPDF auf GitHub
 	ArtCraft website	ArtCraft-Website
 	Check for updates…	Nach Updates suchen…
-	About PdfCraft	Über PdfCraft
+	About NadsPDF	Über NadsPDF
 	Export a PDF	PDF exportieren
 	Export to	Exportieren nach
 	Microsoft Word (.docx)	Microsoft Word (.docx)
@@ -747,12 +747,11 @@
 	Check for updates	Nach Updates suchen
 	No check has run yet.	Es wurde noch nicht gesucht.
 	Checking for a newer version…	Suche nach einer neueren Version…
-	PdfCraft {v} is available.	PdfCraft {v} ist verfügbar.
+	NadsPDF {v} is available.	NadsPDF {v} ist verfügbar.
 	You have version {c}. Download the new version from its release page.	Du hast Version {c}. Lade die neue Version von ihrer Release-Seite herunter.
-	PdfCraft {c} is up to date.	PdfCraft {c} ist auf dem neuesten Stand.
+	NadsPDF {c} is up to date.	NadsPDF {c} ist auf dem neuesten Stand.
 	Couldn't check for updates: {e}	Updates konnten nicht gesucht werden: {e}
 	You have version {c}. All releases are listed at {page}.	Du hast Version {c}. Alle Releases findest du unter {page}.
-	Asks GitHub for the latest release. Nothing is downloaded or installed automatically.	Fragt GitHub nach dem neuesten Release. Es wird nichts automatisch heruntergeladen oder installiert.
 	Download	Herunterladen
 	Later	Später
 	none	keine
@@ -863,8 +862,8 @@
 	No changes allowed	Keine Änderungen erlaubt
 	Annotations, form fill-in, and digital signatures	Anmerkungen, Ausfüllen von Formularen und digitale Signaturen
 	Form fill-in and digital signatures	Ausfüllen von Formularen und digitale Signaturen
-	The key is in the macOS Keychain, which may ask to allow PdfCraft to use it.	Der Schlüssel liegt im macOS-Schlüsselbund, der dich eventuell fragt, ob PdfCraft ihn verwenden darf.
-	The key is in the Windows certificate store, which may ask to allow PdfCraft to use it.	Der Schlüssel liegt im Windows-Zertifikatspeicher, der dich eventuell fragt, ob PdfCraft ihn verwenden darf.
+	The key is in the macOS Keychain, which may ask to allow NadsPDF to use it.	Der Schlüssel liegt im macOS-Schlüsselbund, der dich eventuell fragt, ob NadsPDF ihn verwenden darf.
+	The key is in the Windows certificate store, which may ask to allow NadsPDF to use it.	Der Schlüssel liegt im Windows-Zertifikatspeicher, der dich eventuell fragt, ob NadsPDF ihn verwenden darf.
 	Digital ID password	Passwort der digitalen ID
 	Back	Zurück
 	Validate all	Alle validieren
@@ -1231,7 +1230,7 @@
 	Downsample to	Herunterrechnen auf
 	Also recognize pages that already have text	Auch Seiten erkennen, die bereits Text enthalten
 	Pictures on those pages are recognized too; words already in the page's text are not added again	Bilder auf diesen Seiten werden ebenfalls erkannt; Wörter, die schon im Text der Seite stehen, werden nicht erneut hinzugefügt
-	Text recognition isn't installed: its model files are missing. Reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them.	Die Texterkennung ist nicht installiert: ihre Modelldateien fehlen. Installiere PdfCraft neu oder setze PDFCRAFT_MODELS auf den Ordner, der sie enthält.
+	Text recognition isn't installed: its model files are missing. Reinstall NadsPDF, or set PDFCRAFT_MODELS to the folder that holds them.	Die Texterkennung ist nicht installiert: ihre Modelldateien fehlen. Installiere NadsPDF neu oder setze PDFCRAFT_MODELS auf den Ordner, der sie enthält.
 	Settings	Einstellungen
 	Optional	Optional
 	Planned · {m}	Geplant · {m}
@@ -1374,7 +1373,7 @@
 	Anyone opening the document will need this password. It's applied when you save.	Jeder, der das Dokument öffnet, braucht dieses Passwort. Es wird beim Speichern angewendet.
 	The document opens without a password; this password is needed to change the restrictions. It's applied when you save.	Das Dokument öffnet sich ohne Passwort; dieses Passwort wird benötigt, um die Einschränkungen zu ändern. Es wird beim Speichern angewendet.
 	Recover unsaved documents?	Nicht gespeicherte Dokumente wiederherstellen?
-	PdfCraft didn't shut down normally. These documents had changes that were autosaved:	PdfCraft wurde nicht ordnungsgemäß beendet. Diese Dokumente hatten automatisch gesicherte Änderungen:
+	NadsPDF didn't shut down normally. These documents had changes that were autosaved:	NadsPDF wurde nicht ordnungsgemäß beendet. Diese Dokumente hatten automatisch gesicherte Änderungen:
 	just now	gerade eben
 	{n} min ago	vor {n} Min.
 	{n} h ago	vor {n} Std.
@@ -1532,10 +1531,10 @@
 	On the web, open or drop an image to convert it	Öffne im Web ein Bild oder zieh es hierher, um es zu konvertieren
 	Couldn't optimize the file: {e}	Die Datei konnte nicht optimiert werden: {e}
 	Couldn't write {path}: {e}	{path} konnte nicht geschrieben werden: {e}
-	The form asks to be submitted to {u}; PdfCraft doesn't send form data. Save the document to keep your entries.	Das Formular soll an {u} gesendet werden; PdfCraft sendet keine Formulardaten. Speichere das Dokument, um deine Eingaben zu behalten.
+	The form asks to be submitted to {u}; NadsPDF doesn't send form data. Save the document to keep your entries.	Das Formular soll an {u} gesendet werden; NadsPDF sendet keine Formulardaten. Speichere das Dokument, um deine Eingaben zu behalten.
 	This PDF uses the unsupported {s} action.	Dieses PDF verwendet die nicht unterstützte Aktion {s}.
 	{name}: the {other} action isn't supported yet	{name}: Die Aktion {other} wird noch nicht unterstützt
-	{name} submits the form to {url}; PdfCraft doesn't send form data. Save the document to keep your entries.	{name} sendet das Formular an {url}; PdfCraft sendet keine Formulardaten. Speichere das Dokument, um deine Eingaben zu behalten.
+	{name} submits the form to {url}; NadsPDF doesn't send form data. Save the document to keep your entries.	{name} sendet das Formular an {url}; NadsPDF sendet keine Formulardaten. Speichere das Dokument, um deine Eingaben zu behalten.
 	Export stopped: {e}	Export abgebrochen: {e}
 	Exported 1 image	1 Bild exportiert
 	Exported {n} images	{n} Bilder exportiert
@@ -1637,7 +1636,7 @@
 	Couldn't open {name}: {e}	{name} konnte nicht geöffnet werden: {e}
 	Couldn't read {name}: {e}	{name} konnte nicht gelesen werden: {e}
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	Der portable Modus ist aus: In {folder} kann nicht geschrieben werden ({error}). Die Einstellungen werden stattdessen in deinem Benutzerordner gespeichert.
-	PdfCraft is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	PdfCraft zeichnet ohne Grafikprozessor und kann daher langsam sein. Ein aktualisierter Grafiktreiber kann helfen.
+	NadsPDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	NadsPDF zeichnet ohne Grafikprozessor und kann daher langsam sein. Ein aktualisierter Grafiktreiber kann helfen.
 	Couldn't save: {e}	Speichern fehlgeschlagen: {e}
 	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Anhänge herunterladen kommt im Web mit M3.10 ({n} Bytes bereit)
 	`{command}` {when}	`{command}` {when}
@@ -1711,8 +1710,8 @@
 	Signed and all signatures are valid.	Signiert, alle Signaturen sind gültig.
 	At least one signature has problems.	Mindestens eine Signatur weist Probleme auf.
 	This document is secured. Some changes are restricted by its security settings.	Dieses Dokument ist geschützt. Einige Änderungen sind durch seine Sicherheitseinstellungen eingeschränkt.
-	This is a dynamic XFA form, which PdfCraft can't display yet. What you see is the file's placeholder page.	Dies ist ein dynamisches XFA-Formular, das PdfCraft noch nicht anzeigen kann. Du siehst die Platzhalterseite der Datei.
-	This form also contains XFA data, which PdfCraft doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Dieses Formular enthält auch XFA-Daten, die PdfCraft noch nicht liest. Du kannst die Felder ausfüllen, aber Acrobat zeigt eventuell stattdessen die XFA-Werte an.
+	This is a dynamic XFA form, which NadsPDF can't display yet. What you see is the file's placeholder page.	Dies ist ein dynamisches XFA-Formular, das NadsPDF noch nicht anzeigen kann. Du siehst die Platzhalterseite der Datei.
+	This form also contains XFA data, which NadsPDF doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Dieses Formular enthält auch XFA-Daten, die NadsPDF noch nicht liest. Du kannst die Felder ausfüllen, aber Acrobat zeigt eventuell stattdessen die XFA-Werte an.
 	This document contains {n} interactive form fields.	Dieses Dokument enthält {n} interaktive Formularfelder.
 	This file was damaged and has been repaired. Saving keeps the repaired version.	Diese Datei war beschädigt und wurde repariert. Beim Speichern bleibt die reparierte Version erhalten.
 	Dismiss	Ausblenden
@@ -1761,7 +1760,7 @@
 	there are no pages to print	keine Seiten zum Drucken vorhanden
 	the document has no tags	das Dokument hat keine Tags
 	{0}: {1}	{0}: {1}
-	the text recognition models are not installed (reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them)	die Modelle für die Texterkennung sind nicht installiert (installiere PdfCraft neu oder setze PDFCRAFT_MODELS auf den Ordner, der sie enthält)
+	the text recognition models are not installed (reinstall NadsPDF, or set PDFCRAFT_MODELS to the folder that holds them)	die Modelle für die Texterkennung sind nicht installiert (installiere NadsPDF neu oder setze PDFCRAFT_MODELS auf den Ordner, der sie enthält)
 	the image is empty	das Bild ist leer
 	this file isn't XFDF, FDF, XML or text form data	diese Datei enthält keine Formulardaten als XFDF, FDF, XML oder Text
 	nothing in the file matches this document	nichts in der Datei passt zu diesem Dokument
@@ -1807,6 +1806,8 @@
 	Draw your {what} below.	Zeichne deine {what} unten.
 	Your name	Dein Name
 	Images and text (converted to PDF)	Bilder und Text (in PDF konvertiert)
+	Images, text and documents (converted to PDF)	Bilder, Text und Dokumente (in PDF umgewandelt)
+	PDF, images, text and documents	PDF, Bilder, Text und Dokumente
 	Images and text	Bilder und Text
 	Check Box Style:	Stil des Kontrollkästchens:
 	Button Style:	Stil des Optionsfelds:
@@ -2126,7 +2127,7 @@ comment menu	Edit	Bearbeiten
 signature pad	Type	Tippen
 certificate	Subject	Zertifikatsinhaber
 action wizard	Start	Starten
-	Reopen the files that were open when PdfCraft last closed	Beim Start die Dateien wieder öffnen, die beim letzten Beenden von PdfCraft geöffnet waren
+	Reopen the files that were open when NadsPDF last closed	Beim Start die Dateien wieder öffnen, die beim letzten Beenden von NadsPDF geöffnet waren
 
 # Labels that reach tl!() through a variable (Fill & Sign buttons, link prompts, notices, history labels, checker and certificate rows)
 	Add {what}	{what} hinzufügen
@@ -2136,8 +2137,8 @@ action wizard	Start	Starten
 	A link	Ein Link
 	A button	Eine Schaltfläche
 	A script	Ein Skript
-	{who} in this document tried to open an address PdfCraft won't open: {e}.	{who} in diesem Dokument wollte eine Adresse öffnen, die PdfCraft nicht öffnet: {e}.
-	{who} in this document tried to open an address PdfCraft won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} in diesem Dokument wollte eine Adresse öffnen, die PdfCraft nicht öffnet: {e}. Aus Dokumenten heraus öffnet PdfCraft nur Web-Links (http, https) und E-Mail-Links (mailto).
+	{who} in this document tried to open an address NadsPDF won't open: {e}.	{who} in diesem Dokument wollte eine Adresse öffnen, die NadsPDF nicht öffnet: {e}.
+	{who} in this document tried to open an address NadsPDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} in diesem Dokument wollte eine Adresse öffnen, die NadsPDF nicht öffnet: {e}. Aus Dokumenten heraus öffnet NadsPDF nur Web-Links (http, https) und E-Mail-Links (mailto).
 	Another file dialog is still open. Finish with it first.	Ein anderer Dateidialog ist noch geöffnet. Schließe ihn zuerst.
 	Couldn't show the file picker. Please try again.	Die Dateiauswahl konnte nicht angezeigt werden. Versuch es noch einmal.
 	The document changed while you were choosing a file, so nothing was changed.	Das Dokument hat sich geändert, während du eine Datei ausgewählt hast; deshalb wurde nichts geändert.
@@ -2166,8 +2167,8 @@ action wizard	Start	Starten
 	Remove {name} from Recent	{name} aus „Zuletzt geöffnet“ entfernen
 	The PDF text fonts can't draw “{c}” ({code}). Choose supported text.	Die PDF-Textschriften können „{c}“ ({code}) nicht darstellen. Wählen Sie unterstützten Text.
 	The standard fonts can't draw “{c}” ({code}). Only Western European characters can be added as text for now.	Die Standardschriften können „{c}“ ({code}) nicht darstellen. Derzeit lassen sich nur westeuropäische Zeichen als Text hinzufügen.
-	This field's font can't draw “{c}” ({code}), so PdfCraft shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Die Schrift dieses Felds kann „{c}“ ({code}) nicht darstellen, daher zeigt PdfCraft an dieser Stelle ? an. Der Wert ist gespeichert, und andere PDF-Viewer zeichnen das Feld anhand des Werts neu.
-	The fonts PdfCraft writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	Die Schriften, mit denen PdfCraft schreibt, können „{c}“ ({code}) nicht darstellen, daher erscheint es in jedem PDF-Viewer als ?. Der Text ist gespeichert.
+	This field's font can't draw “{c}” ({code}), so NadsPDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Die Schrift dieses Felds kann „{c}“ ({code}) nicht darstellen, daher zeigt NadsPDF an dieser Stelle ? an. Der Wert ist gespeichert, und andere PDF-Viewer zeichnen das Feld anhand des Werts neu.
+	The fonts NadsPDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	Die Schriften, mit denen NadsPDF schreibt, können „{c}“ ({code}) nicht darstellen, daher erscheint es in jedem PDF-Viewer als ?. Der Text ist gespeichert.
 	Larger pages	Größere Seiten
 	Smaller pages	Kleinere Seiten
 	Reset page size	Seitengröße zurücksetzen
@@ -2321,7 +2322,7 @@ animation effects	Off	Aus
 	no output folder was chosen	kein Ausgabeordner gewählt
 @plural	Downloaded {n} PDF|Downloaded {n} PDFs	{n} PDF heruntergeladen|{n} PDFs heruntergeladen
 	Scan	Scannen
-	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: PdfCraft finds the signature and removes the paper.	Unterschreiben Sie auf einem weißen Blatt Papier und fotografieren Sie es bei hellem, gleichmäßigem Licht (mit Blitz). Wählen Sie das Foto aus oder ziehen Sie es hierher: PdfCraft findet die Unterschrift und entfernt das Papier.
+	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: NadsPDF finds the signature and removes the paper.	Unterschreiben Sie auf einem weißen Blatt Papier und fotografieren Sie es bei hellem, gleichmäßigem Licht (mit Blitz). Wählen Sie das Foto aus oder ziehen Sie es hierher: NadsPDF findet die Unterschrift und entfernt das Papier.
 	Choose photo…	Foto auswählen…
 	No photo chosen	Kein Foto ausgewählt
 	Photo	Foto
@@ -2353,3 +2354,103 @@ animation effects	Off	Aus
 	This document is trying to open a local file:	Dieses Dokument versucht, eine lokale Datei zu öffnen:
 	Move tag earlier	Tag früher verschieben
 	Move tag later	Tag später verschieben
+
+# NadsPDF (nads.site)
+	NadsPDF tools	NadsPDF-Werkzeuge
+	PdfCraft (upstream) on GitHub	PdfCraft (Originalprojekt) auf GitHub
+	Convert to PDF with NadsPDF	Mit NadsPDF in PDF konvertieren
+	Combine with NadsPDF	Mit NadsPDF zusammenführen
+	Open with NadsPDF	Mit NadsPDF öffnen
+	Show NadsPDF in the File Explorer right-click menu	NadsPDF im Kontextmenü des Datei-Explorers anzeigen
+	Added for all users when NadsPDF was installed.	Bei der Installation von NadsPDF für alle Benutzer hinzugefügt.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	In PDF konvertieren, Zusammenführen und Öffnen für Dokumente, Bilder und PDFs. Unter Windows 11 unter „Weitere Optionen anzeigen“.
+	Couldn't change the File Explorer menu: {e}	Das Kontextmenü des Datei-Explorers konnte nicht geändert werden: {e}
+	Couldn't find {name}	{name} wurde nicht gefunden
+# Vaults (Home ▸ Vaults)
+@plural	{n} file|{n} files	{n} Datei|{n} Dateien
+	Give the vault a name	Gib dem Tresor einen Namen
+	You can have up to {n} vaults. Delete one first.	Du kannst bis zu {n} Tresore haben. Lösche zuerst einen.
+	That vault no longer exists	Dieser Tresor existiert nicht mehr
+	Added {files} to {vault}	Zu {vault} hinzugefügt: {files}
+	Already in {vault}	Bereits in {vault}
+	A vault holds up to {n} files	Ein Tresor fasst bis zu {n} Dateien
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	Tresore enthalten PDFs und Dateien, die NadsPDF umwandeln kann, auf diesem Computer
+	No files to open in this vault	In diesem Tresor gibt es keine Dateien zum Öffnen
+	Opening the first {n} files	Die ersten {n} Dateien werden geöffnet
+	Deleted the vault {vault}. Its files were not touched.	Tresor {vault} gelöscht. Seine Dateien wurden nicht angerührt.
+	Moved {file} to {vault}	{file} nach {vault} verschoben
+	Vaults need the desktop app	Tresore benötigen die Desktop-App
+	Locate {file}	{file} suchen
+	Save this document to a file first, then add it to a vault	Speichere dieses Dokument zuerst als Datei und füge es dann einem Tresor hinzu
+	Vaults	Tresore
+	New vault	Neuer Tresor
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	Fasse PDFs von überall auf deinem Computer in benannten Tresoren mit Farbe und Symbol zusammen. Die Dateien bleiben, wo sie sind.
+	Click to show its files. Drag to reorder, or drop files here.	Klicken, um die Dateien zu zeigen. Ziehen zum Umsortieren, oder Dateien hier ablegen.
+	Open all	Alle öffnen
+	Edit vault…	Tresor bearbeiten…
+	Move left	Nach links
+	Move right	Nach rechts
+	Delete vault…	Tresor löschen…
+	New vault…	Neuer Tresor…
+	No files yet. Drop files here to add them.	Noch keine Dateien. Lege Dateien hier ab, um sie hinzuzufügen.
+	Locate…	Suchen…
+	Missing	Fehlt
+	Remove {name} from this vault	{name} aus diesem Tresor entfernen
+	This file has moved or been deleted. Locate it, or remove it from the vault.	Diese Datei wurde verschoben oder gelöscht. Suche sie oder entferne sie aus dem Tresor.
+	Move to vault	In Tresor verschieben
+	Remove from vault	Aus Tresor entfernen
+	Show this vault on Home	Diesen Tresor auf der Startseite zeigen
+	Vault: {name}	Tresor: {name}
+	Vault	Tresor
+	Edit vault	Tresor bearbeiten
+	Vault name	Name des Tresors
+	Create vault	Tresor erstellen
+	Delete the vault {vault}?	Tresor {vault} löschen?
+	Its files stay where they are on your computer. Only the vault is deleted.	Die Dateien bleiben, wo sie auf deinem Computer sind. Nur der Tresor wird gelöscht.
+	Delete vault	Tresor löschen
+	Add to vault	Zum Tresor hinzufügen
+	Already in it	Bereits enthalten
+	Add document to vault…	Dokument zu Tresor hinzufügen…
+	Dark pages	Dunkle Seiten
+	Rasterize pages (strong compression)…	Seiten rastern (starke Komprimierung)…
+	Rasterize pages (strong compression)	Seiten rastern (starke Komprimierung)
+	Rasterizing… page {d} of {t}	Rastern… Seite {d} von {t}
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	Jede Seite wird zu einem Bild: die stärkste Komprimierung, ideal für Scans. Text ist nicht mehr auswählbar oder durchsuchbar, und Links, Lesezeichen und Formularfelder bleiben nicht erhalten. Das Ergebnis wird als Kopie gespeichert.
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi, JPEG-Qualität {q}
+compression level	Light	Leicht
+compression level	Medium	Mittel
+compression level	Strong	Stark
+	Compress	Komprimieren
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	Durch Rastern würde diese Datei nicht kleiner ({size}). Es wurde keine Kopie gespeichert.
+	Add faint watermark	Dezentes Wasserzeichen hinzufügen
+	Recognize text if available	Text erkennen, falls verfügbar
+	Prepare for Sending	Zum Versenden vorbereiten
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	Seiten unten mittig mit „n / gesamt“ nummerieren und die Datei dann für den Versand per E-Mail verkleinern.
+	Archive Scans	Scans archivieren
+	Make scans searchable (when text recognition is available), then make them smaller.	Scans durchsuchbar machen (wenn Texterkennung installiert ist) und dann verkleinern.
+	Confidential	Vertraulich
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	Ein dezentes diagonales Wasserzeichen VERTRAULICH und Seitenzahlen „n / gesamt“ auf jeder Seite.
+	{name} (copy)	{name} (Kopie)
+watermark text	CONFIDENTIAL	VERTRAULICH
+	Group name	Gruppenname
+	Rename Group	Gruppe umbenennen
+	Ungroup	Gruppierung aufheben
+	Close Group	Gruppe schließen
+	Add Tab to New Group	Tab zu neuer Gruppe hinzufügen
+	Add Tab to Group	Tab zu Gruppe hinzufügen
+	Remove from Group	Aus Gruppe entfernen
+	Click to fold or unfold the group	Klicken, um die Gruppe ein- oder auszuklappen
+	Filter tools	Werkzeuge filtern
+	No tool matches	Kein passendes Werkzeug
+	Essentials	Grundlagen
+	Float as a bubble	Als Blase schweben lassen
+	Show this PDF in a small window over the others	Dieses PDF in einem kleinen Fenster über den anderen zeigen
+	Put back as a tab	Wieder als Tab anzeigen
+	Fold into a bubble	Zur Blase verkleinern
+	Click to open, drag onto the tabs to put it back	Klicken zum Öffnen, auf die Tabs ziehen zum Zurücklegen
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	Sie haben Version {c}. NadsPDF wird geschlossen, installiert die neue Version anstelle dieser und öffnet sich wieder. Ihre Einstellungen bleiben erhalten.
+	You have version {c}.	Sie haben Version {c}.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	Diese Kopie von NadsPDF stammt aus dem Microsoft Store, der neue Versionen selbst installiert.
+	Downloading the update…	Update wird heruntergeladen…
+	Couldn't install the update: {e}	Das Update konnte nicht installiert werden: {e}
+	Check for updates when NadsPDF starts (once a day)	Beim Start von NadsPDF nach Updates suchen (einmal täglich)

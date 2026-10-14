@@ -5,6 +5,8 @@ pub(crate) enum Action {
     Close(DocId),
     Reopen,
     Reveal(DocId),
+    /// Float the tab over the window (handled by the strip, which knows the window's size).
+    Float(DocId),
 }
 
 impl crate::PdfCraftApp {
@@ -43,7 +45,67 @@ impl crate::PdfCraftApp {
                 #[cfg(target_arch = "wasm32")]
                 let _ = id;
             }
+            // Without the window's size here, assume the strip's width and a typical height.
+            Action::Float(id) => {
+                let strip = self.strip_rect;
+                let screen = if strip.is_positive() {
+                    egui::Rect::from_min_size(strip.min, egui::vec2(strip.width(), 800.0))
+                } else {
+                    egui::Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(1280.0, 800.0))
+                };
+                self.float_tab(id, screen);
+            }
         }
+    }
+}
+
+impl crate::PdfCraftApp {
+    pub(crate) fn tab_group_action(&mut self, action: crate::tab_groups::GroupAction) {
+        use crate::tab_groups::GroupAction;
+        let groups = &mut self.tab_groups;
+        match action {
+            GroupAction::New(doc) => {
+                // A new group starts with its name being typed, as in Chrome.
+                groups.remove(doc);
+                groups.renaming = groups.create(doc);
+            }
+            GroupAction::Add(doc, group) => groups.add(doc, group),
+            GroupAction::Remove(doc) => groups.remove(doc),
+            GroupAction::Toggle(group) => {
+                if let Some(g) = groups.get_mut(group) {
+                    g.collapsed = !g.collapsed;
+                }
+            }
+            GroupAction::Rename(group) => groups.renaming = Some(group),
+            GroupAction::Recolor(group, color) => {
+                if let Some(g) = groups.get_mut(group) {
+                    g.color = color;
+                }
+            }
+            GroupAction::Ungroup(group) => groups.ungroup(group),
+            GroupAction::Close(group) => self.close_tab_group(group),
+        }
+    }
+
+    /// Close every tab in `group`: clean ones at once; the first with unsaved changes asks, and
+    /// the others with unsaved changes stay open.
+    fn close_tab_group(&mut self, group: u32) {
+        let members = self.tab_groups.members(group);
+        for i in (0..self.views.len()).rev() {
+            if self.views.get(i).is_some_and(|v| members.contains(&v.id)) && !self.has_unsaved_work(i) {
+                self.close_tab(i);
+            }
+        }
+        if let Some(i) = self.views.iter().position(|v| members.contains(&v.id)) {
+            self.request_close_tab(i);
+        }
+    }
+
+    /// Put the active tab in a new group (View ▸ Group tab); the chip then asks for a name.
+    pub(crate) fn group_active_tab(&mut self) -> bool {
+        let Some(doc) = self.active.and_then(|i| self.views.get(i)).map(|v| v.id) else { return false };
+        self.tab_group_action(crate::tab_groups::GroupAction::New(doc));
+        true
     }
 }
 

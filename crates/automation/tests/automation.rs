@@ -548,7 +548,7 @@ fn combine_takes_images_and_text_files() {
     std::fs::write(dir.join("scan.png"), png).unwrap();
     std::fs::write(dir.join("notes.txt"), "Some notes").unwrap();
     std::fs::write(dir.join("broken.png"), b"\x89PNG\r\n\x1a\nbroken").unwrap();
-    std::fs::write(dir.join("report.docx"), b"PK\x03\x04").unwrap();
+    std::fs::write(dir.join("slides.pptx"), b"PK\x03\x04").unwrap();
     let mut a = auto(&dir);
     let combined = ok(&mut a, "doc_combine", json!({ "paths": ["a.pdf", "scan.png", "notes.txt"], "pages": [null, null, "1"], "open": true }));
     let doc = combined["document"]["doc"].as_u64().unwrap();
@@ -558,7 +558,7 @@ fn combine_takes_images_and_text_files() {
     let titles: Vec<&str> = marks.as_array().unwrap().iter().map(|b| b["title"].as_str().unwrap()).collect();
     assert_eq!(titles, ["a", "scan", "notes"]);
     // A file that can't be made into a PDF stops the combine, and says which.
-    for bad in ["broken.png", "report.docx"] {
+    for bad in ["broken.png", "slides.pptx"] {
         let refused = a.call("doc_combine", &json!({ "paths": ["a.pdf", bad] }));
         assert!(matches!(&refused, Err(ToolError::Failed(e)) if e.contains(bad)), "{bad}: {refused:?}");
     }
@@ -2645,6 +2645,60 @@ fn image_signature_preview_layers_are_read_only_and_survive_encrypted_save() {
     assert!(a.call("comment_image_preview", &json!({ "doc": reopened, "page": 1, "index": 3 })).is_err());
 }
 
+/// A minimal Word document: a heading, a bold run with accents, a bullet list and a table.
+fn docx_bytes() -> Vec<u8> {
+    use std::io::Write;
+    let w = r#"xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main""#;
+    let document = format!(
+        r#"<w:document {w}><w:body>
+        <w:p><w:pPr><w:pStyle w:val="Titre1"/></w:pPr><w:r><w:t>Compte rendu</w:t></w:r></w:p>
+        <w:p><w:r><w:rPr><w:b/></w:rPr><w:t>Réunion du 3 août</w:t></w:r><w:r><w:t xml:space="preserve"> à Besançon « été ».</w:t></w:r></w:p>
+        <w:p><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>Premier point</w:t></w:r></w:p>
+        <w:tbl><w:tr><w:tc><w:p><w:r><w:t>Clé</w:t></w:r></w:p></w:tc><w:tc><w:p><w:r><w:t>Valeur</w:t></w:r></w:p></w:tc></w:tr></w:tbl>
+        </w:body></w:document>"#
+    );
+    let styles = format!(r#"<w:styles {w}><w:style w:type="paragraph" w:styleId="Titre1"><w:name w:val="heading 1"/></w:style></w:styles>"#);
+    let numbering = format!(
+        r#"<w:numbering {w}><w:abstractNum w:abstractNumId="0"><w:lvl w:ilvl="0"><w:numFmt w:val="bullet"/></w:lvl></w:abstractNum><w:num w:numId="1"><w:abstractNumId w:val="0"/></w:num></w:numbering>"#
+    );
+    let mut zw = zip::ZipWriter::new(std::io::Cursor::new(Vec::new()));
+    let opts = zip::write::SimpleFileOptions::default().compression_method(zip::CompressionMethod::Deflated);
+    for (name, data) in [("word/document.xml", document), ("word/styles.xml", styles), ("word/numbering.xml", numbering)] {
+        zw.start_file(name, opts).unwrap();
+        zw.write_all(data.as_bytes()).unwrap();
+    }
+    zw.finish().unwrap().into_inner()
+}
+
+#[test]
+fn converting_documents_through_tools() {
+    let dir = workdir("doc-convert");
+    std::fs::write(dir.join("compte rendu.docx"), docx_bytes()).unwrap();
+    std::fs::write(dir.join("ventes.csv"), "Produit;Prix\nCrème brûlée;4,50\n").unwrap();
+    std::fs::write(dir.join("vieux.xls"), b"\xd0\xcf\x11\xe0").unwrap();
+    std::fs::write(dir.join("broken.docx"), b"PK\x03\x04 not really").unwrap();
+    let mut a = auto(&dir);
+    let r = ok(&mut a, "doc_convert", json!({ "path": "compte rendu.docx" }));
+    assert_eq!(r["pages"], 1);
+    assert_eq!(r["conversion"]["escaped"], 0);
+    let doc = r["doc"].as_u64().unwrap();
+    let text = page_text(&mut a, doc).join(" ");
+    for want in ["Compte rendu", "Réunion du 3 août", "Besançon « été »", "Premier point", "Clé", "Valeur"] {
+        assert!(text.contains(want), "{want} in {text}");
+    }
+    // Saved, it reopens as an ordinary PDF.
+    ok(&mut a, "doc_save", json!({ "doc": doc, "path": "compte rendu.pdf" }));
+    let again = ok(&mut a, "doc_open", json!({ "path": "compte rendu.pdf" }))["doc"].as_u64().unwrap();
+    assert!(page_text(&mut a, again).join(" ").contains("Compte rendu"));
+    let csv = ok(&mut a, "doc_convert", json!({ "path": "ventes.csv", "name": "Ventes 2026.pdf" }))["doc"].as_u64().unwrap();
+    assert!(page_text(&mut a, csv).join(" ").contains("Crème brûlée"));
+    // Refusals say what is wrong; nothing outside --root is read.
+    assert!(err(&mut a, "doc_convert", json!({ "path": "vieux.xls" })).to_string().contains(".xlsx"));
+    assert!(err(&mut a, "doc_convert", json!({ "path": "broken.docx" })).to_string().contains("broken.docx"));
+    assert!(a.call("doc_convert", &json!({ "path": "../outside.docx" })).is_err());
+    assert!(a.call("doc_convert", &json!({})).is_err());
+}
+
 #[test]
 fn creating_and_reducing_through_tools() {
     let dir = workdir("create");
@@ -2695,7 +2749,7 @@ fn creating_from_multiple_files_through_tools() {
     }
     std::fs::write(dir.join("scan.png"), png).unwrap();
     std::fs::write(dir.join("notes.txt"), "hello").unwrap();
-    std::fs::write(dir.join("report.docx"), b"PK\x03\x04").unwrap();
+    std::fs::write(dir.join("slides.pptx"), b"PK\x03\x04").unwrap();
     let mut a = auto(&dir);
 
     // Combine: every file converted, in the order given, with a bookmark per file.
@@ -2715,8 +2769,8 @@ fn creating_from_multiple_files_through_tools() {
     assert_eq!(titles, ["notes", "a", "scan"]);
     assert!(dir.join("all.pdf").is_file());
     // A file that can't be converted fails the whole combine, naming it.
-    let err = a.call("doc_create_multiple", &json!({ "paths": ["a.pdf", "report.docx"] })).unwrap_err();
-    assert!(matches!(&err, ToolError::Failed(m) if m.contains("report.docx") && m.contains("can't be converted")), "{err}");
+    let err = a.call("doc_create_multiple", &json!({ "paths": ["a.pdf", "slides.pptx"] })).unwrap_err();
+    assert!(matches!(&err, ToolError::Failed(m) if m.contains("slides.pptx") && m.contains("can't be converted")), "{err}");
     assert!(matches!(a.call("doc_create_multiple", &json!({ "paths": [] })), Err(ToolError::InvalidArgs(_))));
     assert!(matches!(a.call("doc_create_multiple", &json!({ "paths": ["a.pdf"], "mode": "zip" })), Err(ToolError::InvalidArgs(_))));
     assert!(matches!(a.call("doc_create_multiple", &json!({ "paths": ["a.pdf"], "mode": "separate" })), Err(ToolError::InvalidArgs(_))));
@@ -2725,7 +2779,7 @@ fn creating_from_multiple_files_through_tools() {
     // existing file is never overwritten.
     std::fs::create_dir_all(dir.join("out")).unwrap();
     std::fs::write(dir.join("out/notes.pdf"), b"mine").unwrap();
-    let args = json!({ "paths": ["notes.txt", "report.docx", "a.pdf", "scan.png", "missing.txt"], "mode": "separate", "out_dir": "out" });
+    let args = json!({ "paths": ["notes.txt", "slides.pptx", "a.pdf", "scan.png", "missing.txt"], "mode": "separate", "out_dir": "out" });
     let made = ok(&mut a, "doc_create_multiple", args);
     let files = made["files"].as_array().unwrap();
     assert!(files[0]["output"].as_str().unwrap().ends_with("notes (2).pdf"), "{files:?}");
@@ -3082,7 +3136,7 @@ fn printing_through_tools() {
     let mut a = auto(&dir);
     let doc = ok(&mut a, "doc_open", json!({ "path": "a.pdf" }))["doc"].as_u64().unwrap();
     assert!(ok(&mut a, "printers", json!({}))["printers"].is_array());
-    let none = ok(&mut a, "printer_options", json!({ "printer": "No_Such_Queue_PdfCraft" }));
+    let none = ok(&mut a, "printer_options", json!({ "printer": "No_Such_Queue_NadsPDF" }));
     assert_eq!((none["count"].as_u64(), none["options"].as_array().map(Vec::len)), (Some(0), Some(0)));
     assert!(matches!(a.call("printer_options", &json!({})), Err(ToolError::InvalidArgs(_))));
     assert!(matches!(
@@ -3747,7 +3801,7 @@ fn comment_checkmarks_locks_hiding_and_summaries_through_tools() {
 /// value, a button caption, a text box and Fill & Sign text are kept as typed (as Acrobat keeps
 /// them) and the result's `warnings` names the character; a form also asks other viewers to
 /// redraw it. Where the `?` would be permanent the tool refuses: a typed signature, a redaction's
-/// overlay text, a new document from text, and flattening what PdfCraft drew with `?`. A comment
+/// overlay text, a new document from text, and flattening what NadsPDF drew with `?`. A comment
 /// summary that quotes such text writes it as [U+XXXX].
 #[test]
 fn text_the_standard_fonts_cannot_draw_is_never_silent_through_tools() {
@@ -5671,4 +5725,53 @@ fn absolute_gotor_consent_does_not_bypass_validation_or_passwords() {
     let opened = ok(&mut a, "link_open", json!({ "doc": doc, "page": 1, "index": 1, "allow_absolute": true, "password": "secret" }));
     assert_eq!(opened["document"]["encrypted"], true);
     assert_eq!(opened["destination_applied"], true);
+}
+
+/// A 600 × 600 px PNG of noise (72 dpi): a page that PNG can't compress but JPEG can.
+fn noise_png() -> Vec<u8> {
+    let mut seed = 0x2545_f491_u32;
+    let pixels: Vec<u8> = (0..600 * 600 * 3)
+        .map(|_| {
+            seed ^= seed << 13;
+            seed ^= seed >> 17;
+            seed ^= seed << 5;
+            (seed >> 24) as u8
+        })
+        .collect();
+    let mut out = Vec::new();
+    let mut enc = png::Encoder::new(&mut out, 600, 600);
+    enc.set_color(png::ColorType::Rgb);
+    enc.set_depth(png::BitDepth::Eight);
+    enc.write_header().unwrap().write_image_data(&pixels).unwrap();
+    out
+}
+
+#[test]
+fn rasterize_compress_through_tools() {
+    let dir = workdir("rasterize");
+    std::fs::write(dir.join("noise.png"), noise_png()).unwrap();
+    let mut a = auto(&dir);
+    let doc = ok(&mut a, "doc_create", json!({ "from": "images", "paths": ["noise.png"] }))["doc"].as_u64().unwrap();
+    let r = ok(&mut a, "doc_rasterize_compress", json!({ "doc": doc, "path": "small.pdf", "level": "strong" }));
+    assert_eq!(
+        (r["written"].as_bool(), r["level"].as_str(), r["dpi"].as_f64(), r["quality"].as_u64()),
+        (Some(true), Some("strong"), Some(80.0), Some(50)),
+        "{r}"
+    );
+    assert!(r["bytes_after"].as_u64().unwrap() * 2 < r["bytes_before"].as_u64().unwrap(), "{r}");
+    let out = ok(&mut a, "doc_open", json!({ "path": "small.pdf" }))["doc"].as_u64().unwrap();
+    let info = ok(&mut a, "doc_info", json!({ "doc": out }));
+    assert_eq!(info["pages"].as_array().map(Vec::len).or(info["pages"].as_u64().map(|n| n as usize)), Some(1), "{info}");
+
+    // A tiny text file only gets bigger: nothing is written.
+    let text = ok(&mut a, "doc_open", json!({ "path": "a.pdf" }))["doc"].as_u64().unwrap();
+    let r = ok(&mut a, "doc_rasterize_compress", json!({ "doc": text, "path": "text.pdf", "dpi": 300, "quality": 95 }));
+    assert_eq!(r["written"], false, "{r}");
+    assert!(!dir.join("text.pdf").exists());
+
+    for bad in [json!({ "level": "max" }), json!({ "dpi": 5000 }), json!({ "quality": 0 }), json!({ "level": 3 })] {
+        let mut args = json!({ "doc": doc, "path": "x.pdf" });
+        args.as_object_mut().unwrap().extend(bad.as_object().unwrap().clone());
+        assert!(matches!(err(&mut a, "doc_rasterize_compress", args), ToolError::InvalidArgs(_)));
+    }
 }

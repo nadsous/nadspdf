@@ -8,14 +8,16 @@
 
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
+mod layout;
 mod pptx;
 mod zip;
 
+pub use layout::{Layout, Para, Run, family};
 pub use pptx::pptx;
 pub use zip::Zip;
 
 /// A paragraph of a page.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct Block {
     pub text: String,
     /// [x0, y0, x1, y1] on the displayed page in points (y up).
@@ -49,6 +51,8 @@ pub struct Page {
     pub height: f64,
     pub blocks: Vec<Block>,
     pub images: Vec<Image>,
+    /// Word's layout mode for a page whose artwork shows (see [`Layout`]); `None` flows.
+    pub layout: Option<Layout>,
 }
 
 /// One cell of a detected table. `span` is how many grid columns the cell covers (a header
@@ -520,36 +524,44 @@ fn layout_number(n: f64) -> f64 {
     if n.is_finite() { n.clamp(-1584.0, 1584.0) } else { 0.0 }
 }
 
+/// One 1 pt paragraph anchors a whole positioned page. Shapes never reserve body space, so even a
+/// page-sized watermark cannot push the invoice footer onto another page.
+pub(crate) const ANCHOR_OPEN: &str = "<w:p><w:pPr><w:spacing w:before=\"0\" w:after=\"0\" w:line=\"20\" w:lineRule=\"exact\"/></w:pPr>";
+
+/// Block `b` as an absolutely positioned text box (rotated when the PDF's text is).
+pub(crate) fn block_shape(page: &Page, b: &Block, shape_id: usize, body: f64) -> String {
+    let rotation = layout_number(-b.rotation).rem_euclid(360.0);
+    let (sin, cos) = rotation.to_radians().sin_cos();
+    let (bw, bh) = (layout_number(b.rect[2] - b.rect[0]).max(1.0), layout_number(b.rect[3] - b.rect[1]).max(1.0));
+    let h = if b.rotation.abs() > 0.1 { layout_number(b.size).max(1.0) } else { bh };
+    // Recover the unrotated width from the axis-aligned box. Use the larger axis so
+    // quarter turns and 45-degree watermarks do not divide by (nearly) zero.
+    let w = if b.rotation.abs() <= 0.1 {
+        bw
+    } else if cos.abs() >= sin.abs() {
+        (bw - h * sin.abs()) / cos.abs()
+    } else {
+        (bh - h * cos.abs()) / sin.abs()
+    };
+    let w = layout_number(w).max(1.0);
+    let (x, y) = (layout_number(b.rect[0] + (bw - w) / 2.0), layout_number(page.height - b.rect[3] + (bh - h) / 2.0));
+    let z = if b.size >= 2.0 * body { -2 } else { 1 };
+    let style = format!(
+        "position:absolute;margin-left:{x:.3}pt;margin-top:{y:.3}pt;width:{w:.3}pt;height:{h:.3}pt;rotation:{rotation:.3};z-index:{z};mso-position-horizontal-relative:page;mso-position-vertical-relative:page"
+    );
+    format!(
+        "<w:r><w:pict><v:rect id=\"Text{}\" style=\"{style}\" filled=\"f\" stroked=\"f\"><v:textbox inset=\"0,0,0,0\" style=\"mso-fit-shape-to-text:t\"><w:txbxContent><w:p><w:pPr><w:spacing w:before=\"0\" w:after=\"0\"/></w:pPr>{}</w:p></w:txbxContent></v:textbox><w10:wrap type=\"none\"/></v:rect></w:pict></w:r>",
+        shape_id,
+        run_xml(&b.text, b.size, b.bold, b.italic, b.color)
+    )
+}
+
 fn positioned_page<'a>(page: &'a Page, media: &mut Vec<(String, &'a Image)>, shape_id: &mut usize) -> String {
-    // One 1 pt paragraph anchors the whole page. Shapes never reserve body space, so even a
-    // page-sized watermark cannot push the invoice footer onto another page.
-    let mut s = String::from("<w:p><w:pPr><w:spacing w:before=\"0\" w:after=\"0\" w:line=\"20\" w:lineRule=\"exact\"/></w:pPr>");
+    let mut s = String::from(ANCHOR_OPEN);
     let body = body_size(std::slice::from_ref(page)).max(1.0);
     for b in &page.blocks {
         *shape_id = shape_id.saturating_add(1);
-        let rotation = layout_number(-b.rotation).rem_euclid(360.0);
-        let (sin, cos) = rotation.to_radians().sin_cos();
-        let (bw, bh) = (layout_number(b.rect[2] - b.rect[0]).max(1.0), layout_number(b.rect[3] - b.rect[1]).max(1.0));
-        let h = if b.rotation.abs() > 0.1 { layout_number(b.size).max(1.0) } else { bh };
-        // Recover the unrotated width from the axis-aligned box. Use the larger axis so
-        // quarter turns and 45-degree watermarks do not divide by (nearly) zero.
-        let w = if b.rotation.abs() <= 0.1 {
-            bw
-        } else if cos.abs() >= sin.abs() {
-            (bw - h * sin.abs()) / cos.abs()
-        } else {
-            (bh - h * cos.abs()) / sin.abs()
-        };
-        let w = layout_number(w).max(1.0);
-        let (x, y) = (layout_number(b.rect[0] + (bw - w) / 2.0), layout_number(page.height - b.rect[3] + (bh - h) / 2.0));
-        let z = if b.size >= 2.0 * body { -2 } else { 1 };
-        let style = format!(
-            "position:absolute;margin-left:{x:.3}pt;margin-top:{y:.3}pt;width:{w:.3}pt;height:{h:.3}pt;rotation:{rotation:.3};z-index:{z};mso-position-horizontal-relative:page;mso-position-vertical-relative:page"
-        );
-        s.push_str(&format!(
-            "<w:r><w:pict><v:rect id=\"Text{}\" style=\"{style}\" filled=\"f\" stroked=\"f\"><v:textbox inset=\"0,0,0,0\" style=\"mso-fit-shape-to-text:t\"><w:txbxContent><w:p><w:pPr><w:spacing w:before=\"0\" w:after=\"0\"/></w:pPr>{}</w:p></w:txbxContent></v:textbox><w10:wrap type=\"none\"/></v:rect></w:pict></w:r>",
-            shape_id, run_xml(&b.text, b.size, b.bold, b.italic, b.color)
-        ));
+        s.push_str(&block_shape(page, b, *shape_id, body));
     }
     for im in &page.images {
         *shape_id = shape_id.saturating_add(1);
@@ -571,7 +583,9 @@ fn word_page_size(page: &Page) -> (i64, i64) {
 
 fn section(page: &Page) -> String {
     let (pw, ph) = word_page_size(page);
-    let (mx, my) = ((pw / 8).min(1440), (ph / 8).min(1440));
+    // Word caps a text box's unwrapped rows at the column width, so a page in layout mode has
+    // no margins: its boxes may then reach the page edge, as the PDF's text does.
+    let (mx, my) = if page.layout.is_some() { (0, 0) } else { ((pw / 8).min(1440), (ph / 8).min(1440)) };
     format!(
         "<w:sectPr><w:type w:val=\"nextPage\"/><w:pgSz w:w=\"{pw}\" w:h=\"{ph}\"/><w:pgMar w:top=\"{my}\" w:right=\"{mx}\" w:bottom=\"{my}\" w:left=\"{mx}\" w:header=\"{}\" w:footer=\"{}\" w:gutter=\"0\"/></w:sectPr>",
         my / 2,
@@ -591,7 +605,10 @@ pub fn docx(pages: &[Page], title: &str) -> Vec<u8> {
     for (page_index, page) in pages.iter().enumerate() {
         let (pw, _) = word_page_size(page);
         let text_w = (pw - 2 * (pw / 8).min(1440)) as f64 / 20.0;
-        if positioned(page) {
+        if let Some(layout) = &page.layout {
+            body.push_str(&layout::layout_page(page, layout, &mut media, &mut shape_id));
+            after_table = false;
+        } else if positioned(page) {
             body.push_str(&positioned_page(page, &mut media, &mut shape_id));
             after_table = false;
         } else {
@@ -651,7 +668,7 @@ pub fn docx(pages: &[Page], title: &str) -> Vec<u8> {
     let doc = format!(
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n\
 <w:document xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
-xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\"><w:body>{body}\
+xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\"><w:body>{body}\
 </w:body></w:document>"
     );
     let mut types = String::from(
@@ -662,6 +679,10 @@ xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawin
 <Override PartName=\"/word/styles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml\"/>\
 <Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\"/>",
     );
+    let fonts = layout::font_table(&body);
+    if fonts.is_some() {
+        types.push_str("<Override PartName=\"/word/fontTable.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml\"/>");
+    }
     types.push_str("</Types>");
     let rels = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
 <Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"word/document.xml\"/>\
@@ -675,6 +696,9 @@ xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawin
             "<Relationship Id=\"rIdImg{}\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/{name}\"/>",
             i + 1
         ));
+    }
+    if fonts.is_some() {
+        doc_rels.push_str("<Relationship Id=\"rIdFonts\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable\" Target=\"fontTable.xml\"/>");
     }
     doc_rels.push_str("</Relationships>");
     let styles = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<w:styles xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">\
@@ -692,6 +716,9 @@ xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawin
     z.add("docProps/core.xml", core.as_bytes(), true);
     z.add("word/document.xml", doc.as_bytes(), true);
     z.add("word/styles.xml", styles.as_bytes(), true);
+    if let Some(fonts) = &fonts {
+        z.add("word/fontTable.xml", fonts.as_bytes(), true);
+    }
     z.add("word/_rels/document.xml.rels", doc_rels.as_bytes(), true);
     for (name, im) in &media {
         z.add(&format!("word/media/{name}"), &im.bytes, false);
@@ -817,6 +844,7 @@ mod tests {
             rotation: 0.0,
         };
         Page {
+            layout: None,
             width: 612.0,
             height: 792.0,
             blocks: vec![
@@ -1029,6 +1057,7 @@ mod tests {
             rotation: 0.0,
         };
         Page {
+            layout: None,
             width: 612.0,
             height: 792.0,
             blocks: vec![
@@ -1114,6 +1143,7 @@ mod tests {
     fn word_opens_tables_up_to_its_column_limit() {
         // Rows of short numbers on a regular grid, n columns wide.
         let grid = |n: usize| Page {
+            layout: None,
             width: 1500.0,
             height: 792.0,
             blocks: (0..3)
@@ -1152,6 +1182,7 @@ mod tests {
             rotation: 0.0,
         };
         let p = Page {
+            layout: None,
             width: 612.0,
             height: 792.0,
             blocks: vec![

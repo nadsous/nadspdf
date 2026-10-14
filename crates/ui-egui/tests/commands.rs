@@ -184,7 +184,7 @@ fn a_tool_chosen_with_no_document_asks_for_one_and_runs_on_it() {
     h.run_steps(2);
     h.state_mut().run_command("export.text");
     assert!(h.state().toast.as_ref().is_none_or(|t| t.0 != "Open a document first"));
-    h.run_steps(3);
+    wait_until(&mut h, |app| app.dialog.is_some());
     assert!(h.state().active.is_some(), "the picked file is open");
     assert!(matches!(h.state().dialog, Some(Dialog::Export(_))), "and the tool runs on it: {:?}", h.state().dialog);
     // Cancelled: nothing opens and nothing runs.
@@ -287,7 +287,7 @@ fn the_open_recent_menu_lists_files_and_opens_one() {
     h.get_by_label("Open Recent ⏵").hover();
     h.run_steps(3);
     h.get_by_label_contains("recent.pdf").click();
-    h.run_steps(4);
+    wait_until(&mut h, |app| app.views.len() == 2);
     let app = h.state();
     assert_eq!(app.views.len(), 2, "the recent file opened in a new tab");
     let active = app.active.unwrap();
@@ -579,4 +579,15 @@ fn palette_ime_outside_click_closes_without_running_a_command() {
     assert!(!h.state().palette_open);
     assert!(h.state().palette_query.is_empty());
     assert_eq!(h.state().session.get(h.state().views[0].id).unwrap().info.pages[0].rotation, 0);
+}
+
+/// Step until `done` holds (a file opens on a worker thread), for at most five seconds.
+fn wait_until(h: &mut Harness<'static, PdfCraftApp>, done: impl Fn(&PdfCraftApp) -> bool) {
+    for _ in 0..500 {
+        if done(h.state()) {
+            return;
+        }
+        h.run_steps(1);
+        std::thread::sleep(std::time::Duration::from_millis(10));
+    }
 }

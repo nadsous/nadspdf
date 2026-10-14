@@ -110,7 +110,7 @@ fn write_bundle_report(report: &mut String, bundle: &Path) -> anyhow::Result<()>
         writeln!(report, "  bundle identifier: {bundle_id}")?;
         writeln!(report, "  minimum macOS: {minimum}")?;
         writeln!(report, "  PDF registration: {}", pdf_registration(text))?;
-        let executable = plist_value(text, "CFBundleExecutable").unwrap_or_else(|| "PdfCraft".into());
+        let executable = plist_value(text, "CFBundleExecutable").unwrap_or_else(|| "NadsPDF".into());
         write_architecture_report(report, &contents.join("MacOS").join(executable))?;
     } else if plist.exists() {
         writeln!(report, "  Info.plist: present but not UTF-8 XML (binary plist inspection unavailable)")?;
@@ -317,7 +317,7 @@ mod tests {
     fn parses_optional_paths() {
         assert_eq!(
             parse_args(&args(&["--bundle", "PdfCraft.app", "--pdf", "fixture.pdf"])).expect("arguments"),
-            Options { help: false, bundle: Some("PdfCraft.app".into()), pdf: Some("fixture.pdf".into()) }
+            Options { help: false, bundle: Some("NadsPDF.app".into()), pdf: Some("fixture.pdf".into()) }
         );
     }
 

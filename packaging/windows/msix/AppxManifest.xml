@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  NadsPDF MSIX manifest template for the Microsoft Store. build-msix.ps1 fills the {{...}} tokens
+  (identity from store-identity.psd1 or the command line, version from Cargo.toml) and generates
+  the Assets\ images; nothing here is used directly.
+
+  Full-trust desktop app (runFullTrust). What the MSI registers and how it maps here:
+    - .pdf "Open with" / Default apps      -> windows.fileTypeAssociation (.pdf), with an extra
+                                              "Fusionner avec NadsPDF" verb (the combine flag) under
+                                              "Show more options".
+    - App Paths entry                      -> windows.appExecutionAlias (nadspdf.exe).
+    - Start Menu shortcut                  -> the Application entry itself.
+    - Explorer "Convertir en PDF" entries
+      on .docx/.xlsx/.png/... (HKLM
+      SystemFileAssociations)              -> not packaged: a packaged app can only add verbs to
+                                              types it owns, or to arbitrary types through an
+                                              IExplorerCommand COM DLL (desktop4/desktop5), which
+                                              NadsPDF does not have. Associating those types
+                                              would put NadsPDF in their "Open with" list, which
+                                              the MSI deliberately does not do.
+    - Desktop shortcut                     -> not available to MSIX packages.
+-->
+<Package
+    xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+    xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+    xmlns:uap2="http://schemas.microsoft.com/appx/manifest/uap/windows10/2"
+    xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+    xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+    xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+    IgnorableNamespaces="uap uap2 uap3 desktop rescap">
+
+  <Identity
+      Name="{{IDENTITY_NAME}}"
+      Publisher="{{PUBLISHER}}"
+      Version="{{VERSION}}"
+      ProcessorArchitecture="{{ARCH}}" />
+
+  <Properties>
+    <DisplayName>NadsPDF</DisplayName>
+    <PublisherDisplayName>{{PUBLISHER_DISPLAY_NAME}}</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+    <Description>Lire, annoter, modifier, signer, convertir et organiser vos PDF, entièrement en local.</Description>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.26100.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="fr-FR" />
+    <Resource Language="en-US" />
+  </Resources>
+
+  <Applications>
+    <Application Id="NadsPDF" Executable="nadspdf.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+          DisplayName="NadsPDF"
+          Description="Lire, annoter, modifier, signer, convertir et organiser vos PDF."
+          BackgroundColor="#111113"
+          Square150x150Logo="Assets\Square150x150Logo.png"
+          Square44x44Logo="Assets\Square44x44Logo.png">
+        <uap:DefaultTile
+            ShortName="NadsPDF"
+            Wide310x150Logo="Assets\Wide310x150Logo.png"
+            Square71x71Logo="Assets\Square71x71Logo.png"
+            Square310x310Logo="Assets\Square310x310Logo.png" />
+      </uap:VisualElements>
+
+      <Extensions>
+        <uap3:Extension Category="windows.fileTypeAssociation">
+          <uap3:FileTypeAssociation Name="pdf">
+            <uap:DisplayName>Document PDF</uap:DisplayName>
+            <uap:Logo>Assets\PdfDocument.png</uap:Logo>
+            <uap:SupportedFileTypes>
+              <uap:FileType ContentType="application/pdf">.pdf</uap:FileType>
+            </uap:SupportedFileTypes>
+            <uap2:SupportedVerbs>
+              <uap3:Verb Id="open" Parameters="&quot;%1&quot;">Ouvrir avec NadsPDF</uap3:Verb>
+              <uap3:Verb Id="combine" Parameters="--combine &quot;%1&quot;">Fusionner avec NadsPDF</uap3:Verb>
+            </uap2:SupportedVerbs>
+          </uap3:FileTypeAssociation>
+        </uap3:Extension>
+
+        <uap3:Extension Category="windows.appExecutionAlias" Executable="nadspdf.exe" EntryPoint="Windows.FullTrustApplication">
+          <uap3:AppExecutionAlias>
+            <desktop:ExecutionAlias Alias="nadspdf.exe" />
+          </uap3:AppExecutionAlias>
+        </uap3:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>

@@ -383,8 +383,9 @@ pub fn show(app: &mut crate::PdfCraftApp, ui: &mut egui::Ui) {
     style.resize_label = crate::i18n::t("Resize panels").into();
     style.resize_window_label = crate::i18n::t("Resize panel window").into();
     style.background = t.panel;
-    style.tab_background = t.chrome;
-    style.active_background = t.selected;
+    style.tab_background = t.titlebar;
+    // The active tab merges into its panel, like a file tab; red stays for the accent line.
+    style.active_background = t.panel;
     style.text = t.text;
     style.inactive_text = t.text_muted;
     style.border = egui::Stroke::new(1.0, t.divider);

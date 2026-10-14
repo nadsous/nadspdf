@@ -17,6 +17,11 @@ zbus = { version = "=5.19.0", default-features = false, features = ["async-io"] 
 async-channel = "2"
 futures-lite = "2"
 
+[target.'cfg(windows)'.dependencies]
+# File Explorer's right-click menu (src/explorer_menu.rs) is written to the registry through
+# winsafe's safe wrappers (already in the tree through ui-egui and the desktop app).
+winsafe = { version = "0.0.29", default-features = false, features = ["advapi"] }
+
 [dev-dependencies]
 # Exercise the actual portal wire decoder and cancellable worker on every native test host.
 zbus = { version = "=5.19.0", default-features = false, features = ["async-io"] }

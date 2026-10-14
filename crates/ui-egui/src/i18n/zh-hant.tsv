@@ -5,7 +5,7 @@
 # Clean-room: every entry was written from the plain meaning of the English label using ordinary
 # Traditional Chinese computing vocabulary. No proprietary localisation resource, string table or
 # product UI (Acrobat's included) was consulted or copied; add entries the same way.
-# Product and technology names (PdfCraft, PDF, Acrobat JavaScript ...) stay in Latin letters;
+# Product and technology names (NadsPDF, PDF, Acrobat JavaScript ...) stay in Latin letters;
 # the trailing "…" of dialog commands is kept.
 
 	Menu	選單
@@ -404,12 +404,11 @@
 	Check for updates	檢驗更新
 	No check has run yet.	尚未執行檢驗。
 	Checking for a newer version…	正在檢驗新版本…
-	PdfCraft {v} is available.	PdfCraft {v} 可用。
+	NadsPDF {v} is available.	NadsPDF {v} 可用。
 	You have version {c}. Download the new version from its release page.	當前版本為 {c}。請從其釋出頁面下載新版本。
-	PdfCraft {c} is up to date.	PdfCraft {c} 已是最新。
+	NadsPDF {c} is up to date.	NadsPDF {c} 已是最新。
 	Couldn't check for updates: {e}	無法檢驗更新：{e}
 	You have version {c}. All releases are listed at {page}.	當前版本為 {c}。所有版本列在 {page}。
-	Asks GitHub for the latest release. Nothing is downloaded or installed automatically.	向 GitHub 搜尋最新版本。不會自動下載或安裝任何內容。
 	Download	下載
 	Later	稍後
 	none	無
@@ -518,8 +517,8 @@
 	No changes allowed	不允許任何更改
 	Annotations, form fill-in, and digital signatures	註解、填寫表單和數位簽章
 	Form fill-in and digital signatures	填寫表單和數位簽章
-	The key is in the macOS Keychain, which may ask to allow PdfCraft to use it.	金鑰位於 macOS 鑰匙串中，系統可能會詢問是否允許 PdfCraft 使用它。
-	The key is in the Windows certificate store, which may ask to allow PdfCraft to use it.	金鑰位於 Windows 憑證存放區中，系統可能會詢問是否允許 PdfCraft 使用它。
+	The key is in the macOS Keychain, which may ask to allow NadsPDF to use it.	金鑰位於 macOS 鑰匙串中，系統可能會詢問是否允許 NadsPDF 使用它。
+	The key is in the Windows certificate store, which may ask to allow NadsPDF to use it.	金鑰位於 Windows 憑證存放區中，系統可能會詢問是否允許 NadsPDF 使用它。
 	Digital ID password	數位 ID 密碼
 	Back	返回
 	Validate all	全部驗證
@@ -891,7 +890,7 @@
 	Downsample to	降取樣至
 	Also recognize pages that already have text	同時辨識已有文字的頁面
 	Pictures on those pages are recognized too; words already in the page's text are not added again	這些頁面上的圖片也會被辨識；頁面文字中已有的字詞不會重複加入
-	Text recognition isn't installed: its model files are missing. Reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them.	未安裝文字辨識：缺少模型檔案。請重新安裝 PdfCraft，或將 PDFCRAFT_MODELS 設定為包含這些檔案的資料夾。
+	Text recognition isn't installed: its model files are missing. Reinstall NadsPDF, or set PDFCRAFT_MODELS to the folder that holds them.	未安裝文字辨識：缺少模型檔案。請重新安裝 NadsPDF，或將 PDFCRAFT_MODELS 設定為包含這些檔案的資料夾。
 	Settings	設定
 	Protect	保護
 	Advanced options	進階選項
@@ -1282,7 +1281,7 @@
 	Anyone opening the document will need this password. It's applied when you save.	開啟文件的任何人都需要此密碼。儲存時應用。
 	The document opens without a password; this password is needed to change the restrictions. It's applied when you save.	開啟文件無需密碼；更改限制需要此密碼。儲存時應用。
 	Recover unsaved documents?	要恢復未儲存的文件嗎？
-	PdfCraft didn't shut down normally. These documents had changes that were autosaved:	PdfCraft 未正常關閉。以下文件的更改已自動儲存：
+	NadsPDF didn't shut down normally. These documents had changes that were autosaved:	NadsPDF 未正常關閉。以下文件的更改已自動儲存：
 	just now	剛剛
 	{n} min ago	{n} 分鐘前
 	{n} h ago	{n} 小時前
@@ -1450,10 +1449,10 @@
 	On the web, open or drop an image to convert it	在 Web 端，開啟或拖入圖片進行轉換
 	Couldn't optimize the file: {e}	無法最佳化檔案：{e}
 	Couldn't write {path}: {e}	無法寫入{path}：{e}
-	The form asks to be submitted to {u}; PdfCraft doesn't send form data. Save the document to keep your entries.	該表單請求提交到{u}；PdfCraft 不傳送表單資料。請儲存文件以保留填寫內容。
+	The form asks to be submitted to {u}; NadsPDF doesn't send form data. Save the document to keep your entries.	該表單請求提交到{u}；NadsPDF 不傳送表單資料。請儲存文件以保留填寫內容。
 	This PDF uses the unsupported {s} action.	此 PDF 使用了不支援的 {s} 動作。
 	{name}: the {other} action isn't supported yet	{name}：{other} 動作暫不受支援
-	{name} submits the form to {url}; PdfCraft doesn't send form data. Save the document to keep your entries.	{name} 將表單提交到{url}；PdfCraft 不傳送表單資料。請儲存文件以保留填寫內容。
+	{name} submits the form to {url}; NadsPDF doesn't send form data. Save the document to keep your entries.	{name} 將表單提交到{url}；NadsPDF 不傳送表單資料。請儲存文件以保留填寫內容。
 	Export stopped: {e}	匯出中止：{e}
 	Exported 1 image	已匯出 1 張圖片
 	Exported {n} images	已匯出{n}張圖片
@@ -1688,9 +1687,9 @@
 	Signed and all signatures are valid.	已簽名，所有簽名均有效。
 	At least one signature has problems.	至少一個簽名存在問題。
 	This document is secured. Some changes are restricted by its security settings.	本文件已加密。其安全設定限制了部分更改。
-	This is a dynamic XFA form, which PdfCraft can't display yet. What you see is the file's placeholder page.	這是動態 XFA 表單，PdfCraft 暫無法顯示。您看到的是檔案的佔位頁面。
+	This is a dynamic XFA form, which NadsPDF can't display yet. What you see is the file's placeholder page.	這是動態 XFA 表單，NadsPDF 暫無法顯示。您看到的是檔案的佔位頁面。
 	This form's scripts are turned off because one ran too long. Reopen the document to run them again.	此表單的指令碼已關閉，因為其中一個指令碼執行時間過長。重新開啟文件即可再次執行。
-	This form also contains XFA data, which PdfCraft doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	此表單還包含 XFA 資料，PdfCraft 暫不讀取。您可以填寫欄位，但 Acrobat 可能顯示 XFA 值。
+	This form also contains XFA data, which NadsPDF doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	此表單還包含 XFA 資料，NadsPDF 暫不讀取。您可以填寫欄位，但 Acrobat 可能顯示 XFA 值。
 	This document contains {n} interactive form fields.	本文件包含 {n} 個互動式表單欄位。
 	This file was damaged and has been repaired. Saving keeps the repaired version.	此檔案已損壞並已修復。儲存將保留修復後的版本。
 	Dismiss	關閉
@@ -1729,7 +1728,7 @@
 	Read	閱讀
 	Convert	轉換
 	E-Sign	電子簽署
-	Welcome to PdfCraft	歡迎使用 PdfCraft
+	Welcome to NadsPDF	歡迎使用 NadsPDF
 	An open-source PDF workbench — local, private, and scriptable.	開源 PDF 工作台，在本機處理、保護隱私，並支援指令碼。
 	Recommended tools	推薦工具
 	Use now	立即使用
@@ -1768,11 +1767,11 @@
 	Join the ArtCraft community	加入 ArtCraft 社群
 	Get help, share feedback and follow development on Discord.	在 Discord 取得協助、提供意見並追蹤開發進度。
 	Join our Discord	加入 Discord 社群
-	PdfCraft web page	PdfCraft 網頁
-	PdfCraft on GitHub	GitHub 上的 PdfCraft
+	NadsPDF web page	NadsPDF 網頁
+	NadsPDF on GitHub	GitHub 上的 NadsPDF
 	ArtCraft website	ArtCraft 網站
 	Check for updates…	尋找更新…
-	About PdfCraft	關於 PdfCraft
+	About NadsPDF	關於 NadsPDF
 	JavaScript console…	JavaScript 主控台…
 	Document JavaScripts…	文件 JavaScript…
 	Recognize text…	辨識文字…
@@ -1782,8 +1781,8 @@
 	Add background…	新增背景…
 	Prepare a form	準備表單
 	Digitally sign	數位簽署
-	Files you open in PdfCraft appear here. Drop a PDF anywhere to open it.	在 PdfCraft 開啟過的檔案會顯示在這裡。將 PDF 拖曳至視窗即可開啟。
-	PdfCraft works offline. No telemetry, no account, and no cloud processing unless you add a provider.	PdfCraft 可離線使用，不收集遙測資料，也不需要帳號。只有在您新增服務供應商後，才會使用雲端處理。
+	Files you open in NadsPDF appear here. Drop a PDF anywhere to open it.	在 NadsPDF 開啟過的檔案會顯示在這裡。將 PDF 拖曳至視窗即可開啟。
+	NadsPDF works offline. No telemetry, no account, and no cloud processing unless you add a provider.	NadsPDF 可離線使用，不收集遙測資料，也不需要帳號。只有在您新增服務供應商後，才會使用雲端處理。
 	Double-click	滑鼠按兩下
 	PDF/A…	PDF/A…
 	Microsoft Word (.docx)	Microsoft Word（.docx）
@@ -1825,7 +1824,7 @@
 	there are no pages to print	沒有可列印的頁面
 	the document has no tags	此文件沒有標籤
 	{0}: {1}	{0}：{1}
-	the text recognition models are not installed (reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them)	尚未安裝文字辨識模型（請重新安裝 PdfCraft，或將 PDFCRAFT_MODELS 設定為包含這些模型的資料夾）
+	the text recognition models are not installed (reinstall NadsPDF, or set PDFCRAFT_MODELS to the folder that holds them)	尚未安裝文字辨識模型（請重新安裝 NadsPDF，或將 PDFCRAFT_MODELS 設定為包含這些模型的資料夾）
 	the image is empty	圖片是空的
 	this file isn't XFDF, FDF, XML or text form data	此檔案不是 XFDF、FDF、XML 或純文字表單資料
 	nothing in the file matches this document	檔案中沒有與此文件相符的資料
@@ -1871,6 +1870,8 @@
 	Draw your {what} below.	在下方繪製您的{what}。
 	Your name	您的姓名
 	Images and text (converted to PDF)	圖片與文字（轉換為 PDF）
+	Images, text and documents (converted to PDF)	影像、文字和文件（轉換為 PDF）
+	PDF, images, text and documents	PDF、影像、文字和文件
 	Images and text	圖片與文字
 	Check Box Style:	核取方塊樣式：
 	Button Style:	按鈕樣式：
@@ -2033,11 +2034,11 @@
 	Couldn't import the signature image: {e}	無法匯入簽名圖像：{e}
 	Go to page…	轉到頁面…
 	For page sizes and margins.	用於頁面尺寸和邊距。
-	Reopen the files that were open when PdfCraft last closed	重新開啟上次關閉 PdfCraft 時開啟的檔案
+	Reopen the files that were open when NadsPDF last closed	重新開啟上次關閉 NadsPDF 時開啟的檔案
 	The PDF text fonts can't draw “{c}” ({code}). Choose supported text.	PDF 文字字型無法顯示「{c}」（{code}）。請選擇支援的文字。
 	The standard fonts can't draw “{c}” ({code}). Only Western European characters can be added as text for now.	標準字型無法顯示「{c}」（{code}）。目前只能新增西歐字元作為文字。
-	This field's font can't draw “{c}” ({code}), so PdfCraft shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	此欄位的字型無法顯示「{c}」（{code}），PdfCraft 會在該處顯示 ?。值已儲存，其他 PDF 閱讀器會依據該值重新繪製此欄位。
-	The fonts PdfCraft writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	PdfCraft 寫入時使用的字型無法顯示「{c}」（{code}），因此它在所有 PDF 閱讀器中都會顯示為 ?。文字已儲存。
+	This field's font can't draw “{c}” ({code}), so NadsPDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	此欄位的字型無法顯示「{c}」（{code}），NadsPDF 會在該處顯示 ?。值已儲存，其他 PDF 閱讀器會依據該值重新繪製此欄位。
+	The fonts NadsPDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	NadsPDF 寫入時使用的字型無法顯示「{c}」（{code}），因此它在所有 PDF 閱讀器中都會顯示為 ?。文字已儲存。
 	Open arrow	開口箭頭
 	Closed arrow	閉合箭頭
 	Butt	平頭
@@ -2060,7 +2061,7 @@
 	Printer properties	印表機內容
 	Reset to printer defaults	還原印表機預設值
 	This printer offers no settings of its own.	此印表機沒有專屬設定。
-	PdfCraft is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	PdfCraft 正在不使用圖形處理器的情況下繪製，因此可能較慢。更新顯示卡驅動程式可能會有幫助。
+	NadsPDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	NadsPDF 正在不使用圖形處理器的情況下繪製，因此可能較慢。更新顯示卡驅動程式可能會有幫助。
 	Scroll tabs left	向左捲動索引標籤
 	Scroll tabs right	向右捲動索引標籤
 
@@ -2183,7 +2184,7 @@ animation effects	Off	關
 	no output folder was chosen	未選擇輸出資料夾
 @plural	Downloaded {n} PDF|Downloaded {n} PDFs	已下載 {n} 個 PDF
 	Scan	掃描
-	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: PdfCraft finds the signature and removes the paper.	在白紙上簽名，並在明亮、均勻的光線下拍照（使用閃光燈）。選擇相片或將其拖放到此處：PdfCraft 會找到簽名並去除紙張背景。
+	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: NadsPDF finds the signature and removes the paper.	在白紙上簽名，並在明亮、均勻的光線下拍照（使用閃光燈）。選擇相片或將其拖放到此處：NadsPDF 會找到簽名並去除紙張背景。
 	Choose photo…	選擇相片…
 	No photo chosen	未選擇相片
 	Photo	相片
@@ -2226,3 +2227,103 @@ animation effects	Off	關
 	This document is trying to open a local file:	此文件正嘗試開啟本機檔案：
 	Move tag earlier	將標記前移
 	Move tag later	將標記後移
+
+# NadsPDF (nads.site)
+	NadsPDF tools	NadsPDF 工具
+	PdfCraft (upstream) on GitHub	GitHub 上的 PdfCraft（上游專案）
+	Convert to PDF with NadsPDF	使用 NadsPDF 轉換為 PDF
+	Combine with NadsPDF	使用 NadsPDF 合併
+	Open with NadsPDF	使用 NadsPDF 開啟
+	Show NadsPDF in the File Explorer right-click menu	在檔案總管的右鍵選單中顯示 NadsPDF
+	Added for all users when NadsPDF was installed.	安裝 NadsPDF 時已為所有使用者新增。
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	在文件、影像和 PDF 上提供「轉換為 PDF」「合併」和「開啟」。在 Windows 11 中位於「顯示更多選項」下。
+	Couldn't change the File Explorer menu: {e}	無法變更檔案總管選單：{e}
+	Couldn't find {name}	找不到 {name}
+# Vaults (Home ▸ Vaults)
+@plural	{n} file|{n} files	{n} 個檔案
+	Give the vault a name	請為保險庫命名
+	You can have up to {n} vaults. Delete one first.	最多可以有 {n} 個保險庫。請先刪除一個。
+	That vault no longer exists	該保險庫已不存在
+	Added {files} to {vault}	已新增到 {vault}：{files}
+	Already in {vault}	已在 {vault} 中
+	A vault holds up to {n} files	一個保險庫最多容納 {n} 個檔案
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	保險庫存放這台電腦上的 PDF 以及 NadsPDF 可以轉換的檔案
+	No files to open in this vault	此保險庫中沒有可開啟的檔案
+	Opening the first {n} files	正在開啟前 {n} 個檔案
+	Deleted the vault {vault}. Its files were not touched.	已刪除保險庫 {vault}。其中的檔案未受影響。
+	Moved {file} to {vault}	已將 {file} 移到 {vault}
+	Vaults need the desktop app	保險庫需要桌面版應用程式
+	Locate {file}	尋找 {file}
+	Save this document to a file first, then add it to a vault	請先將此文件儲存為檔案，再新增到保險庫
+	Vaults	保險庫
+	New vault	新增保險庫
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	把電腦上各處的 PDF 歸入有名稱、顏色和圖示的保險庫。檔案仍留在原處。
+	Click to show its files. Drag to reorder, or drop files here.	按一下顯示其檔案。拖曳可重新排序，也可將檔案拖放到這裡。
+	Open all	全部開啟
+	Edit vault…	編輯保險庫…
+	Move left	左移
+	Move right	右移
+	Delete vault…	刪除保險庫…
+	New vault…	新增保險庫…
+	No files yet. Drop files here to add them.	還沒有檔案。將檔案拖放到這裡即可新增。
+	Locate…	尋找…
+	Missing	遺失
+	Remove {name} from this vault	從此保險庫移除 {name}
+	This file has moved or been deleted. Locate it, or remove it from the vault.	此檔案已被移動或刪除。請找到它，或將其從保險庫移除。
+	Move to vault	移到保險庫
+	Remove from vault	從保險庫移除
+	Show this vault on Home	在首頁顯示此保險庫
+	Vault: {name}	保險庫：{name}
+	Vault	保險庫
+	Edit vault	編輯保險庫
+	Vault name	保險庫名稱
+	Create vault	建立保險庫
+	Delete the vault {vault}?	要刪除保險庫 {vault} 嗎？
+	Its files stay where they are on your computer. Only the vault is deleted.	檔案仍留在電腦上的原處。只會刪除保險庫。
+	Delete vault	刪除保險庫
+	Add to vault	新增到保險庫
+	Already in it	已在其中
+	Add document to vault…	將文件新增到保險庫…
+	Dark pages	深色頁面
+	Rasterize pages (strong compression)…	將頁面點陣化（強力壓縮）…
+	Rasterize pages (strong compression)	將頁面點陣化（強力壓縮）
+	Rasterizing… page {d} of {t}	正在點陣化… 第 {d} 頁，共 {t} 頁
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	每一頁都會變成圖片：壓縮最強，最適合掃描文件。文字將無法再選取或搜尋，連結、書籤和表單欄位也不會保留。結果另存為副本。
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi，JPEG 品質 {q}
+compression level	Light	輕度
+compression level	Medium	中度
+compression level	Strong	強力
+	Compress	壓縮
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	點陣化不會讓此檔案變小（{size}）。未儲存副本。
+	Add faint watermark	加入淡色浮水印
+	Recognize text if available	如可用則辨識文字
+	Prepare for Sending	準備傳送
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	在底部置中以「n / 總數」編號頁面，然後縮小檔案以便透過電子郵件傳送。
+	Archive Scans	封存掃描文件
+	Make scans searchable (when text recognition is available), then make them smaller.	讓掃描文件可搜尋（如已安裝文字辨識），然後將其縮小。
+	Confidential	機密
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	每頁加上淡色對角「機密」浮水印和「n / 總數」頁碼。
+	{name} (copy)	{name}（副本）
+watermark text	CONFIDENTIAL	機密
+	Group name	群組名稱
+	Rename Group	重新命名群組
+	Ungroup	取消群組
+	Close Group	關閉群組
+	Add Tab to New Group	將分頁加入新群組
+	Add Tab to Group	將分頁加入群組
+	Remove from Group	從群組中移除
+	Click to fold or unfold the group	按一下以摺疊或展開群組
+	Filter tools	篩選工具
+	No tool matches	沒有符合的工具
+	Essentials	常用
+	Float as a bubble	浮動為泡泡
+	Show this PDF in a small window over the others	在其他文件上方的小視窗中顯示此 PDF
+	Put back as a tab	放回為分頁
+	Fold into a bubble	收合為泡泡
+	Click to open, drag onto the tabs to put it back	按一下以開啟，拖到分頁列即可放回
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	你的版本是 {c}。NadsPDF 將會關閉，安裝新版本取代目前版本，然後重新開啟。你的設定會保留。
+	You have version {c}.	你的版本是 {c}。
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	此 NadsPDF 來自 Microsoft Store，新版本由 Store 自動安裝。
+	Downloading the update…	正在下載更新…
+	Couldn't install the update: {e}	無法安裝更新：{e}
+	Check for updates when NadsPDF starts (once a day)	啟動 NadsPDF 時檢查更新（每天一次）

@@ -125,7 +125,7 @@ fn text_is_wrapped_and_paginated() {
 }
 
 /// Text Helvetica can't draw is refused with its line and character, never set as `?`; text
-/// PdfCraft generates writes such characters as [U+XXXX] and says so.
+/// NadsPDF generates writes such characters as [U+XXXX] and says so.
 #[test]
 fn text_helvetica_cannot_draw_is_refused_or_escaped() {
     let err = from_text("notes", "Café —\tok\r\n\u{c}第二页 notes", LETTER, 11.0).unwrap_err();
@@ -817,4 +817,20 @@ fn cmyk_and_ycck_jpegs_export_in_the_colours_the_page_shows() {
             assert_eq!((ext, &extract_images(&doc, &[0], 0).images[0].data), ("jpg", &jpeg), "{what}");
         }
     }
+}
+
+#[test]
+fn page_images_fill_pages_of_the_given_size() {
+    let doc = from_page_images(&[(jpeg_bytes(), 612.0, 792.0), (jpeg_bytes(), 842.0, 595.0)], "Scan").unwrap();
+    let doc = reopen(&doc);
+    let p = pages(&doc);
+    assert_eq!(p.len(), 2);
+    assert_eq!(media(&p[0]), vec![0.0, 0.0, 612.0, 792.0]);
+    assert_eq!(media(&p[1]), vec![0.0, 0.0, 842.0, 595.0]);
+    // Oversized pages shrink to the PDF limit, keeping their proportions.
+    let big = from_page_images(&[(jpeg_bytes(), 28_800.0, 14_400.0)], "Big").unwrap();
+    assert_eq!(media(&pages(&big)[0]), vec![0.0, 0.0, 14_400.0, 7_200.0]);
+    assert!(from_page_images(&[], "x").is_err());
+    assert!(from_page_images(&[(jpeg_bytes(), f64::NAN, 10.0)], "x").is_err());
+    assert!(from_page_images(&[(b"not an image".to_vec(), 10.0, 10.0)], "x").is_err());
 }

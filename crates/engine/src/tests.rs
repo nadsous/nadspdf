@@ -923,8 +923,18 @@ fn a_page_with_a_form_field_shown_twice_keeps_one_field() {
 #[test]
 fn files_that_cannot_be_converted_are_refused_clearly() {
     let s = Session::new();
+    let err = s.convert_to_pdf("report.odp", &Arc::new(b"PK\x03\x04".to_vec())).unwrap_err();
+    assert_eq!(
+        err,
+        EditError::Source(
+            "report.odp: this file type can't be converted; use a PDF, an image, a .txt file or a document (.docx, .xlsx, .ods, .csv, .html)".into()
+        )
+    );
+    // A damaged Word file and a binary Excel file are refused with what to do.
     let err = s.convert_to_pdf("report.docx", &Arc::new(b"PK\x03\x04".to_vec())).unwrap_err();
-    assert_eq!(err, EditError::Source("report.docx: this file type can't be converted; use a PDF, an image or a .txt file".into()));
+    assert!(matches!(&err, EditError::Source(m) if m.starts_with("report.docx: ") && m.contains("Word")), "{err}");
+    let err = s.convert_to_pdf("old.xls", &Arc::new(b"\xd0\xcf\x11\xe0".to_vec())).unwrap_err();
+    assert!(err.to_string().contains(".xlsx"), "{err}");
     assert!(matches!(s.convert_to_pdf("empty", &Arc::new(Vec::new())), Err(EditError::Source(_))));
     // Damaged inputs of a known type fail with an error, not a panic.
     assert!(s.convert_to_pdf("bad.png", &Arc::new(b"\x89PNG\r\n\x1a\nnope".to_vec())).is_err());
@@ -932,6 +942,27 @@ fn files_that_cannot_be_converted_are_refused_clearly() {
     assert!(s.convert_to_pdf("bad.pdf", &Arc::new(b"%PDF-1.7 nope".to_vec())).is_err());
     let err = s.convert_to_pdf("locked.pdf", &protected("pw", "o", -1)).unwrap_err();
     assert_eq!(err, EditError::Source("locked.pdf: it is password-protected".into()));
+}
+
+/// Office, spreadsheet and HTML files become new PDFs through Create, and are listed with the
+/// extensions Open, Create and Combine accept.
+#[test]
+fn documents_convert_to_pdf() {
+    let mut s = Session::new();
+    assert_eq!(source_kind("t.csv", b"a;b"), Some(SourceKind::Document));
+    assert_eq!(source_kind("t.txt", b"a"), Some(SourceKind::Text), "plain text keeps the text path");
+    assert_eq!(source_kind("t.xls", b""), Some(SourceKind::Document), "recognised, to be refused with an explanation");
+    for ext in pdfcraft_convert::EXTENSIONS.iter().chain(pdfcraft_create::CONVERTIBLE.iter()) {
+        assert!(CONVERTIBLE.contains(ext), "{ext}");
+    }
+    let (kind, pdf) = s.convert_to_pdf("Ventes.csv", &Arc::new("Produit;Prix\nCrème brûlée;4,50\n".as_bytes().to_vec())).unwrap();
+    assert_eq!(kind, SourceKind::Document);
+    let id = s.open_new("Ventes.pdf", pdf).unwrap();
+    let text = page_texts(&s, id).join(" ");
+    assert!(text.contains("Produit") && text.contains("Crème brûlée"), "{text}");
+    let (pdf, report) = s.create_from_document("page.html", "<h1>Titre</h1><p>café</p>".as_bytes()).unwrap();
+    assert_eq!(report.pages, 1);
+    assert!(!pdf.is_empty() && s.as_pdf("page.html", &Arc::new(b"<p>x</p>".to_vec())).is_ok());
 }
 
 /// Combine files (#569): images and text become PDFs; PDFs pass through unread, even protected
@@ -945,8 +976,8 @@ fn files_for_combine_are_made_into_pdfs_and_pdfs_pass_through() {
     assert!(Arc::ptr_eq(&s.as_pdf("old.PDF", &headless).unwrap(), &headless));
     assert!(s.as_pdf("scan.jpg", &Arc::new(jpeg_bytes())).unwrap().starts_with(b"%PDF-"));
     assert!(s.as_pdf("notes.txt", &Arc::new(b"hello".to_vec())).unwrap().starts_with(b"%PDF-"));
-    let err = s.as_pdf("report.docx", &Arc::new(b"PK\x03\x04".to_vec())).unwrap_err();
-    assert!(matches!(err, EditError::Source(m) if m.starts_with("report.docx: this file type can't be converted")));
+    let err = s.as_pdf("slides.pptx", &Arc::new(b"PK\x03\x04".to_vec())).unwrap_err();
+    assert!(matches!(err, EditError::Source(m) if m.starts_with("slides.pptx: this file type can't be converted")));
 }
 
 fn protected(user: &str, owner: &str, permissions: i32) -> Arc<Vec<u8>> {
@@ -4522,4 +4553,62 @@ fn copy_image_finds_a_picture_inside_form_artwork_under_text() {
     // The largest picture in the group, as the JPEG stored in the PDF.
     assert_eq!(d.page_image_copy_file(0, 0).unwrap(), ("jpg", jpeg));
     assert!(d.page_image_copy_file(0, 1).is_err());
+}
+
+#[test]
+fn rasterizing_rebuilds_pages_as_images_at_their_displayed_size() {
+    use crate::rasterize::{RasterLevel, RasterSettings};
+    // A page turned 90°: the copy keeps it as displayed (landscape), without /Rotate.
+    let (session, id) = rotated_blank(90);
+    let shown = session.get(id).unwrap().info.pages[0].clone();
+    assert_eq!((shown.width, shown.height), (300.0, 200.0));
+    let bytes = session.rasterized_bytes(id, RasterLevel::Strong.settings()).unwrap();
+    let mut s2 = Session::new();
+    let out = s2.open("out.pdf", None, bytes, None).unwrap();
+    let page = &s2.get(out).unwrap().info.pages[0];
+    assert_eq!((page.width, page.height), (300.0, 200.0));
+    assert_eq!(page.rotation, 0);
+
+    // Text becomes pixels: the same pages, nothing left to select.
+    let mut s = Session::new();
+    let src = s.create_from_text("t", "Quarterly numbers").unwrap();
+    let doc = s.open("q.pdf", None, src, None).unwrap();
+    let bytes = s.rasterized_bytes(doc, RasterSettings { dpi: 72.0, quality: 60 }).unwrap();
+    let out = s.open("q (compressed).pdf", None, bytes, None).unwrap();
+    assert_eq!(s.get(out).unwrap().info.pages.len(), s.get(doc).unwrap().info.pages.len());
+    assert!(page_texts(&s, doc)[0].contains("Quarterly"));
+    assert_eq!(page_texts(&s, out), [""]);
+    assert_eq!(s.get(out).unwrap().info.title.as_deref(), Some("q"));
+
+    // Stopping asks before the first page.
+    let job = s.rasterize_job(doc, RasterLevel::Light.settings()).unwrap();
+    assert_eq!(job.run(|_| false).unwrap_err(), EditError::Cancelled);
+    assert_eq!(s.rasterize_job(DocId(999), RasterLevel::Light.settings()).err(), Some(EditError::NoDocument));
+}
+
+#[test]
+fn ready_made_pipelines_number_mark_and_compress() {
+    let s = Session::new();
+    let src = s.create_from_text("t", "Quarterly numbers").unwrap();
+    let built = actions::builtin();
+    let find = |name: &str| built.iter().find(|a| a.name == name).unwrap();
+    let mut s2 = Session::new();
+
+    let r = actions::run_on(find("Prepare for Sending"), "q.pdf", src.clone(), |_, _| {}).unwrap();
+    assert_eq!(r.log[0], "Add footer");
+    assert!(r.log[1].starts_with("Reduce file size"), "{:?}", r.log);
+    let id = s2.open("a.pdf", None, r.bytes, None).unwrap();
+    assert!(page_texts(&s2, id)[0].contains("1 / 1"), "{:?}", page_texts(&s2, id));
+
+    let r = actions::run_on(find("Confidential"), "q.pdf", src.clone(), |_, _| {}).unwrap();
+    assert_eq!(r.log, ["Add faint watermark", "Add footer"]);
+    let id = s2.open("b.pdf", None, r.bytes, None).unwrap();
+    let text = &page_texts(&s2, id)[0];
+    assert!(text.contains("CONFIDENTIAL") && text.contains("1 / 1"), "{text}");
+
+    // Text recognition is optional: without its models the step is skipped, not a failure.
+    let r = actions::run_on(find("Archive Scans"), "q.pdf", src, |_, _| {}).unwrap();
+    assert_eq!(r.log.len(), 2, "{:?}", r.log);
+    assert!(r.log[0].starts_with("Recognize text"), "{:?}", r.log);
+    assert_eq!(actions::Step::from_id("add_faint_watermark", "DRAFT"), Some(actions::Step::AddFaintWatermark("DRAFT".into())));
 }

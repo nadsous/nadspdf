@@ -15,7 +15,7 @@
 # localisation or any other product's translation. Terminology: annotations are "komentáře",
 # pages are "stránky", form fields are "formulářová pole", redaction is "začernění", flattening is
 # "sloučení se stránkou", tags are "tagy" (to tag = "označkovat"). Product and format names
-# (PdfCraft, PDF, PDF/A, OCR, XFA, Word, HTML…) stay in Latin letters; the trailing "…" of dialog
+# (NadsPDF, PDF, PDF/A, OCR, XFA, Word, HTML…) stay in Latin letters; the trailing "…" of dialog
 # commands is kept. Messages with a count but no `@plural` entry use count-neutral wording
 # ("Vybráno stránek: {n}"), because Czech has three plural forms.
 
@@ -115,11 +115,11 @@
 	Number pages…	Očíslovat stránky…
 	Keyboard shortcuts	Klávesové zkratky
 	Join the ArtCraft Discord	Připojit se ke komunitě ArtCraft na Discordu
-	PdfCraft web page	Webová stránka PdfCraft
-	PdfCraft on GitHub	PdfCraft na GitHubu
+	NadsPDF web page	Webová stránka NadsPDF
+	NadsPDF on GitHub	NadsPDF na GitHubu
 	ArtCraft website	Web ArtCraft
 	Check for updates…	Zkontrolovat aktualizace…
-	About PdfCraft	O aplikaci PdfCraft
+	About NadsPDF	O aplikaci NadsPDF
 	Auto	Automaticky
 	Continuous scrolling	Plynulé posouvání
 	Single page	Jednostránkové zobrazení
@@ -133,7 +133,7 @@
 	Fit to width scrolling	Plynulé posouvání s přizpůsobením šířce
 	Fit one full page	Celá jedna stránka
 	Used when a PDF doesn't ask for a layout or zoom. Continuous scrolling never snaps between pages.	Používá se, když PDF nepožaduje rozložení ani zvětšení. Plynulé posouvání mezi stránkami neskáče.
-	Reopen the files that were open when PdfCraft last closed	Znovu otevřít soubory, které byly otevřené při posledním zavření aplikace PdfCraft
+	Reopen the files that were open when NadsPDF last closed	Znovu otevřít soubory, které byly otevřené při posledním zavření aplikace NadsPDF
 	Reload documents when their files change on disk	Znovu načítat dokumenty při změně jejich souborů na disku
 	This file changed on disk. Reload it to see the new version; your unsaved changes will be lost.	Tento soubor se na disku změnil. Znovu jej načtěte, abyste viděli novou verzi; neuložené změny budou ztraceny.
 	Reload	Znovu načíst
@@ -141,7 +141,7 @@
 	Choose a PNG or JPEG image (up to 4 MiB). Transparency is preserved.	Vyberte obrázek PNG nebo JPEG (nejvýše 4 MiB). Průhlednost bude zachována.
 	Couldn't import the signature image: {e}	Obrázek podpisu nelze importovat: {e}
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	Přenosný režim je vypnutý: do složky {folder} nelze zapisovat ({error}). Nastavení se místo toho ukládá do vaší uživatelské složky.
-	PdfCraft is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	PdfCraft vykresluje bez grafického procesoru, takže může být pomalý. Pomoci může aktualizace grafického ovladače.
+	NadsPDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	NadsPDF vykresluje bez grafického procesoru, takže může být pomalý. Pomoci může aktualizace grafického ovladače.
 	Go to page…	Přejít na stránku…
 	Margins	Okraje
 	For page sizes and margins.	Pro velikosti stránek a okraje.
@@ -276,7 +276,7 @@ key	Space	Mezerník
 	Next page	Další stránka
 	Previous page	Předchozí stránka
 	Current page — type a page number or label (such as iv) and press Enter	Aktuální stránka — zadejte číslo nebo označení stránky (třeba iv) a stiskněte Enter
-	Welcome to PdfCraft	Vítá vás PdfCraft
+	Welcome to NadsPDF	Vítá vás NadsPDF
 	An open-source PDF workbench — local, private, and scriptable.	Open-source dílna pro PDF — lokální, soukromá a skriptovatelná.
 	Join the ArtCraft community	Připojte se ke komunitě ArtCraft
 	Get help, share feedback and follow development on Discord.	Získejte pomoc, sdílejte zpětnou vazbu a sledujte vývoj na Discordu.
@@ -284,9 +284,9 @@ key	Space	Mezerník
 	Use now	Použít
 	Open file	Otevřít soubor
 	Recent	Nedávné
-	Files you open in PdfCraft appear here. Drop a PDF anywhere to open it.	Zde se zobrazí soubory, které otevřete v PdfCraftu. Soubor PDF otevřete přetažením kamkoli do okna.
+	Files you open in NadsPDF appear here. Drop a PDF anywhere to open it.	Zde se zobrazí soubory, které otevřete v NadsPDFu. Soubor PDF otevřete přetažením kamkoli do okna.
 	Privacy	Soukromí
-	PdfCraft works offline. No telemetry, no account, and no cloud processing unless you add a provider.	PdfCraft funguje offline. Žádná telemetrie, žádný účet a žádné zpracování v cloudu, pokud nepřidáte poskytovatele.
+	NadsPDF works offline. No telemetry, no account, and no cloud processing unless you add a provider.	NadsPDF funguje offline. Žádná telemetrie, žádný účet a žádné zpracování v cloudu, pokud nepřidáte poskytovatele.
 	Scripts run in a sandbox without file or network access. With JavaScript off, Acrobat's standard format, validate and calculate functions still work.	Skripty běží v izolovaném prostředí bez přístupu k souborům a síti. S vypnutým JavaScriptem dál fungují standardní funkce Acrobatu pro formátování, ověření a výpočty.
 	Back to all tools	Zpět na všechny nástroje
 	Close panel	Zavřít panel
@@ -844,12 +844,11 @@ key	Space	Mezerník
 	Check for updates	Zkontrolovat aktualizace
 	No check has run yet.	Kontrola zatím neproběhla.
 	Checking for a newer version…	Hledání novější verze…
-	PdfCraft {v} is available.	Je k dispozici PdfCraft {v}.
+	NadsPDF {v} is available.	Je k dispozici NadsPDF {v}.
 	You have version {c}. Download the new version from its release page.	Máte verzi {c}. Novou verzi si stáhněte z její stránky s vydáním.
-	PdfCraft {c} is up to date.	PdfCraft {c} je aktuální.
+	NadsPDF {c} is up to date.	NadsPDF {c} je aktuální.
 	Couldn't check for updates: {e}	Aktualizace nelze zkontrolovat: {e}
 	You have version {c}. All releases are listed at {page}.	Máte verzi {c}. Všechna vydání najdete na {page}.
-	Asks GitHub for the latest release. Nothing is downloaded or installed automatically.	Zjistí na GitHubu nejnovější vydání. Nic se automaticky nestahuje ani neinstaluje.
 	Download	Stáhnout
 	Later	Později
 	none	žádná
@@ -959,8 +958,8 @@ key	Space	Mezerník
 	No changes allowed	Nejsou povoleny žádné změny
 	Annotations, form fill-in, and digital signatures	Anotace, vyplňování formulářů a digitální podpisy
 	Form fill-in and digital signatures	Vyplňování formulářů a digitální podpisy
-	The key is in the macOS Keychain, which may ask to allow PdfCraft to use it.	Klíč je v Klíčence systému macOS, která se může zeptat, zda PdfCraftu povolit jeho použití.
-	The key is in the Windows certificate store, which may ask to allow PdfCraft to use it.	Klíč je v úložišti certifikátů Windows, které se může zeptat, zda PdfCraftu povolit jeho použití.
+	The key is in the macOS Keychain, which may ask to allow NadsPDF to use it.	Klíč je v Klíčence systému macOS, která se může zeptat, zda NadsPDFu povolit jeho použití.
+	The key is in the Windows certificate store, which may ask to allow NadsPDF to use it.	Klíč je v úložišti certifikátů Windows, které se může zeptat, zda NadsPDFu povolit jeho použití.
 	Digital ID password	Heslo digitálního ID
 	Back	Zpět
 	Validate all	Ověřit vše
@@ -1313,7 +1312,7 @@ key	Space	Mezerník
 	Downsample to	Převzorkovat na
 	Also recognize pages that already have text	Rozpoznat i stránky, které už obsahují text
 	Pictures on those pages are recognized too; words already in the page's text are not added again	Rozpoznají se i obrázky na těchto stránkách; slova, která už jsou v textu stránky, se znovu nepřidají
-	Text recognition isn't installed: its model files are missing. Reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them.	Rozpoznávání textu není nainstalováno: chybí soubory jeho modelů. Přeinstalujte PdfCraft nebo nastavte PDFCRAFT_MODELS na složku, ve které jsou.
+	Text recognition isn't installed: its model files are missing. Reinstall NadsPDF, or set PDFCRAFT_MODELS to the folder that holds them.	Rozpoznávání textu není nainstalováno: chybí soubory jeho modelů. Přeinstalujte NadsPDF nebo nastavte PDFCRAFT_MODELS na složku, ve které jsou.
 	Settings	Nastavení
 	Optional	Volitelné
 	Planned · {m}	Plánováno · {m}
@@ -1457,7 +1456,7 @@ key	Space	Mezerník
 	Anyone opening the document will need this password. It's applied when you save.	Každý, kdo dokument otevře, bude potřebovat toto heslo. Použije se při uložení.
 	The document opens without a password; this password is needed to change the restrictions. It's applied when you save.	Dokument se otevře bez hesla; toto heslo je potřeba ke změně omezení. Použije se při uložení.
 	Recover unsaved documents?	Obnovit neuložené dokumenty?
-	PdfCraft didn't shut down normally. These documents had changes that were autosaved:	PdfCraft nebyl řádně ukončen. V těchto dokumentech byly změny, které se automaticky uložily:
+	NadsPDF didn't shut down normally. These documents had changes that were autosaved:	NadsPDF nebyl řádně ukončen. V těchto dokumentech byly změny, které se automaticky uložily:
 	just now	právě teď
 	{n} min ago	před {n} min
 	{n} h ago	před {n} h
@@ -1613,10 +1612,10 @@ key	Space	Mezerník
 	On the web, open or drop an image to convert it	Na webu obrázek k převodu otevřete nebo přetáhněte
 	Couldn't optimize the file: {e}	Soubor nelze optimalizovat: {e}
 	Couldn't write {path}: {e}	Nelze zapsat {path}: {e}
-	The form asks to be submitted to {u}; PdfCraft doesn't send form data. Save the document to keep your entries.	Formulář žádá o odeslání na {u}; PdfCraft data formulářů neodesílá. Své údaje zachováte uložením dokumentu.
+	The form asks to be submitted to {u}; NadsPDF doesn't send form data. Save the document to keep your entries.	Formulář žádá o odeslání na {u}; NadsPDF data formulářů neodesílá. Své údaje zachováte uložením dokumentu.
 	This PDF uses the unsupported {s} action.	Tento PDF používá nepodporovanou akci {s}.
 	{name}: the {other} action isn't supported yet	{name}: akce {other} zatím není podporována
-	{name} submits the form to {url}; PdfCraft doesn't send form data. Save the document to keep your entries.	{name} odesílá formulář na {url}; PdfCraft data formulářů neodesílá. Své údaje zachováte uložením dokumentu.
+	{name} submits the form to {url}; NadsPDF doesn't send form data. Save the document to keep your entries.	{name} odesílá formulář na {url}; NadsPDF data formulářů neodesílá. Své údaje zachováte uložením dokumentu.
 	Export stopped: {e}	Export byl zastaven: {e}
 	Exported 1 image	Exportován 1 obrázek
 	Exported {n} images	Exportováno obrázků: {n}
@@ -1824,8 +1823,8 @@ key	Space	Mezerník
 	Signed and all signatures are valid.	Podepsáno a všechny podpisy jsou platné.
 	At least one signature has problems.	Alespoň jeden podpis má problémy.
 	This document is secured. Some changes are restricted by its security settings.	Tento dokument je zabezpečený. Některé změny omezuje jeho nastavení zabezpečení.
-	This is a dynamic XFA form, which PdfCraft can't display yet. What you see is the file's placeholder page.	Toto je dynamický formulář XFA, který PdfCraft zatím neumí zobrazit. Vidíte zástupnou stránku souboru.
-	This form also contains XFA data, which PdfCraft doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Tento formulář obsahuje také data XFA, která PdfCraft zatím nečte. Pole můžete vyplnit, ale Acrobat může místo nich zobrazit hodnoty XFA.
+	This is a dynamic XFA form, which NadsPDF can't display yet. What you see is the file's placeholder page.	Toto je dynamický formulář XFA, který NadsPDF zatím neumí zobrazit. Vidíte zástupnou stránku souboru.
+	This form also contains XFA data, which NadsPDF doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Tento formulář obsahuje také data XFA, která NadsPDF zatím nečte. Pole můžete vyplnit, ale Acrobat může místo nich zobrazit hodnoty XFA.
 	This document contains {n} interactive form fields.	Tento dokument obsahuje interaktivní formulářová pole (počet: {n}).
 	This file was damaged and has been repaired. Saving keeps the repaired version.	Tento soubor byl poškozený a byl opraven. Uložením se zachová opravená verze.
 	Dismiss	Zavřít
@@ -1874,7 +1873,7 @@ key	Space	Mezerník
 	there are no pages to print	nejsou žádné stránky k tisku
 	the document has no tags	dokument nemá žádné tagy
 	{0}: {1}	{0}: {1}
-	the text recognition models are not installed (reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them)	modely pro rozpoznávání textu nejsou nainstalované (přeinstalujte PdfCraft nebo nastavte PDFCRAFT_MODELS na složku, ve které jsou)
+	the text recognition models are not installed (reinstall NadsPDF, or set PDFCRAFT_MODELS to the folder that holds them)	modely pro rozpoznávání textu nejsou nainstalované (přeinstalujte NadsPDF nebo nastavte PDFCRAFT_MODELS na složku, ve které jsou)
 	the image is empty	obrázek je prázdný
 	this file isn't XFDF, FDF, XML or text form data	tento soubor neobsahuje data formuláře ve formátu XFDF, FDF, XML ani v textovém
 	nothing in the file matches this document	nic v souboru neodpovídá tomuto dokumentu
@@ -1920,6 +1919,8 @@ key	Space	Mezerník
 	Draw your {what} below.	Níže nakreslete {what}.
 	Your name	Vaše jméno
 	Images and text (converted to PDF)	Obrázky a text (převedené do PDF)
+	Images, text and documents (converted to PDF)	Obrázky, text a dokumenty (převedené do PDF)
+	PDF, images, text and documents	PDF, obrázky, text a dokumenty
 	Images and text	Obrázky a text
 	Check Box Style:	Styl zaškrtávacího políčka:
 	Button Style:	Styl přepínače:
@@ -2176,8 +2177,8 @@ calendar date	December	prosince
 	A link	Odkaz
 	A button	Tlačítko
 	A script	Skript
-	{who} in this document tried to open an address PdfCraft won't open: {e}.	Pokus o otevření adresy, kterou PdfCraft neotevře ({who} v tomto dokumentu): {e}.
-	{who} in this document tried to open an address PdfCraft won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	Pokus o otevření adresy, kterou PdfCraft neotevře ({who} v tomto dokumentu): {e}. Z dokumentů se otevírají jen webové (http, https) a e-mailové (mailto) odkazy.
+	{who} in this document tried to open an address NadsPDF won't open: {e}.	Pokus o otevření adresy, kterou NadsPDF neotevře ({who} v tomto dokumentu): {e}.
+	{who} in this document tried to open an address NadsPDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	Pokus o otevření adresy, kterou NadsPDF neotevře ({who} v tomto dokumentu): {e}. Z dokumentů se otevírají jen webové (http, https) a e-mailové (mailto) odkazy.
 	Another file dialog is still open. Finish with it first.	Je stále otevřené jiné dialogové okno se soubory. Nejdřív ho dokončete.
 	Couldn't show the file picker. Please try again.	Výběr souborů nelze zobrazit. Zkuste to prosím znovu.
 	The document changed while you were choosing a file, so nothing was changed.	Dokument se změnil, zatímco jste vybírali soubor, proto se nic nezměnilo.
@@ -2364,8 +2365,8 @@ animation effects	Off	Vypnuto
 	Change the colour of line art as well as text	Změnit barvu i čar, ne jen textu
 	Colours are remapped while rendering; the document itself never changes.	Barvy se mění při vykreslování; samotný dokument se nikdy nemění.
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	Ovladač této tiskárny nepřijímá nastavení oboustranného tisku z jiných programů, proto platí jeho vlastní nastavení. Změňte ho ve Vlastnosti…
-	This field's font can't draw “{c}” ({code}), so PdfCraft shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Písmo tohoto pole neumí zobrazit „{c}“ ({code}), proto PdfCraft místo něj ukazuje ?. Hodnota se uloží a jiné prohlížeče PDF pole podle ní překreslí.
-	The fonts PdfCraft writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	Písma, kterými PdfCraft píše, neumí zobrazit „{c}“ ({code}), proto se ve všech prohlížečích PDF zobrazí jako ?. Text se uloží.
+	This field's font can't draw “{c}” ({code}), so NadsPDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Písmo tohoto pole neumí zobrazit „{c}“ ({code}), proto NadsPDF místo něj ukazuje ?. Hodnota se uloží a jiné prohlížeče PDF pole podle ní překreslí.
+	The fonts NadsPDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	Písma, kterými NadsPDF píše, neumí zobrazit „{c}“ ({code}), proto se ve všech prohlížečích PDF zobrazí jako ?. Text se uloží.
 	Browser's print dialog	Dialog tisku prohlížeče
 	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Počet kopií, oboustranný tisk a barva se volí v dialogu tisku prohlížeče.
 	Preparing {n} sheets for printing…	Příprava {n} listů k tisku…
@@ -2394,7 +2395,7 @@ animation effects	Off	Vypnuto
 	no output folder was chosen	nebyla vybrána výstupní složka
 @plural	Downloaded {n} PDF|Downloaded {n} PDFs	Stažen {n} soubor PDF|Staženy {n} soubory PDF|Staženo {n} souborů PDF
 	Scan	Skenovat
-	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: PdfCraft finds the signature and removes the paper.	Podepište se na bílý list papíru a vyfoťte ho při jasném, rovnoměrném světle (použijte blesk). Vyberte fotografii nebo ji sem přetáhněte: PdfCraft najde podpis a odstraní papír.
+	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: NadsPDF finds the signature and removes the paper.	Podepište se na bílý list papíru a vyfoťte ho při jasném, rovnoměrném světle (použijte blesk). Vyberte fotografii nebo ji sem přetáhněte: NadsPDF najde podpis a odstraní papír.
 	Choose photo…	Vybrat fotografii…
 	No photo chosen	Není vybrána žádná fotografie
 	Photo	Fotografie
@@ -2426,3 +2427,103 @@ animation effects	Off	Vypnuto
 	This document is trying to open a local file:	Tento dokument se pokouší otevřít místní soubor:
 	Move tag earlier	Přesunout značku dříve
 	Move tag later	Přesunout značku později
+
+# NadsPDF (nads.site)
+	NadsPDF tools	Nástroje NadsPDF
+	PdfCraft (upstream) on GitHub	PdfCraft (původní projekt) na GitHubu
+	Convert to PDF with NadsPDF	Převést do PDF pomocí NadsPDF
+	Combine with NadsPDF	Sloučit pomocí NadsPDF
+	Open with NadsPDF	Otevřít pomocí NadsPDF
+	Show NadsPDF in the File Explorer right-click menu	Zobrazit NadsPDF v místní nabídce Průzkumníka souborů
+	Added for all users when NadsPDF was installed.	Přidáno pro všechny uživatele při instalaci NadsPDF.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	Převést do PDF, Sloučit a Otevřít u dokumentů, obrázků a PDF. Ve Windows 11 pod „Zobrazit další možnosti“.
+	Couldn't change the File Explorer menu: {e}	Nabídku Průzkumníka souborů nelze změnit: {e}
+	Couldn't find {name}	{name} nebyl nalezen
+# Vaults (Home ▸ Vaults)
+@plural	{n} file|{n} files	{n} soubor|{n} soubory|{n} souborů
+	Give the vault a name	Pojmenujte trezor
+	You can have up to {n} vaults. Delete one first.	Můžete mít až {n} trezorů. Nejprve jeden smažte.
+	That vault no longer exists	Tento trezor už neexistuje
+	Added {files} to {vault}	Přidáno do {vault}: {files}
+	Already in {vault}	Už je v {vault}
+	A vault holds up to {n} files	Trezor pojme až {n} souborů
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	Trezory obsahují PDF a soubory, které NadsPDF umí převést, na tomto počítači
+	No files to open in this vault	V tomto trezoru nejsou žádné soubory k otevření
+	Opening the first {n} files	Otevírá se prvních {n} souborů
+	Deleted the vault {vault}. Its files were not touched.	Trezor {vault} byl smazán. Jeho souborů se to nedotklo.
+	Moved {file} to {vault}	{file} přesunut do {vault}
+	Vaults need the desktop app	Trezory vyžadují desktopovou aplikaci
+	Locate {file}	Najít {file}
+	Save this document to a file first, then add it to a vault	Nejprve dokument uložte do souboru, pak ho přidejte do trezoru
+	Vaults	Trezory
+	New vault	Nový trezor
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	Seskupte PDF odkudkoli z počítače do pojmenovaných trezorů s barvou a ikonou. Soubory zůstávají tam, kde jsou.
+	Click to show its files. Drag to reorder, or drop files here.	Kliknutím zobrazíte soubory. Přetažením změníte pořadí, nebo sem přetáhněte soubory.
+	Open all	Otevřít vše
+	Edit vault…	Upravit trezor…
+	Move left	Posunout doleva
+	Move right	Posunout doprava
+	Delete vault…	Smazat trezor…
+	New vault…	Nový trezor…
+	No files yet. Drop files here to add them.	Zatím žádné soubory. Přetáhněte sem soubory a přidejte je.
+	Locate…	Najít…
+	Missing	Chybí
+	Remove {name} from this vault	Odebrat {name} z tohoto trezoru
+	This file has moved or been deleted. Locate it, or remove it from the vault.	Tento soubor byl přesunut nebo smazán. Najděte ho, nebo ho z trezoru odeberte.
+	Move to vault	Přesunout do trezoru
+	Remove from vault	Odebrat z trezoru
+	Show this vault on Home	Zobrazit tento trezor na úvodní stránce
+	Vault: {name}	Trezor: {name}
+	Vault	Trezor
+	Edit vault	Upravit trezor
+	Vault name	Název trezoru
+	Create vault	Vytvořit trezor
+	Delete the vault {vault}?	Smazat trezor {vault}?
+	Its files stay where they are on your computer. Only the vault is deleted.	Soubory zůstanou tam, kde jsou. Smaže se jen trezor.
+	Delete vault	Smazat trezor
+	Add to vault	Přidat do trezoru
+	Already in it	Už je tu
+	Add document to vault…	Přidat dokument do trezoru…
+	Dark pages	Tmavé stránky
+	Rasterize pages (strong compression)…	Rastrovat stránky (silná komprese)…
+	Rasterize pages (strong compression)	Rastrovat stránky (silná komprese)
+	Rasterizing… page {d} of {t}	Rastrování… stránka {d} z {t}
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	Každá stránka se stane obrázkem: nejsilnější komprese, nejlepší pro skeny. Text už nelze vybrat ani prohledávat a odkazy, záložky a pole formulářů se nezachovají. Výsledek se uloží jako kopie.
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi, kvalita JPEG {q}
+compression level	Light	Lehká
+compression level	Medium	Střední
+compression level	Strong	Silná
+	Compress	Komprimovat
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	Rastrování by tento soubor nezmenšilo ({size}). Žádná kopie nebyla uložena.
+	Add faint watermark	Přidat jemný vodoznak
+	Recognize text if available	Rozpoznat text, je-li k dispozici
+	Prepare for Sending	Připravit k odeslání
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	Očíslovat stránky „n / celkem“ dole uprostřed a pak soubor zmenšit pro odeslání e-mailem.
+	Archive Scans	Archivovat skeny
+	Make scans searchable (when text recognition is available), then make them smaller.	Umožnit prohledávání skenů (pokud je nainstalováno rozpoznávání textu) a pak je zmenšit.
+	Confidential	Důvěrné
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	Jemný diagonální vodoznak DŮVĚRNÉ a čísla stránek „n / celkem“ na každé stránce.
+	{name} (copy)	{name} (kopie)
+watermark text	CONFIDENTIAL	DŮVĚRNÉ
+	Group name	Název skupiny
+	Rename Group	Přejmenovat skupinu
+	Ungroup	Zrušit seskupení
+	Close Group	Zavřít skupinu
+	Add Tab to New Group	Přidat kartu do nové skupiny
+	Add Tab to Group	Přidat kartu do skupiny
+	Remove from Group	Odebrat ze skupiny
+	Click to fold or unfold the group	Kliknutím skupinu sbalíte nebo rozbalíte
+	Filter tools	Filtrovat nástroje
+	No tool matches	Žádný nástroj neodpovídá
+	Essentials	Základní
+	Float as a bubble	Plovoucí bublina
+	Show this PDF in a small window over the others	Zobrazit toto PDF v malém okně nad ostatními
+	Put back as a tab	Vrátit jako kartu
+	Fold into a bubble	Sbalit do bubliny
+	Click to open, drag onto the tabs to put it back	Kliknutím otevřete, přetažením na karty vrátíte
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	Máte verzi {c}. NadsPDF se zavře, nainstaluje novou verzi místo této a znovu se otevře. Vaše nastavení zůstanou zachována.
+	You have version {c}.	Máte verzi {c}.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	Tato kopie NadsPDF pochází z Microsoft Store, který nové verze instaluje sám.
+	Downloading the update…	Stahování aktualizace…
+	Couldn't install the update: {e}	Aktualizaci se nepodařilo nainstalovat: {e}
+	Check for updates when NadsPDF starts (once a day)	Hledat aktualizace při spuštění NadsPDF (jednou denně)

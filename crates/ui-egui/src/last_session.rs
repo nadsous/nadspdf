@@ -1,5 +1,5 @@
 //! Reopen the files from the last session (Preferences ▸ Documents and view, #442): which files
-//! were open when PdfCraft last closed, the page each showed and the active tab. Local only, like
+//! were open when NadsPDF last closed, the page each showed and the active tab. Local only, like
 //! the recent-files list, and kept only while the preference is on.
 
 use serde::Serialize;
@@ -9,12 +9,14 @@ use crate::PdfCraftApp;
 /// More files than anyone keeps open. Settings are untrusted, so a longer list is cut here.
 pub const MAX_FILES: usize = 64;
 
-/// The files open when PdfCraft last closed.
+/// The files open when NadsPDF last closed.
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
 pub struct LastSession {
     pub files: Vec<SessionFile>,
     /// The path of the tab that was active.
     pub active: Option<String>,
+    /// The tab groups the files were in.
+    pub groups: Vec<crate::tab_groups::TabGroup>,
 }
 
 /// One open file and where the reader was in it.
@@ -24,6 +26,8 @@ pub struct SessionFile {
     pub path: String,
     /// The page the tab showed (0-based).
     pub page: usize,
+    /// The id of the tab group (in [`LastSession::groups`]) the tab was in.
+    pub group: Option<u32>,
 }
 
 impl LastSession {
@@ -39,13 +43,18 @@ impl LastSession {
                         let path = f["path"].as_str().filter(|p| !p.is_empty())?.to_string();
                         // `go_to_page` clamps a page past the end.
                         let page = f["page"].as_u64().and_then(|p| usize::try_from(p).ok()).unwrap_or(0);
-                        Some(SessionFile { path, page })
+                        let group = f["group"].as_u64().and_then(|g| u32::try_from(g).ok());
+                        Some(SessionFile { path, page, group })
                     })
                     .take(MAX_FILES)
                     .collect()
             })
             .unwrap_or_default();
-        Self { files, active: v["active"].as_str().map(str::to_string) }
+        let groups = v["groups"]
+            .as_array()
+            .map(|groups| groups.iter().filter_map(crate::tab_groups::TabGroup::from_json).take(crate::tab_groups::MAX_GROUPS).collect())
+            .unwrap_or_default();
+        Self { files, active: v["active"].as_str().map(str::to_string), groups }
     }
 }
 
@@ -63,9 +72,14 @@ impl PdfCraftApp {
         #[cfg(not(target_arch = "wasm32"))]
         {
             let path = |v: &crate::DocView| self.session.get(v.id).and_then(|d| d.path.as_deref()).map(absolute);
-            let files = self.views.iter().filter_map(|v| Some(SessionFile { path: path(v)?, page: v.current })).take(MAX_FILES).collect();
+            let files = self
+                .views
+                .iter()
+                .filter_map(|v| Some(SessionFile { path: path(v)?, page: v.current, group: self.tab_groups.group_of(v.id) }))
+                .take(MAX_FILES)
+                .collect();
             let active = self.active.and_then(|i| self.views.get(i)).and_then(path);
-            LastSession { files, active }
+            LastSession { files, active, groups: self.tab_groups.groups().to_vec() }
         }
         #[cfg(target_arch = "wasm32")]
         LastSession::default()
@@ -107,6 +121,7 @@ impl PdfCraftApp {
                 skip.iter().map(|p| absolute(p)).chain(self.recoverable.iter().filter_map(|m| m.path.as_deref().map(absolute))).collect();
             let mut active = None;
             let mut prompt = self.password_prompt.take();
+            let mut groups = std::collections::HashMap::new();
             for f in &last.files {
                 let open = |app: &Self| {
                     app.views.iter().any(|v| app.session.get(v.id).and_then(|d| d.path.as_deref()).map(absolute).as_deref() == Some(f.path.as_str()))
@@ -123,8 +138,12 @@ impl PdfCraftApp {
                     && let Some(view) = self.views.last_mut()
                 {
                     view.go_to_page(f.page);
+                    let doc = view.id;
                     if last.active.as_ref() == Some(&f.path) {
                         active = Some(self.views.len() - 1);
+                    }
+                    if let Some(saved) = f.group.and_then(|g| last.groups.iter().find(|s| s.id == g)) {
+                        self.tab_groups.restore(doc, saved, &mut groups);
                     }
                 }
             }
@@ -152,6 +171,12 @@ mod tests {
         let pages: Vec<(&str, usize)> = s.files.iter().map(|f| (f.path.as_str(), f.page)).collect();
         assert_eq!(pages, [("/a.pdf", 0), ("/b.pdf", 0), ("/c.pdf", 7)]);
         assert_eq!(s.active, None);
+        let grouped = LastSession::from_json(&serde_json::json!({
+            "files": [{"path": "/a.pdf", "group": 3}, {"path": "/b.pdf", "group": "x"}],
+            "groups": [{"id": 3, "name": "Factures", "color": 2}, {"name": "no id"}],
+        }));
+        assert_eq!(grouped.files.iter().map(|f| f.group).collect::<Vec<_>>(), [Some(3), None]);
+        assert_eq!(grouped.groups.len(), 1);
         let many: Vec<serde_json::Value> = (0..1000).map(|i| serde_json::json!({"path": format!("/{i}.pdf")})).collect();
         assert_eq!(LastSession::from_json(&serde_json::json!({"files": many})).files.len(), MAX_FILES);
         assert_eq!(LastSession::from_json(&serde_json::json!("garbage")), LastSession::default());

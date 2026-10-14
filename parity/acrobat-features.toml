@@ -1650,6 +1650,18 @@ evidence = ["crates/ui-egui/tests/ui_group/theme.rs::toolbar_and_view_menu_share
 notes = "Toolbar, Display theme and --theme system share a persisted System preference that follows OS changes without losing the selected mode; ui.state reports preference and resolved colours separately."
 
 [[feature]]
+id = "view.dark-pages"
+title = "Dark pages (inverted page lightness for reading; NadsPDF extra)"
+area = "B"
+tier = "P2"
+milestone = "M3"
+status = "shipped"
+commands = ["view.dark_pages"]
+tools = []
+evidence = ["crates/ui-egui/src/dark_pages.rs::dark_pixels_invert_lightness_and_keep_hue", "crates/ui-egui/src/dark_pages.rs::dark_pages_follow_every_view_and_survive_a_restart", "crates/ui-egui/src/canvas.rs::dark_pages_cover_screen_rasters_but_never_print_previews"]
+notes = "Display only: HSL lightness inverted with hue and saturation kept (red stays red), squeezed between near-black paper and off-white ink, applied once per raster as it arrives; thumbnails and the Organize grid follow unless dark-thumbnails is off; print previews, printing and exports are unchanged. Persisted; Ctrl+Shift+D (⇧⌘D); `--dark-pages on` for shots and the control channel. No automation tool: it changes no document. Images and photos are inverted too (no per-image exemption)."
+
+[[feature]]
 id = "view.home-view"
 title = "Home view with recommended tools and recent files"
 area = "B"
@@ -6853,11 +6865,11 @@ title = "Create PDF from an HTML file"
 area = "J"
 tier = "P2"
 milestone = "M10"
-status = "planned"
-commands = []
-tools = []
-evidence = []
-notes = ""
+status = "partial"
+commands = ["create.file", "create.multiple"]
+tools = ["doc_convert", "doc_create_multiple"]
+evidence = ["crates/convert/src/tests.rs::html_structure_entities_and_scripts", "crates/convert/src/tests.rs::html_scanner_is_lenient", "crates/engine/src/tests.rs::documents_convert_to_pdf"]
+notes = "pdfcraft-convert, pure Rust (no browser): headings, paragraphs, bold/italic/underline, lists, tables, pre, entities; scripts/styles skipped. Missing: CSS layout, fonts and colours, images, links, web page capture."
 
 [[feature]]
 id = "create.from-web-page"
@@ -6873,15 +6885,15 @@ notes = ""
 
 [[feature]]
 id = "create.from-office"
-title = "Create PDF from Office documents (LibreOffice sidecar)"
+title = "Create PDF from Office documents"
 area = "J"
 tier = "P2"
 milestone = "M10"
-status = "planned"
-commands = []
-tools = []
-evidence = []
-notes = ""
+status = "partial"
+commands = ["create.file", "create.multiple"]
+tools = ["doc_convert", "doc_create_multiple"]
+evidence = ["crates/convert/src/tests.rs::docx_headings_runs_lists_and_tables", "crates/convert/src/tests.rs::docx_images_are_embedded_at_their_size", "crates/convert/src/tests.rs::xlsx_sheets_become_headed_tables", "crates/convert/src/tests.rs::ods_tables_expand_repeats_and_skip_empty_space", "crates/convert/src/tests.rs::csv_delimiters_and_quotes", "crates/automation/tests/automation.rs::converting_documents_through_tools"]
+notes = "pdfcraft-convert, pure Rust (no LibreOffice): .docx (headings, runs, lists, tables, page breaks, images), .xlsx/.xlsm/.ods (a table per sheet, landscape and column groups when wide), .csv/.tsv; opened, dropped or picked in Create, they become new unsaved PDFs. Set in Helvetica on A4: no source fonts, colours, headers/footers, footnotes, charts or text boxes. .xls/.doc/.ppt/.pptx/.odt are not converted (refused with what to do)."
 
 [[feature]]
 id = "create.create-multiple"
@@ -6893,7 +6905,7 @@ status = "shipped"
 commands = ["create.multiple"]
 tools = ["doc_create_multiple"]
 evidence = ["crates/engine/src/tests.rs::mixed_files_convert_and_combine_in_order", "crates/engine/src/tests.rs::files_that_cannot_be_converted_are_refused_clearly", "crates/automation/tests/automation.rs::creating_from_multiple_files_through_tools", "crates/ui-egui/tests/create.rs::multiple_files_open_as_one_document_in_the_page_grid", "crates/ui-egui/tests/editing.rs::plus_between_pages_inserts_picked_files_there_in_order", "crates/ui-egui/tests/editing.rs::save_pages_writes_what_the_grid_shows"]
-notes = "Create ▸ Multiple files: the picked PDFs, images (PNG, JPEG, JPEG 2000, TIFF, GIF, BMP) and .txt files open as one unsaved document in the page grid, in the order picked (a bookmark per file); there pages are removed, reordered, more files inserted at any gap (a + button, or dropped there), and Save pages writes what is shown. One PDF per file is offered by the doc_create_multiple tool only (mode separate), not in the app. Missing: Office, HTML and Markdown inputs, PDF Portfolio output, per-file image resolution choice, progress and cancel for large batches (conversion runs on the UI thread). The combined file has combine's limits: untagged, no page labels or document info carried over, and its per-file bookmarks are not updated when pages are later moved between files."
+notes = "Create ▸ Multiple files: the picked PDFs, images (PNG, JPEG, JPEG 2000, TIFF, GIF, BMP) and .txt files open as one unsaved document in the page grid, in the order picked (a bookmark per file); there pages are removed, reordered, more files inserted at any gap (a + button, or dropped there), and Save pages writes what is shown. One PDF per file is offered by the doc_create_multiple tool only (mode separate), not in the app. Office (.docx, .xlsx, .ods), CSV and HTML files are converted by pdfcraft-convert (see create.from-office). Missing: Markdown input, PDF Portfolio output, per-file image resolution choice, progress and cancel for large batches (conversion runs on the UI thread). The combined file has combine's limits: untagged, no page labels or document info carried over, and its per-file bookmarks are not updated when pages are later moved between files."
 
 [[feature]]
 id = "create.image-conversion-options"
@@ -7197,7 +7209,7 @@ status = "na"
 commands = []
 tools = []
 evidence = []
-notes = "Adobe cloud; LibreOffice sidecar instead"
+notes = "Adobe cloud; local pure-Rust conversion (pdfcraft-convert) instead"
 
 # ==================================================================================================
 # K. Optimize and standards
@@ -7214,6 +7226,18 @@ commands = ["optimize.reduce"]
 tools = ["doc_reduce"]
 evidence = ["crates/ui-egui/tests/create.rs::reduce_file_size_writes_a_compact_copy", "crates/ui-egui/tests/create.rs::reduce_file_size_saves_nothing_when_the_file_is_already_small", "crates/engine/src/tests.rs::create_and_reduce", "crates/automation/tests/automation.rs::creating_and_reducing_through_tools", "crates/automation/tests/automation.rs::optimizing_through_tools", "crates/optimize/tests/optimize.rs::an_identity_decode_array_does_not_stop_reduce"]
 notes = "images above 225 ppi to 150 ppi JPEG medium, thumbnails dropped, resources merged, object streams; scanner images with the default decode array are included; a copy that isn't smaller is not saved (\"already as small as it can be made\"); runs in the background with a progress bar and Cancel"
+
+[[feature]]
+id = "optimize.rasterize-pages"
+title = "Rasterize pages for the strongest compression (NadsPDF extra, not in Acrobat)"
+area = "K"
+tier = "P2"
+milestone = "M11"
+status = "shipped"
+commands = ["optimize.rasterize"]
+tools = ["doc_rasterize_compress"]
+evidence = ["crates/engine/src/tests.rs::rasterizing_rebuilds_pages_as_images_at_their_displayed_size", "crates/engine/src/rasterize.rs::grey_pages_are_encoded_as_greyscale", "crates/create/src/tests.rs::page_images_fill_pages_of_the_given_size", "crates/automation/tests/automation.rs::rasterize_compress_through_tools", "crates/ui-egui/tests/rasterize.rs::rasterize_dialog_picks_a_level_and_saves_a_smaller_copy"]
+notes = "Every page rendered as displayed (comments, fields, visible layers) and stored as one JPEG at its displayed size, /Rotate baked in; Light 150 dpi q80, Medium 110 dpi q65, Strong 80 dpi q50 (or any dpi/quality through the tool); all-grey pages are stored as greyscale JPEG. Runs in the background with progress and Cancel and saves a copy (not when it would be larger). Loses selectable text, links, bookmarks, form fields, tags, metadata other than the title, and encryption; no OCR text layer is added back. Vector-text PDFs usually get larger: it pays off for scans and image-heavy files."
 
 [[feature]]
 id = "optimize.compatibility-level"
@@ -9254,6 +9278,18 @@ commands = ["actions.optimize_scans"]
 tools = ["action_run"]
 evidence = ["crates/engine/src/tests.rs::actions_run_their_steps_on_files", "crates/automation/tests/automation.rs::actions_through_tools"]
 notes = "Recognize text, then reduce file size."
+
+[[feature]]
+id = "misc.action-ready-made-pipelines"
+title = "Ready-made actions: Prepare for Sending, Archive Scans, Confidential (NadsPDF extras)"
+area = "N"
+tier = "P2"
+milestone = "M13"
+status = "shipped"
+commands = ["actions.wizard"]
+tools = ["action_run"]
+evidence = ["crates/engine/src/tests.rs::ready_made_pipelines_number_mark_and_compress", "crates/automation/tests/automation.rs::actions_through_tools"]
+notes = "Prepare for Sending: \"n / total\" footer, then Reduce File Size. Archive Scans: Recognize text if the models are installed (skipped and logged otherwise), then Reduce File Size. Confidential: faint (18%) diagonal watermark, translated in the interface language (CONFIDENTIEL in French), plus \"n / total\". Any action can be duplicated into an editable copy. No password step: actions run unattended over many files, so they can't ask for one; protect the results afterwards."
 
 [[feature]]
 id = "misc.action-archive"

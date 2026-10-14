@@ -120,7 +120,7 @@
 	Next page	Келесі бет
 	Previous page	Алдыңғы бет
 	Current page — type a page number or label (such as iv) and press Enter	Ағымдағы бет — бет нөмірін немесе белгісін (мысалы, iv) теріңіз де, Enter пернесін басыңыз
-	Welcome to PdfCraft	PdfCraft-ге қош келдіңіз
+	Welcome to NadsPDF	NadsPDF-ге қош келдіңіз
 	An open-source PDF workbench — local, private, and scriptable.	Ашық бастапқы кодты PDF жұмыс орны — жергілікті, жеке әрі скрипттерді қолдайтын.
 	Join the ArtCraft community	ArtCraft қауымдастығына қосылыңыз
 	Get help, share feedback and follow development on Discord.	Көмек алыңыз, пікір бөлісіңіз және Discord-тағы әзірлеуді қадағалаңыз.
@@ -128,9 +128,9 @@
 	Use now	Дәл қазір пайдалану
 	Open file	Файлды ашу
 	Recent	Соңғы
-	Files you open in PdfCraft appear here. Drop a PDF anywhere to open it.	PdfCraft-те ашқан файлдарыңыз осында көрсетіледі. PDF файлын ашу үшін оны кез келген жерге апарып тастаңыз.
+	Files you open in NadsPDF appear here. Drop a PDF anywhere to open it.	NadsPDF-те ашқан файлдарыңыз осында көрсетіледі. PDF файлын ашу үшін оны кез келген жерге апарып тастаңыз.
 	Privacy	Жекелік
-	PdfCraft works offline. No telemetry, no account, and no cloud processing unless you add a provider.	PdfCraft офлайн жұмыс істейді. Провайдер қоспағаныңызша телеметрия да, тіркелгі де, бұлтта өңдеу де жоқ.
+	NadsPDF works offline. No telemetry, no account, and no cloud processing unless you add a provider.	NadsPDF офлайн жұмыс істейді. Провайдер қоспағаныңызша телеметрия да, тіркелгі де, бұлтта өңдеу де жоқ.
 	Scripts run in a sandbox without file or network access. With JavaScript off, Acrobat's standard format, validate and calculate functions still work.	Скрипттер файлға да, желіге де қатынасы жоқ құмсалғышта орындалады. JavaScript өшірулі тұрса да, Acrobat-тың стандартты пішімдеу, тексеру және есептеу функциялары әлі де жұмыс істейді.
 	Back to all tools	Барлық құралдарға оралу
 	Close panel	Панельді жабу
@@ -268,11 +268,11 @@
 	Number pages…	Беттерді нөмірлеу…
 	Keyboard shortcuts	Пернетақта тіркесімдері
 	Join the ArtCraft Discord	ArtCraft Discord-ына қосылыңыз
-	PdfCraft web page	PdfCraft веб-сайты
-	PdfCraft on GitHub	GitHub-тағы PdfCraft
+	NadsPDF web page	NadsPDF веб-сайты
+	NadsPDF on GitHub	GitHub-тағы NadsPDF
 	ArtCraft website	ArtCraft веб-сайты
 	Check for updates…	Жаңартуларды тексеру…
-	About PdfCraft	PdfCraft туралы
+	About NadsPDF	NadsPDF туралы
 	Export a PDF	PDF экспорттау
 	Export to	Мынаған экспорттау
 	Microsoft Word (.docx)	Microsoft Word (.docx)
@@ -726,12 +726,11 @@
 	Check for updates	Жаңартуларды тексеру
 	No check has run yet.	Тексеру әлі жүргізілген жоқ.
 	Checking for a newer version…	Жаңа нұсқа бар ма екені тексерілуде…
-	PdfCraft {v} is available.	PdfCraft {v} қолжетімді.
+	NadsPDF {v} is available.	NadsPDF {v} қолжетімді.
 	You have version {c}. Download the new version from its release page.	Сізде {c} нұсқасы бар. Жаңа нұсқаны шығарылым бетінен жүктеп алыңыз.
-	PdfCraft {c} is up to date.	PdfCraft {c} нұсқасы ең соңғы.
+	NadsPDF {c} is up to date.	NadsPDF {c} нұсқасы ең соңғы.
 	Couldn't check for updates: {e}	Жаңартуларды тексеру мүмкін болмады: {e}
 	You have version {c}. All releases are listed at {page}.	Сізде {c} нұсқасы бар. Барлық шығарылымдар {page} бетінде көрсетілген.
-	Asks GitHub for the latest release. Nothing is downloaded or installed automatically.	GitHub-тан соңғы шығарылымды сұрайды. Ештеңе автоматты түрде жүктелмейді немесе орнатылмайды.
 	Download	Жүктеп алу
 	Later	Кейінірек
 	none	жоқ
@@ -837,8 +836,8 @@
 	No changes allowed	Ешқандай өзгеріс рұқсат етілмейді
 	Annotations, form fill-in, and digital signatures	Белгілеулер, форманы толтыру және цифрлық қолтаңбалар
 	Form fill-in and digital signatures	Форманы толтыру және цифрлық қолтаңбалар
-	The key is in the macOS Keychain, which may ask to allow PdfCraft to use it.	Кілт macOS Keychain ішінде; ол PdfCraft-ге оны пайдалануға рұқсат сұрауы мүмкін.
-	The key is in the Windows certificate store, which may ask to allow PdfCraft to use it.	Кілт Windows сертификаттар қоймасында; ол PdfCraft-ге оны пайдалануға рұқсат сұрауы мүмкін.
+	The key is in the macOS Keychain, which may ask to allow NadsPDF to use it.	Кілт macOS Keychain ішінде; ол NadsPDF-ге оны пайдалануға рұқсат сұрауы мүмкін.
+	The key is in the Windows certificate store, which may ask to allow NadsPDF to use it.	Кілт Windows сертификаттар қоймасында; ол NadsPDF-ге оны пайдалануға рұқсат сұрауы мүмкін.
 	Digital ID password	Цифрлық ID құпиясөзі
 	Back	Артқа
 	Validate all	Барлығын тексеру
@@ -1330,7 +1329,7 @@
 	Anyone opening the document will need this password. It's applied when you save.	Құжатты ашатын кез келген адамға осы құпиясөз қажет болады. Ол сақтау кезінде қолданылады.
 	The document opens without a password; this password is needed to change the restrictions. It's applied when you save.	Құжат құпиясөзсіз ашылады; шектеулерді өзгерту үшін осы құпиясөз керек. Ол сақтау кезінде қолданылады.
 	Recover unsaved documents?	Сақталмаған құжаттарды қалпына келтіру керек пе?
-	PdfCraft didn't shut down normally. These documents had changes that were autosaved:	PdfCraft қалыпты жабылмады. Осы құжаттардың өзгерістері автосақталды:
+	NadsPDF didn't shut down normally. These documents had changes that were autosaved:	NadsPDF қалыпты жабылмады. Осы құжаттардың өзгерістері автосақталды:
 	just now	жаңа ғана
 	{n} min ago	{n} минут бұрын
 	{n} h ago	{n} сағат бұрын
@@ -1486,10 +1485,10 @@
 	On the web, open or drop an image to convert it	Веб-нұсқада түрлендіру үшін суретті ашыңыз немесе сүйреп әкеліп тастаңыз
 	Couldn't optimize the file: {e}	Файлды оңтайландыру мүмкін болмады: {e}
 	Couldn't write {path}: {e}	{path} жолына жазу мүмкін болмады: {e}
-	The form asks to be submitted to {u}; PdfCraft doesn't send form data. Save the document to keep your entries.	Форма {u} адресіне жіберілуді сұрайды; PdfCraft форма деректерін жібермейді. Енгізген деректеріңізді сақтап қалу үшін құжатты сақтаңыз.
+	The form asks to be submitted to {u}; NadsPDF doesn't send form data. Save the document to keep your entries.	Форма {u} адресіне жіберілуді сұрайды; NadsPDF форма деректерін жібермейді. Енгізген деректеріңізді сақтап қалу үшін құжатты сақтаңыз.
 	This PDF uses the unsupported {s} action.	Бұл PDF қолдау көрсетілмейтін {s} әрекетін пайдаланады.
 	{name}: the {other} action isn't supported yet	{name}: {other} әрекеті әлі қолдау көрсетілмейді
-	{name} submits the form to {url}; PdfCraft doesn't send form data. Save the document to keep your entries.	{name} форманы {url} адресіне жібереді; PdfCraft форма деректерін жібермейді. Енгізген деректеріңізді сақтап қалу үшін құжатты сақтаңыз.
+	{name} submits the form to {url}; NadsPDF doesn't send form data. Save the document to keep your entries.	{name} форманы {url} адресіне жібереді; NadsPDF форма деректерін жібермейді. Енгізген деректеріңізді сақтап қалу үшін құжатты сақтаңыз.
 	Export stopped: {e}	Экспорт тоқтатылды: {e}
 	Exported 1 image	1 сурет экспортталды
 	Exported {n} images	{n} сурет экспортталды
@@ -1702,8 +1701,8 @@
 	Signed and all signatures are valid.	Қол қойылды, барлық қолтаңбалар жарамды.
 	At least one signature has problems.	Кемінде бір қолтаңбада мәселелер бар.
 	This document is secured. Some changes are restricted by its security settings.	Бұл құжат қорғалған. Кейбір өзгерістер оның қауіпсіздік параметрлерімен шектеулі.
-	This is a dynamic XFA form, which PdfCraft can't display yet. What you see is the file's placeholder page.	Бұл динамикалық XFA формасы, оны PdfCraft әлі көрсете алмайды. Көріп тұрғаныңыз — файлдың орынбасар беті.
-	This form also contains XFA data, which PdfCraft doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Бұл формада PdfCraft әлі оқымайтын XFA деректері де бар. Өрістерін толтыра аласыз, бірақ Acrobat орнына XFA мәндерін көрсетуі мүмкін.
+	This is a dynamic XFA form, which NadsPDF can't display yet. What you see is the file's placeholder page.	Бұл динамикалық XFA формасы, оны NadsPDF әлі көрсете алмайды. Көріп тұрғаныңыз — файлдың орынбасар беті.
+	This form also contains XFA data, which NadsPDF doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Бұл формада NadsPDF әлі оқымайтын XFA деректері де бар. Өрістерін толтыра аласыз, бірақ Acrobat орнына XFA мәндерін көрсетуі мүмкін.
 	This document contains {n} interactive form fields.	Бұл құжат {n} интерактивті форма өрісін қамтиды.
 	This file was damaged and has been repaired. Saving keeps the repaired version.	Бұл файл зақымдалған еді және жөнделді. Сақтау кезінде жөнделген нұсқа сақталады.
 	Dismiss	Жабу
@@ -1797,6 +1796,8 @@
 	Draw your {what} below.	Төменде {what} салыңыз.
 	Your name	Атыңыз
 	Images and text (converted to PDF)	Кескіндер мен мәтін (PDF-ке түрлендірілген)
+	Images, text and documents (converted to PDF)	Суреттер, мәтін және құжаттар (PDF-ке түрлендіріледі)
+	PDF, images, text and documents	PDF, суреттер, мәтін және құжаттар
 	Images and text	Кескіндер мен мәтін
 	Check Box Style:	Құсбелгі стилі:
 	Button Style:	Түйме стилі:
@@ -2057,7 +2058,7 @@ calendar date	September	Қыркүйек
 calendar date	October	Қазан
 calendar date	November	Қараша
 calendar date	December	Желтоқсан
-	Reopen the files that were open when PdfCraft last closed	PdfCraft соңғы рет жабылғанда ашық болған файлдарды қайта ашу
+	Reopen the files that were open when NadsPDF last closed	NadsPDF соңғы рет жабылғанда ашық болған файлдарды қайта ашу
 	Clear Recent Files	Соңғы файлдарды тазарту
 	Remove from Recent	Соңғылардан алып тастау
 	Remove {name} from Recent	{name} дегенді соңғылардан алып тастау
@@ -2069,8 +2070,8 @@ calendar date	December	Желтоқсан
 	A link	Сілтеме
 	A button	Түйме
 	A script	Сценарий
-	{who} in this document tried to open an address PdfCraft won't open: {e}.	Осы құжаттағы {who} PdfCraft ашпайтын адресті ашпақ болды: {e}.
-	{who} in this document tried to open an address PdfCraft won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	Осы құжаттағы {who} PdfCraft ашпайтын адресті ашпақ болды: {e}. Құжаттардан тек веб (http, https) және email (mailto) сілтемелері ашылады.
+	{who} in this document tried to open an address NadsPDF won't open: {e}.	Осы құжаттағы {who} NadsPDF ашпайтын адресті ашпақ болды: {e}.
+	{who} in this document tried to open an address NadsPDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	Осы құжаттағы {who} NadsPDF ашпайтын адресті ашпақ болды: {e}. Құжаттардан тек веб (http, https) және email (mailto) сілтемелері ашылады.
 	Another file dialog is still open. Finish with it first.	Басқа файл сұхбат терезесі әлі ашық тұр. Алдымен оны аяқтаңыз.
 	Couldn't show the file picker. Please try again.	Файл таңдау терезесін көрсету мүмкін болмады. Қайталап көріңіз.
 	The document changed while you were choosing a file, so nothing was changed.	Сіз файл таңдап жатқанда құжат өзгергендіктен, ешнәрсе өзгертілген жоқ.
@@ -2155,7 +2156,7 @@ calendar date	December	Желтоқсан
 	Open a PDF ({key})	PDF ашу ({key})
 	Open arrow	Ашық көрсеткі
 	Pages: {k} of {n}	Беттер: {k}, барлығы {n}
-	PdfCraft is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	PdfCraft графикалық процессорсыз сурет салуда, сондықтан баяу жұмыс істеуі мүмкін. Графикалық драйверді жаңарту көмектесуі мүмкін.
+	NadsPDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	NadsPDF графикалық процессорсыз сурет салуда, сондықтан баяу жұмыс істеуі мүмкін. Графикалық драйверді жаңарту көмектесуі мүмкін.
 	Preview unavailable: {e}	Алдын ала көру қолжетімсіз: {e}
 	Previous ({key})	Алдыңғы ({key})
 	Print ({key})	Басып шығару ({key})
@@ -2175,7 +2176,7 @@ calendar date	December	Желтоқсан
 	Slash	Қиғаш сызық
 	Some bookmarks are not shown here: the panel lists a limited number, nested a limited depth.	Кейбір бетбелгілер осында көрсетілмеген: панель шектеулі санды, шектеулі тереңдікке дейін ғана тізеді.
 	Switch to List view to change the pages it takes.	Қамтитын беттерін өзгерту үшін Тізім көрінісіне ауысыңыз.
-	Text recognition isn't installed: its model files are missing. Reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them.	Мәтінді тану орнатылмаған: модель файлдары жоқ. PdfCraft қайта орнатыңыз немесе PDFCRAFT_MODELS айнымалысына олар жатқан қалтаны көрсетіңіз.
+	Text recognition isn't installed: its model files are missing. Reinstall NadsPDF, or set PDFCRAFT_MODELS to the folder that holds them.	Мәтінді тану орнатылмаған: модель файлдары жоқ. NadsPDF қайта орнатыңыз немесе PDFCRAFT_MODELS айнымалысына олар жатқан қалтаны көрсетіңіз.
 	Text used as a clipping path cannot be moved with this selection.	Қиып алу жолы ретінде қолданылатын мәтін бұл таңдаумен жылжытылмайды.
 	The document changed while you were editing field properties.	Өріс сипаттарын түзетіп жүргенде құжат өзгерді.
 	The document is no longer open.	Құжат енді ашық емес.
@@ -2191,7 +2192,7 @@ calendar date	December	Желтоқсан
 	Zoom in ({key})	Үлкейту ({key})
 	Zoom in / out (also pinch or {key}-scroll)	Үлкейту / кішірейту (сонымен қатар қысу немесе {key}-айналдыру)
 	Zoom out ({key})	Кішірейту ({key})
-	the text recognition models are not installed (reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them)	мәтінді тану модельдері орнатылмаған (PdfCraft қайта орнатыңыз немесе PDFCRAFT_MODELS айнымалысына олар жатқан қалтаны көрсетіңіз)
+	the text recognition models are not installed (reinstall NadsPDF, or set PDFCRAFT_MODELS to the folder that holds them)	мәтінді тану модельдері орнатылмаған (NadsPDF қайта орнатыңыз немесе PDFCRAFT_MODELS айнымалысына олар жатқан қалтаны көрсетіңіз)
 	{name} is too large for a word list (at most 1 MB).	{name} сөз тізімі үшін тым үлкен (ең көбі 1 МБ).
 	{n} fields selected	{n} өріс таңдалды
 	{n} word(s) or phrase(s)	{n} сөз немесе тіркес
@@ -2277,8 +2278,8 @@ animation effects	Off	Өшірулі
 	Greyscale	Сұр реңктер
 	Black and white	Ақ-қара
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	Бұл принтердің драйвері басқа бағдарламалардан екі жақты басып шығару баптауларын қабылдамайды, сондықтан өз баптауы қолданылады. Оны мына жерден өзгертіңіз: Сипаттар…
-	This field's font can't draw “{c}” ({code}), so PdfCraft shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Бұл өрістің қаріпі «{c}» ({code}) таңбасын сала алмайды, сондықтан PdfCraft оның орнына ? көрсетеді. Мән сақталады, ал басқа PDF қарау құралдары өрісті соған қарап қайта салады.
-	The fonts PdfCraft writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	PdfCraft жазатын қаріптер «{c}» ({code}) таңбасын сала алмайды, сондықтан ол барлық PDF қарау құралдарында ? болып көрінеді. Мәтін сақталады.
+	This field's font can't draw “{c}” ({code}), so NadsPDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Бұл өрістің қаріпі «{c}» ({code}) таңбасын сала алмайды, сондықтан NadsPDF оның орнына ? көрсетеді. Мән сақталады, ал басқа PDF қарау құралдары өрісті соған қарап қайта салады.
+	The fonts NadsPDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	NadsPDF жазатын қаріптер «{c}» ({code}) таңбасын сала алмайды, сондықтан ол барлық PDF қарау құралдарында ? болып көрінеді. Мәтін сақталады.
 	Browser's print dialog	Браузердің басып шығару терезесі
 	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Көшірмелер саны, екі жақты басып шығару және түс браузердің басып шығару терезесінде таңдалады.
 	Preparing {n} sheets for printing…	Басып шығаруға парақтар дайындалуда: {n}…
@@ -2308,7 +2309,7 @@ animation effects	Off	Өшірулі
 @plural	Downloaded {n} PDF|Downloaded {n} PDFs	{n} PDF жүктелді|{n} PDF жүктелді
 @plural	{n} field name collides with earlier files and will be renamed: {list}|{n} field names collide with earlier files and will be renamed: {list}	{n} өріс атауы алдыңғы файлдармен қайшы келеді және қайта аталады: {list}|{n} өріс атауы алдыңғы файлдармен қайшы келеді және қайта аталады: {list}
 	Scan	Сканерлеу
-	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: PdfCraft finds the signature and removes the paper.	Ақ қағаз парағына қол қойып, оны жарық әрі біркелкі жарықта суретке түсіріңіз (жарқылды қосыңыз). Суретті таңдаңыз немесе осында тастаңыз: PdfCraft қолтаңбаны тауып, қағазды алып тастайды.
+	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: NadsPDF finds the signature and removes the paper.	Ақ қағаз парағына қол қойып, оны жарық әрі біркелкі жарықта суретке түсіріңіз (жарқылды қосыңыз). Суретті таңдаңыз немесе осында тастаңыз: NadsPDF қолтаңбаны тауып, қағазды алып тастайды.
 	Choose photo…	Суретті таңдау…
 	No photo chosen	Сурет таңдалмаған
 	Photo	Сурет
@@ -2350,3 +2351,103 @@ animation effects	Off	Өшірулі
 	This document is trying to open a local file:	Бұл құжат жергілікті файлды ашуға әрекеттеніп жатыр:
 	Move tag earlier	Тегті ертерек жылжыту
 	Move tag later	Тегті кейінірек жылжыту
+
+# NadsPDF (nads.site)
+	NadsPDF tools	NadsPDF құралдары
+	PdfCraft (upstream) on GitHub	GitHub-тағы PdfCraft (бастапқы жоба)
+	Convert to PDF with NadsPDF	NadsPDF арқылы PDF-ке түрлендіру
+	Combine with NadsPDF	NadsPDF арқылы біріктіру
+	Open with NadsPDF	NadsPDF арқылы ашу
+	Show NadsPDF in the File Explorer right-click menu	NadsPDF-ті File Explorer контекстік мәзірінде көрсету
+	Added for all users when NadsPDF was installed.	NadsPDF орнатылғанда барлық пайдаланушылар үшін қосылды.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	Құжаттар, суреттер және PDF үшін «PDF-ке түрлендіру», «Біріктіру» және «Ашу». Windows 11 жүйесінде «Қосымша опцияларды көрсету» ішінде.
+	Couldn't change the File Explorer menu: {e}	File Explorer мәзірін өзгерту мүмкін болмады: {e}
+	Couldn't find {name}	{name} табылмады
+# Vaults (Home ▸ Vaults)
+@plural	{n} file|{n} files	{n} файл|{n} файл
+	Give the vault a name	Сейфке атау беріңіз
+	You can have up to {n} vaults. Delete one first.	{n} сейфке дейін болуы мүмкін. Алдымен біреуін жойыңыз.
+	That vault no longer exists	Бұл сейф енді жоқ
+	Added {files} to {vault}	{vault} ішіне қосылды: {files}
+	Already in {vault}	{vault} ішінде бар
+	A vault holds up to {n} files	Сейфке {n} файлға дейін сыяды
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	Сейфтерде осы компьютердегі PDF және NadsPDF түрлендіре алатын файлдар сақталады
+	No files to open in this vault	Бұл сейфте ашатын файл жоқ
+	Opening the first {n} files	Алғашқы {n} файл ашылуда
+	Deleted the vault {vault}. Its files were not touched.	{vault} сейфі жойылды. Оның файлдары өзгертілмеді.
+	Moved {file} to {vault}	{file} {vault} ішіне жылжытылды
+	Vaults need the desktop app	Сейфтерге жұмыс үстелі қолданбасы керек
+	Locate {file}	{file} табу
+	Save this document to a file first, then add it to a vault	Алдымен құжатты файлға сақтап, содан кейін сейфке қосыңыз
+	Vaults	Сейфтер
+	New vault	Жаңа сейф
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	Компьютердің кез келген жеріндегі PDF файлдарын атауы, түсі және таңбашасы бар сейфтерге топтаңыз. Файлдар орнында қалады.
+	Click to show its files. Drag to reorder, or drop files here.	Файлдарын көру үшін басыңыз. Ретін өзгерту үшін сүйреңіз немесе файлдарды осында тастаңыз.
+	Open all	Барлығын ашу
+	Edit vault…	Сейфті өңдеу…
+	Move left	Солға жылжыту
+	Move right	Оңға жылжыту
+	Delete vault…	Сейфті жою…
+	New vault…	Жаңа сейф…
+	No files yet. Drop files here to add them.	Әзірге файл жоқ. Қосу үшін файлдарды осында тастаңыз.
+	Locate…	Табу…
+	Missing	Жоқ
+	Remove {name} from this vault	{name} файлын осы сейфтен алып тастау
+	This file has moved or been deleted. Locate it, or remove it from the vault.	Бұл файл жылжытылған не жойылған. Оны табыңыз немесе сейфтен алып тастаңыз.
+	Move to vault	Сейфке жылжыту
+	Remove from vault	Сейфтен алып тастау
+	Show this vault on Home	Бұл сейфті басты бетте көрсету
+	Vault: {name}	Сейф: {name}
+	Vault	Сейф
+	Edit vault	Сейфті өңдеу
+	Vault name	Сейф атауы
+	Create vault	Сейф жасау
+	Delete the vault {vault}?	{vault} сейфін жою керек пе?
+	Its files stay where they are on your computer. Only the vault is deleted.	Файлдар компьютерде орнында қалады. Тек сейф жойылады.
+	Delete vault	Сейфті жою
+	Add to vault	Сейфке қосу
+	Already in it	Ішінде бар
+	Add document to vault…	Құжатты сейфке қосу…
+	Dark pages	Қараңғы беттер
+	Rasterize pages (strong compression)…	Беттерді растрлау (күшті қысу)…
+	Rasterize pages (strong compression)	Беттерді растрлау (күшті қысу)
+	Rasterizing… page {d} of {t}	Растрлау… {t} беттің {d}-і
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	Әр бет суретке айналады: ең күшті қысу, сканерленген құжаттарға ең қолайлы. Мәтінді енді таңдау не іздеу мүмкін емес, ал сілтемелер, бетбелгілер мен форма өрістері сақталмайды. Нәтиже көшірме ретінде сақталады.
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi, JPEG сапасы {q}
+compression level	Light	Әлсіз
+compression level	Medium	Орташа
+compression level	Strong	Күшті
+	Compress	Қысу
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	Растрлау бұл файлды кішірейтпейді ({size}). Көшірме сақталмады.
+	Add faint watermark	Бозғылт су таңбасын қосу
+	Recognize text if available	Қолжетімді болса, мәтінді тану
+	Prepare for Sending	Жіберуге дайындау
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	Беттерді төменгі ортада «n / барлығы» түрінде нөмірлеп, содан кейін файлды электрондық поштамен жіберу үшін кішірейту.
+	Archive Scans	Скандарды мұрағаттау
+	Make scans searchable (when text recognition is available), then make them smaller.	Скандарды іздеуге болатын ету (мәтінді тану орнатылған болса), содан кейін кішірейту.
+	Confidential	Құпия
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	Әр бетте бозғылт диагональ ҚҰПИЯ су таңбасы және «n / барлығы» бет нөмірлері.
+	{name} (copy)	{name} (көшірме)
+watermark text	CONFIDENTIAL	ҚҰПИЯ
+	Group name	Топ атауы
+	Rename Group	Топтың атын өзгерту
+	Ungroup	Топтан шығару
+	Close Group	Топты жабу
+	Add Tab to New Group	Қойындыны жаңа топқа қосу
+	Add Tab to Group	Қойындыны топқа қосу
+	Remove from Group	Топтан алып тастау
+	Click to fold or unfold the group	Топты жию немесе жаю үшін басыңыз
+	Filter tools	Құралдарды сүзу
+	No tool matches	Сәйкес құрал жоқ
+	Essentials	Негізгі
+	Float as a bubble	Көпіршік ету
+	Show this PDF in a small window over the others	Бұл PDF-ті басқалардың үстіндегі шағын терезеде көрсету
+	Put back as a tab	Қойындыға қайтару
+	Fold into a bubble	Көпіршікке жию
+	Click to open, drag onto the tabs to put it back	Ашу үшін басыңыз, қайтару үшін қойындыларға сүйреңіз
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	Сізде {c} нұсқасы бар. NadsPDF жабылып, осының орнына жаңа нұсқаны орнатады да, қайта ашылады. Баптауларыңыз сақталады.
+	You have version {c}.	Сізде {c} нұсқасы бар.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	NadsPDF-тің бұл көшірмесі Microsoft Store-дан алынған, жаңа нұсқаларды Store өзі орнатады.
+	Downloading the update…	Жаңарту жүктелуде…
+	Couldn't install the update: {e}	Жаңартуды орнату мүмкін болмады: {e}
+	Check for updates when NadsPDF starts (once a day)	NadsPDF іске қосылғанда жаңартуларды тексеру (күніне бір рет)

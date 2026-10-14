@@ -2547,6 +2547,30 @@ impl PdfCraftApp {
         }
     }
 
+    /// Add files named by path to the Combine files list, in this order and as one undo step, and
+    /// show it (`--combine`, File Explorer's "Combine with NadsPDF"). A folder adds the files in
+    /// it and its subfolders; a path that names nothing is reported and left out.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn combine_paths(&mut self, paths: &[String]) {
+        let mut files = Vec::new();
+        for p in paths {
+            let path = std::path::Path::new(p);
+            if path.is_dir() {
+                self.add_folder_to_combine(path, true);
+            } else if path.is_file() {
+                files.push(path.to_path_buf());
+            } else {
+                let name = path.file_name().map_or_else(|| p.clone(), |n| n.to_string_lossy().into_owned());
+                self.notify_fmt("Couldn't find {name}", &[("name", &name)]);
+            }
+        }
+        if files.is_empty() {
+            self.open_combine_tab();
+        } else {
+            self.use_paths(crate::files::FilePurpose::Combine, &files);
+        }
+    }
+
     /// Add documents open in tabs (by tab index), as they are now; those already in the list
     /// stay out (#1356). The same document, not the same name: two files called alike are two.
     pub(crate) fn add_open_documents(&mut self, tabs: &[usize]) {
@@ -2671,6 +2695,28 @@ mod tests {
         assert_eq!(warnings(("notes.txt", b"Hello"), ("notes.txt", b"Hello")), [true, true], "the same text file");
         assert_eq!(warnings(("photo.png", &png), ("photo.png", &png)), [true, true], "the same image");
         assert_eq!(warnings(("notes.txt", b"Hello"), ("notes.txt", b"World")), [false, false], "different text, same name and size");
+    }
+
+    #[test]
+    fn files_named_by_path_join_the_list_in_order_and_a_missing_one_is_reported() {
+        let dir = std::env::temp_dir().join(format!("pdfcraft-combine-paths-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let (a, b) = (dir.join("b first.txt"), dir.join("a second.txt"));
+        std::fs::write(&a, "One").unwrap();
+        std::fs::write(&b, "Two").unwrap();
+        let path = |p: &std::path::Path| p.to_string_lossy().into_owned();
+        let mut app = PdfCraftApp::new();
+        app.combine_paths(&[path(&a), path(&dir.join("gone.pdf")), path(&b)]);
+        let names: Vec<&str> = app.combine_draft.iter().map(|f| f.name.as_str()).collect();
+        assert_eq!(names, ["b first.txt", "a second.txt"], "in the order given");
+        assert!(app.combine_draft.iter().all(|f| f.pages == 1), "text files are converted as they join");
+        assert!(app.combine_showing());
+        assert!(app.toast.as_ref().is_some_and(|(m, _)| m.contains("gone.pdf")), "{:?}", app.toast);
+        // Nothing to add still shows the (empty) list.
+        let mut app = PdfCraftApp::new();
+        app.combine_paths(&[]);
+        assert!(app.combine_showing() && app.combine_draft.is_empty());
+        let _ = std::fs::remove_dir_all(&dir);
     }
 
     #[test]

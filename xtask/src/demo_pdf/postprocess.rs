@@ -10,8 +10,8 @@ use super::pdf::{Content, Font, Fonts, Stamp, colors, name, text};
 /// Links to this prefix in showcase.html mark where annotations go.
 const MARKER_PREFIX: &str = "https://mark.pdfcraft.invalid/";
 
-const TITLE: &str = "PdfCraft Showcase";
-const AUTHOR: &str = "PdfCraft";
+const TITLE: &str = "NadsPDF Showcase";
+const AUTHOR: &str = "NadsPDF";
 const SUBJECT: &str = "A specimen document exercising typography, world scripts, vector graphics, \
                        MathML, forms, annotations, layers and attachments.";
 const KEYWORDS: &[&str] = &["PDF", "typography", "OpenType", "AcroForm", "annotations", "optional content", "PdfCraft"];

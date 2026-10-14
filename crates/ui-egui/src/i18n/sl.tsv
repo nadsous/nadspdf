@@ -5,7 +5,7 @@
 # Clean-room: every entry was written from the plain meaning of the English label using ordinary
 # Slovene computing vocabulary. No proprietary localisation resource, string table or product UI
 # (Acrobat's included) was consulted or copied; add entries the same way.
-# Product and technology names (PdfCraft, PDF, Acrobat JavaScript ...) are not translated;
+# Product and technology names (NadsPDF, PDF, Acrobat JavaScript ...) are not translated;
 # the trailing "…" of dialog commands is kept.
 
 	Menu	Meni
@@ -58,7 +58,7 @@
 	A summary describes the table's purpose and layout. Add a Summary attribute to each table.	Povzetek opisuje namen in postavitev tabele. Vsaki tabeli dodajte atribut Summary.
 	AI assistant	Pomočnik za UI
 	About	O programu
-	About PdfCraft	O programu PdfCraft
+	About NadsPDF	O programu NadsPDF
 	Accepted	Potrjeno
 	Accessibility	Dostopnost
 	Accessibility Checker	Preverjanje dostopnosti
@@ -231,7 +231,6 @@
 	Arrow	Puščica
 	ArtCraft website	Spletna stran ArtCraft
 	Ask about this document	Vprašaj o tem dokumentu
-	Asks GitHub for the latest release. Nothing is downloaded or installed automatically.	Vpraša GitHub za najnovejšo izdajo. Ničesar se ne prenese ali namesti samodejno.
 	Associated with content	Povezano z vsebino
 	At least one signature has problems.	Vsaj en podpis ima težave.
 	At least one signature is invalid.	Vsaj en podpis je neveljaven.
@@ -776,7 +775,7 @@
 	Files are combined from top to bottom. Leave Pages empty to take every page.	Datoteke se združijo od zgoraj navzdol. Če pustite Strani prazno, se vzamejo vse strani.
 	Files are combined in this order. Leave Pages empty to take every page.	Datoteke se združijo v tem vrstnem redu. Če pustite Strani prazno, se vzamejo vse strani.
 	Files for {name}	Datoteke za {name}
-	Files you open in PdfCraft appear here. Drop a PDF anywhere to open it.	Datoteke, ki jih odprete v PdfCraftu, se prikažejo tukaj. Spustite PDF kamor koli, da ga odprete.
+	Files you open in NadsPDF appear here. Drop a PDF anywhere to open it.	Datoteke, ki jih odprete v NadsPDFu, se prikažejo tukaj. Spustite PDF kamor koli, da ga odprete.
 	Fill	Izpolni
 	Fill & Sign	Izpolni in podpiši
 	Fill & Sign: add text	Izpolni in podpiši: dodaj besedilo
@@ -920,6 +919,8 @@
 	Images	Slike
 	Images and text	Slike in besedilo
 	Images and text (converted to PDF)	Slike in besedilo (pretvorjeno v PDF)
+	Images, text and documents (converted to PDF)	Slike, besedilo in dokumenti (pretvorjeni v PDF)
+	PDF, images, text and documents	PDF, slike, besedilo in dokumenti
 	Import comments…	Uvozi komentarje…
 	Import data	Uvozi podatke
 	Import form data…	Uvozi podatke obrazca…
@@ -1305,12 +1306,12 @@
 	Paths	Poti
 	Patterns	Vzorci
 	Patterns (graphics objects)	Vzorci (grafični objekti)
-	PdfCraft didn't shut down normally. These documents had changes that were autosaved:	PdfCraft se ni zaprl običajno. Ti dokumenti so imeli samodejno shranjene spremembe:
-	PdfCraft on GitHub	PdfCraft na GitHubu
-	PdfCraft web page	Spletna stran PdfCraft
-	PdfCraft works offline. No telemetry, no account, and no cloud processing unless you add a provider.	PdfCraft deluje brez povezave. Brez telemetrije, brez računa in brez obdelave v oblaku, razen če dodate ponudnika.
-	PdfCraft {c} is up to date.	PdfCraft {c} je posodobljen.
-	PdfCraft {v} is available.	Na voljo je PdfCraft {v}.
+	NadsPDF didn't shut down normally. These documents had changes that were autosaved:	NadsPDF se ni zaprl običajno. Ti dokumenti so imeli samodejno shranjene spremembe:
+	NadsPDF on GitHub	NadsPDF na GitHubu
+	NadsPDF web page	Spletna stran NadsPDF
+	NadsPDF works offline. No telemetry, no account, and no cloud processing unless you add a provider.	NadsPDF deluje brez povezave. Brez telemetrije, brez računa in brez obdelave v oblaku, razen če dodate ponudnika.
+	NadsPDF {c} is up to date.	NadsPDF {c} je posodobljen.
+	NadsPDF {v} is available.	Na voljo je NadsPDF {v}.
 	People may need more time to respond. Check that nothing has a time limit.	Ljudje bodo morda potrebovali več časa za odziv. Preverite, da nič nima časovne omejitve.
 	Percentage	Odstotek
 	Perimeter	Obseg
@@ -1457,7 +1458,7 @@
 	Rename	Preimenuj
 	Rename bookmark	Preimenuj zaznamek
 	Rendering: hayro (bootstrap) · UI: egui · Icons: Lucide (ISC) · Fonts: Inter, JetBrains Mono, Dancing Script (OFL)	Izris: hayro (bootstrap) · Vmesnik: egui · Ikone: Lucide (ISC) · Pisave: Inter, JetBrains Mono, Dancing Script (OFL)
-	Reopen the files that were open when PdfCraft last closed	Ponovno odpri datoteke, ki so bile odprte ob zadnjem zaprtju PdfCrafta
+	Reopen the files that were open when NadsPDF last closed	Ponovno odpri datoteke, ki so bile odprte ob zadnjem zaprtju NadsPDFa
 	Repair log	Dnevnik popravil
 	Repairs	Popravila
 	Repeat overlay text	Ponovi besedilo prekrivanja
@@ -1791,10 +1792,10 @@
 	The document was closed before it could be saved.	Dokument je bil zaprt, preden ga je bilo mogoče shraniti.
 	The document's security settings don't allow filling in form fields	Varnostne nastavitve dokumenta ne dovoljujejo izpolnjevanja polj obrazca
 	The document's security settings don't allow this change	Varnostne nastavitve dokumenta ne dovoljujejo te spremembe
-	The form asks to be submitted to {u}; PdfCraft doesn't send form data. Save the document to keep your entries.	Obrazec želi biti oddan na {u}; PdfCraft ne pošilja podatkov obrazcev. Shranite dokument, da obdržite svoje vnose.
+	The form asks to be submitted to {u}; NadsPDF doesn't send form data. Save the document to keep your entries.	Obrazec želi biti oddan na {u}; NadsPDF ne pošilja podatkov obrazcev. Shranite dokument, da obdržite svoje vnose.
 	The form asks viewers to make appearances (NeedAppearances)	Obrazec zahteva, da gledalci ustvarijo videze (NeedAppearances)
-	The key is in the Windows certificate store, which may ask to allow PdfCraft to use it.	Ključ je v shrambi potrdil Windows, ki lahko zahteva dovoljenje, da ga PdfCraft uporabi.
-	The key is in the macOS Keychain, which may ask to allow PdfCraft to use it.	Ključ je v macOS Keychain, ki lahko zahteva dovoljenje, da ga PdfCraft uporabi.
+	The key is in the Windows certificate store, which may ask to allow NadsPDF to use it.	Ključ je v shrambi potrdil Windows, ki lahko zahteva dovoljenje, da ga NadsPDF uporabi.
+	The key is in the macOS Keychain, which may ask to allow NadsPDF to use it.	Ključ je v macOS Keychain, ki lahko zahteva dovoljenje, da ga NadsPDF uporabi.
 	The newest {n} of {total} PDFs	Najnovejših {n} od {total} datotek PDF
 	The operation failed.	Operacija ni uspela.
 	The pages were extracted but not deleted, because the document changed while you were choosing a folder.	Strani so bile izvlečene, a ne izbrisane, ker se je dokument spremenil, medtem ko ste izbirali mapo.
@@ -1842,8 +1843,8 @@
 	This field is locked. Unlock it to change its properties.	To polje je zaklenjeno. Odklenite ga, da spremenite njegove lastnosti.
 	This file was damaged and has been repaired. Saving keeps the repaired version.	Ta datoteka je bila poškodovana in je bila popravljena. Shranjevanje obdrži popravljeno različico.
 	This folder isn't available right now. It may have moved, or its drive or cloud sync is offline.	Ta mapa trenutno ni na voljo. Morda je bila premaknjena ali pa je njen pogon ali sinhronizacija v oblaku brez povezave.
-	This form also contains XFA data, which PdfCraft doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Ta obrazec vsebuje tudi podatke XFA, ki jih PdfCraft še ne bere. Polja lahko izpolnite, vendar Acrobat morda prikaže vrednosti XFA.
-	This is a dynamic XFA form, which PdfCraft can't display yet. What you see is the file's placeholder page.	To je dinamični obrazec XFA, ki ga PdfCraft še ne more prikazati. Tisto, kar vidite, je nadomestna stran datoteke.
+	This form also contains XFA data, which NadsPDF doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Ta obrazec vsebuje tudi podatke XFA, ki jih NadsPDF še ne bere. Polja lahko izpolnite, vendar Acrobat morda prikaže vrednosti XFA.
+	This is a dynamic XFA form, which NadsPDF can't display yet. What you see is the file's placeholder page.	To je dinamični obrazec XFA, ki ga NadsPDF še ne more prikazati. Tisto, kar vidite, je nadomestna stran datoteke.
 	This measurement needs at least {n} points.	Ta meritev potrebuje vsaj točk: {n}.
 	This page couldn't be displayed.\n{e}	Te strani ni bilo mogoče prikazati.\n{e}
 	This web address mixes letters from different alphabets, a common way to imitate another site's name.	Ta spletni naslov meša črke iz različnih abeced, kar je pogost način posnemanja imena druge strani.
@@ -1958,7 +1959,7 @@
 	Warnings	Opozorila
 	Watermark	Vodni žig
 	Weak	Šibko
-	Welcome to PdfCraft	Dobrodošli v PdfCraftu
+	Welcome to NadsPDF	Dobrodošli v NadsPDFu
 	What word or phrase would you like to search for?	Katero besedo ali besedno zvezo želite poiskati?
 	Whole words only	Samo cele besede
 	Width	Širina
@@ -2060,7 +2061,7 @@
 	{name} can't be combined: {why}	Datoteke {name} ni mogoče združiti: {why}
 	{name} has no action	{name} nima dejanja
 	{name} is read-only	{name} je samo za branje
-	{name} submits the form to {url}; PdfCraft doesn't send form data. Save the document to keep your entries.	{name} odda obrazec na {url}; PdfCraft ne pošilja podatkov obrazcev. Shranite dokument, da obdržite svoje vnose.
+	{name} submits the form to {url}; NadsPDF doesn't send form data. Save the document to keep your entries.	{name} odda obrazec na {url}; NadsPDF ne pošilja podatkov obrazcev. Shranite dokument, da obdržite svoje vnose.
 	{name} — unsaved changes	{name} — neshranjene spremembe
 	{name}: choosing images arrives on the web with file pickers for images	{name}: izbiranje slik bo v spletni različici na voljo z izbirniki slikovnih datotek
 	{name}: the {other} action isn't supported yet	{name}: dejanje {other} še ni podprto
@@ -2089,8 +2090,8 @@
 	{verb} Header and Footer	Glava in noga: {verb}
 	{verb} Watermark	Vodni žig: {verb}
 	{verb} as "{name}"	{verb} kot „{name}“
-	{who} in this document tried to open an address PdfCraft won't open: {e}.	{who} v tem dokumentu je poskusil odpreti naslov, ki ga PdfCraft ne odpre: {e}.
-	{who} in this document tried to open an address PdfCraft won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} v tem dokumentu je poskusil odpreti naslov, ki ga PdfCraft ne odpre: {e}. Iz dokumentov se odpirajo samo spletne (http, https) in e-poštne (mailto) povezave.
+	{who} in this document tried to open an address NadsPDF won't open: {e}.	{who} v tem dokumentu je poskusil odpreti naslov, ki ga NadsPDF ne odpre: {e}.
+	{who} in this document tried to open an address NadsPDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} v tem dokumentu je poskusil odpreti naslov, ki ga NadsPDF ne odpre: {e}. Iz dokumentov se odpirajo samo spletne (http, https) in e-poštne (mailto) povezave.
 	{who} in this document wants to open this address in your browser:	{who} v tem dokumentu želi ta naslov odpreti v vašem brskalniku:
 	{who} in this document wants to open your email app with this address:	{who} v tem dokumentu želi odpreti vaš e-poštni program s tem naslovom:
 	{words} on {pages}	{words} na {pages}
@@ -2132,7 +2133,7 @@ signature pad	Type	Vtipkaj
 	Open arrow	Odprta puščica
 	Opens the printer driver's preferences. They are saved for every print from this computer; the copies, two-sided, grayscale and paper chosen here still apply.	Odpre nastavitve gonilnika tiskalnika. Shranjene so za vsako tiskanje s tega računalnika; kopije, obojestransko, sivine in papir, izbrani tukaj, še vedno veljajo.
 	Pattern	Vzorec
-	PdfCraft is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	PdfCraft riše brez grafičnega procesorja, zato je lahko počasen. Pomaga lahko posodobitev grafičnega gonilnika.
+	NadsPDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	NadsPDF riše brez grafičnega procesorja, zato je lahko počasen. Pomaga lahko posodobitev grafičnega gonilnika.
 	Previous ({key})	Prejšnja ({key})
 	Print ({key})	Natisni ({key})
 	Printer properties	Lastnosti tiskalnika
@@ -2150,7 +2151,7 @@ signature pad	Type	Vtipkaj
 	Shift- or Ctrl/Command-click to select several fields.	S Shift ali Ctrl/Command in klikom izberete več polj.
 	Slash	Poševnica
 	Smaller pages	Manjše strani
-	Text recognition isn't installed: its model files are missing. Reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them.	Prepoznavanje besedila ni nameščeno: manjkajo datoteke njegovih modelov. Ponovno namestite PdfCraft ali nastavite PDFCRAFT_MODELS na mapo, v kateri so.
+	Text recognition isn't installed: its model files are missing. Reinstall NadsPDF, or set PDFCRAFT_MODELS to the folder that holds them.	Prepoznavanje besedila ni nameščeno: manjkajo datoteke njegovih modelov. Ponovno namestite NadsPDF ali nastavite PDFCRAFT_MODELS na mapo, v kateri so.
 	Text, marks and signatures become part of the page. Other comments stay editable.	Besedilo, oznake in podpisi postanejo del strani. Drugi komentarji ostanejo urejljivi.
 	The document changed while you were editing field properties.	Dokument se je spremenil med urejanjem lastnosti polja.
 	The document is no longer open.	Dokument ni več odprt.
@@ -2166,7 +2167,7 @@ signature pad	Type	Vtipkaj
 	Zoom in ({key})	Povečaj ({key})
 	Zoom in / out (also pinch or {key}-scroll)	Povečaj / pomanjšaj (tudi s ščipanjem ali {key} + pomikanjem)
 	Zoom out ({key})	Pomanjšaj ({key})
-	the text recognition models are not installed (reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them)	modeli za prepoznavanje besedila niso nameščeni (ponovno namestite PdfCraft ali nastavite PDFCRAFT_MODELS na mapo, v kateri so)
+	the text recognition models are not installed (reinstall NadsPDF, or set PDFCRAFT_MODELS to the folder that holds them)	modeli za prepoznavanje besedila niso nameščeni (ponovno namestite NadsPDF ali nastavite PDFCRAFT_MODELS na mapo, v kateri so)
 	yyyy or yy year · m or mm month · mmm or mmmm month name · d or dd day · ddd or dddd weekday. H, h, M, s and t are time letters and can't be used on their own: put {escape} before a letter to show it as is.	yyyy ali yy leto · m ali mm mesec · mmm ali mmmm ime meseca · d ali dd dan · ddd ali dddd dan v tednu. H, h, M, s in t so časovne črke in jih ni mogoče uporabiti samostojno: pred črko postavite {escape}, da se prikaže tako, kot je.
 	{chars} can't be written into the PDF yet: Fill & Sign text is Western European only. Pick a numeric format such as dd.mm.yyyy.	Znakov {chars} še ni mogoče zapisati v PDF: besedilo Izpolni in podpiši je samo zahodnoevropsko. Izberite številčno obliko, na primer dd.mm.yyyy.
 	{name} is too large for a word list (at most 1 MB).	Datoteka {name} je prevelika za seznam besed (največ 1 MB).
@@ -2294,8 +2295,8 @@ animation effects	Off	Izklopljeni
 	Change the colour of line art as well as text	Spremeni barvo tudi črt, ne samo besedila
 	Colours are remapped while rendering; the document itself never changes.	Barve se spremenijo pri izrisovanju; sam dokument se nikoli ne spremeni.
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	Gonilnik tega tiskalnika ne sprejema nastavitev obojestranskega tiskanja iz drugih programov, zato velja njegova lastna nastavitev. Spremenite jo v Lastnosti…
-	This field's font can't draw “{c}” ({code}), so PdfCraft shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Pisava tega polja ne more prikazati »{c}« ({code}), zato PdfCraft namesto njega prikaže ?. Vrednost se shrani, drugi pregledovalniki PDF pa polje znova narišejo iz nje.
-	The fonts PdfCraft writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	Pisave, s katerimi piše PdfCraft, ne morejo prikazati »{c}« ({code}), zato se v vseh pregledovalnikih PDF prikaže kot ?. Besedilo se shrani.
+	This field's font can't draw “{c}” ({code}), so NadsPDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Pisava tega polja ne more prikazati »{c}« ({code}), zato NadsPDF namesto njega prikaže ?. Vrednost se shrani, drugi pregledovalniki PDF pa polje znova narišejo iz nje.
+	The fonts NadsPDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	Pisave, s katerimi piše NadsPDF, ne morejo prikazati »{c}« ({code}), zato se v vseh pregledovalnikih PDF prikaže kot ?. Besedilo se shrani.
 	Browser's print dialog	Pogovorno okno za tiskanje v brskalniku
 	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Število kopij, obojestransko tiskanje in barvo izberete v pogovornem oknu za tiskanje v brskalniku.
 	Preparing {n} sheets for printing…	Priprava listov za tiskanje: {n}…
@@ -2325,7 +2326,7 @@ animation effects	Off	Izklopljeni
 @plural	Downloaded {n} PDF|Downloaded {n} PDFs	Prenesen {n} PDF|Prenesena {n} PDF-ja|Preneseni {n} PDF-ji|Prenesenih {n} PDF-jev
 @plural	{n} field name collides with earlier files and will be renamed: {list}|{n} field names collide with earlier files and will be renamed: {list}	{n} ime polja se ujema z imeni iz prejšnjih datotek in bo preimenovano: {list}|{n} imeni polj se ujemata z imeni iz prejšnjih datotek in bosta preimenovani: {list}|{n} imena polj se ujemajo z imeni iz prejšnjih datotek in bodo preimenovana: {list}|{n} imen polj se ujema z imeni iz prejšnjih datotek in bo preimenovanih: {list}
 	Scan	Skeniraj
-	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: PdfCraft finds the signature and removes the paper.	Podpišite se na list belega papirja in ga fotografirajte v močni, enakomerni svetlobi (uporabite bliskavico). Izberite fotografijo ali jo spustite sem: PdfCraft poišče podpis in odstrani papir.
+	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: NadsPDF finds the signature and removes the paper.	Podpišite se na list belega papirja in ga fotografirajte v močni, enakomerni svetlobi (uporabite bliskavico). Izberite fotografijo ali jo spustite sem: NadsPDF poišče podpis in odstrani papir.
 	Choose photo…	Izberi fotografijo…
 	No photo chosen	Fotografija ni izbrana
 	Photo	Fotografija
@@ -2357,3 +2358,103 @@ animation effects	Off	Izklopljeni
 	This document is trying to open a local file:	Ta dokument poskuša odpreti lokalno datoteko:
 	Move tag earlier	Premakni oznako prej
 	Move tag later	Premakni oznako pozneje
+
+# NadsPDF (nads.site)
+	NadsPDF tools	Orodja NadsPDF
+	PdfCraft (upstream) on GitHub	PdfCraft (izvirni projekt) na GitHubu
+	Convert to PDF with NadsPDF	Pretvori v PDF z NadsPDF
+	Combine with NadsPDF	Združi z NadsPDF
+	Open with NadsPDF	Odpri z NadsPDF
+	Show NadsPDF in the File Explorer right-click menu	Prikaži NadsPDF v priročnem meniju Raziskovalca
+	Added for all users when NadsPDF was installed.	Dodano za vse uporabnike ob namestitvi NadsPDF.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	Pretvori v PDF, Združi in Odpri za dokumente, slike in datoteke PDF. V sistemu Windows 11 pod »Pokaži več možnosti«.
+	Couldn't change the File Explorer menu: {e}	Menija Raziskovalca ni bilo mogoče spremeniti: {e}
+	Couldn't find {name}	{name} ni bilo mogoče najti
+# Vaults (Home ▸ Vaults)
+@plural	{n} file|{n} files	{n} datoteka|{n} datoteki|{n} datoteke|{n} datotek
+	Give the vault a name	Poimenujte trezor
+	You can have up to {n} vaults. Delete one first.	Imate lahko do {n} trezorjev. Najprej izbrišite enega.
+	That vault no longer exists	Ta trezor ne obstaja več
+	Added {files} to {vault}	Dodano v {vault}: {files}
+	Already in {vault}	Že v {vault}
+	A vault holds up to {n} files	Trezor sprejme do {n} datotek
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	Trezorji hranijo PDF-je in datoteke, ki jih NadsPDF zna pretvoriti, na tem računalniku
+	No files to open in this vault	V tem trezorju ni datotek za odpiranje
+	Opening the first {n} files	Odpiranje prvih {n} datotek
+	Deleted the vault {vault}. Its files were not touched.	Trezor {vault} je izbrisan. Njegove datoteke so nedotaknjene.
+	Moved {file} to {vault}	{file} premaknjena v {vault}
+	Vaults need the desktop app	Trezorji potrebujejo namizno aplikacijo
+	Locate {file}	Poišči {file}
+	Save this document to a file first, then add it to a vault	Najprej shranite dokument v datoteko, nato ga dodajte v trezor
+	Vaults	Trezorji
+	New vault	Nov trezor
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	Združite PDF-je od kjerkoli na računalniku v poimenovane trezorje z barvo in ikono. Datoteke ostanejo, kjer so.
+	Click to show its files. Drag to reorder, or drop files here.	Kliknite za prikaz datotek. Povlecite za spremembo vrstnega reda ali spustite datoteke sem.
+	Open all	Odpri vse
+	Edit vault…	Uredi trezor…
+	Move left	Premakni levo
+	Move right	Premakni desno
+	Delete vault…	Izbriši trezor…
+	New vault…	Nov trezor…
+	No files yet. Drop files here to add them.	Še ni datotek. Spustite datoteke sem, da jih dodate.
+	Locate…	Poišči…
+	Missing	Manjka
+	Remove {name} from this vault	Odstrani {name} iz tega trezorja
+	This file has moved or been deleted. Locate it, or remove it from the vault.	Ta datoteka je bila premaknjena ali izbrisana. Poiščite jo ali jo odstranite iz trezorja.
+	Move to vault	Premakni v trezor
+	Remove from vault	Odstrani iz trezorja
+	Show this vault on Home	Prikaži ta trezor na domači strani
+	Vault: {name}	Trezor: {name}
+	Vault	Trezor
+	Edit vault	Uredi trezor
+	Vault name	Ime trezorja
+	Create vault	Ustvari trezor
+	Delete the vault {vault}?	Izbrišem trezor {vault}?
+	Its files stay where they are on your computer. Only the vault is deleted.	Datoteke ostanejo, kjer so na računalniku. Izbriše se le trezor.
+	Delete vault	Izbriši trezor
+	Add to vault	Dodaj v trezor
+	Already in it	Že tukaj
+	Add document to vault…	Dodaj dokument v trezor…
+	Dark pages	Temne strani
+	Rasterize pages (strong compression)…	Rastriraj strani (močno stiskanje)…
+	Rasterize pages (strong compression)	Rastriraj strani (močno stiskanje)
+	Rasterizing… page {d} of {t}	Rastriranje … stran {d} od {t}
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	Vsaka stran postane slika: najmočnejše stiskanje, najboljše za skene. Besedila ni več mogoče izbirati ali iskati, povezave, zaznamki in polja obrazcev pa se ne ohranijo. Rezultat se shrani kot kopija.
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi, kakovost JPEG {q}
+compression level	Light	Rahlo
+compression level	Medium	Srednje
+compression level	Strong	Močno
+	Compress	Stisni
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	Rastriranje te datoteke ne bi zmanjšalo ({size}). Kopija ni bila shranjena.
+	Add faint watermark	Dodaj bled vodni žig
+	Recognize text if available	Prepoznaj besedilo, če je na voljo
+	Prepare for Sending	Pripravi za pošiljanje
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	Oštevilči strani »n / skupaj« spodaj na sredini, nato zmanjšaj datoteko za pošiljanje po e-pošti.
+	Archive Scans	Arhiviraj skene
+	Make scans searchable (when text recognition is available), then make them smaller.	Omogoči iskanje po skenih (če je prepoznavanje besedila nameščeno), nato jih zmanjšaj.
+	Confidential	Zaupno
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	Bled diagonalni vodni žig ZAUPNO in številke strani »n / skupaj« na vsaki strani.
+	{name} (copy)	{name} (kopija)
+watermark text	CONFIDENTIAL	ZAUPNO
+	Group name	Ime skupine
+	Rename Group	Preimenuj skupino
+	Ungroup	Razdruži
+	Close Group	Zapri skupino
+	Add Tab to New Group	Dodaj zavihek v novo skupino
+	Add Tab to Group	Dodaj zavihek v skupino
+	Remove from Group	Odstrani iz skupine
+	Click to fold or unfold the group	Kliknite, da skupino strnete ali razširite
+	Filter tools	Filtriraj orodja
+	No tool matches	Nobeno orodje se ne ujema
+	Essentials	Osnovno
+	Float as a bubble	Lebdeči mehurček
+	Show this PDF in a small window over the others	Prikaži ta PDF v majhnem oknu nad drugimi
+	Put back as a tab	Vrni kot zavihek
+	Fold into a bubble	Strni v mehurček
+	Click to open, drag onto the tabs to put it back	Kliknite za odpiranje, povlecite na zavihke za vrnitev
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	Imate različico {c}. NadsPDF se bo zaprl, namestil novo različico namesto te in se znova odprl. Vaše nastavitve ostanejo.
+	You have version {c}.	Imate različico {c}.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	Ta kopija NadsPDF je iz trgovine Microsoft Store, ki nove različice namešča sama.
+	Downloading the update…	Prenašanje posodobitve…
+	Couldn't install the update: {e}	Posodobitve ni bilo mogoče namestiti: {e}
+	Check for updates when NadsPDF starts (once a day)	Ob zagonu NadsPDF preveri posodobitve (enkrat na dan)

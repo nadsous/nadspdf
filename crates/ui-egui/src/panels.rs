@@ -8,24 +8,25 @@ use pdfcraft_render::{DocInfo, FieldKind, OutlineItem};
 use crate::theme::{self, Tokens};
 use crate::{LeftPanel, PdfCraftApp, RightPanel, icons, widgets};
 
-const COLLAPSED_TOOLS: usize = 14;
+/// The tools by what they are for. A catalogue group missing here (one added later) lands under
+/// Advanced, so the panel always lists the whole catalogue.
+const ESSENTIALS: &[&str] = &["edit", "organize", "combine", "compress", "export", "create"];
+const REVIEW: &[&str] = &["comment", "fill_sign", "stamp", "form", "compare"];
+const PROTECT: &[&str] = &["protect", "redact", "certificate"];
 
-fn hue(g: &ToolGroup) -> Color32 {
-    Color32::from_rgb(g.hue[0], g.hue[1], g.hue[2])
+fn sectioned(id: &str) -> bool {
+    [ESSENTIALS, REVIEW, PROTECT].iter().any(|ids| ids.contains(&id))
 }
 
 pub fn left_panel(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
     let t = Tokens::get(ui.ctx());
-    egui::Frame::NONE.fill(t.panel).inner_margin(egui::Margin { left: 14, right: 10, top: 12, bottom: 10 }).stroke(Stroke::new(1.0, t.divider)).show(
-        ui,
-        |ui| match app.left {
-            LeftPanel::AllTools => all_tools(app, ui, &t),
-            LeftPanel::Tool(id) => match catalog::group(id) {
-                Some(g) => tool_detail(app, ui, &t, g),
-                None => app.left = LeftPanel::AllTools,
-            },
+    egui::Frame::NONE.fill(t.panel).inner_margin(egui::Margin { left: 10, right: 10, top: 10, bottom: 10 }).show(ui, |ui| match app.left {
+        LeftPanel::AllTools => all_tools(app, ui, &t),
+        LeftPanel::Tool(id) => match catalog::group(id) {
+            Some(g) => tool_detail(app, ui, &t, g),
+            None => app.left = LeftPanel::AllTools,
         },
-    );
+    });
 }
 
 fn panel_header(ui: &mut egui::Ui, t: &Tokens, title: &str, back: bool) -> (bool, bool) {
@@ -51,31 +52,107 @@ fn panel_header(ui: &mut egui::Ui, t: &Tokens, title: &str, back: bool) -> (bool
 }
 
 fn all_tools(app: &mut PdfCraftApp, ui: &mut egui::Ui, t: &Tokens) {
-    let (_, close) = panel_header(ui, t, "All tools", false);
+    let mut close = false;
+    ui.horizontal(|ui| {
+        let width = (ui.available_width() - 26.0 - ui.spacing().item_spacing.x).max(40.0);
+        tools_filter(ui, t, &mut app.tools_filter, width);
+        if icons::button(ui, "x", 26.0, false, tl!("Close panel")).clicked() {
+            close = true;
+        }
+    });
     if close {
         app.left_open = false;
     }
+    let query = app.tools_filter.trim().to_lowercase();
+    let mut pick = None;
     egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
-        let shown = if app.all_tools_expanded { TOOL_GROUPS.len() } else { COLLAPSED_TOOLS.min(TOOL_GROUPS.len()) };
-        for g in &TOOL_GROUPS[..shown] {
-            if tool_row(ui, t, g).clicked() {
-                app.select_tool(g.id);
+        ui.spacing_mut().item_spacing.y = 1.0;
+        if !query.is_empty() {
+            // Typed text matches the translated name and the English one.
+            let hits: Vec<&ToolGroup> =
+                TOOL_GROUPS.iter().filter(|g| tl!(g.label).to_lowercase().contains(&query) || g.label.to_lowercase().contains(&query)).collect();
+            ui.add_space(6.0);
+            if hits.is_empty() {
+                ui.label(egui::RichText::new(tl!("No tool matches")).color(t.text_faint).font(theme::regular(12.5)));
+            }
+            for g in hits {
+                if tool_row(ui, t, g).clicked() {
+                    pick = Some(g.id);
+                }
+            }
+            return;
+        }
+        for (title, ids) in [(tl!("Essentials"), ESSENTIALS), (tl!("Review"), REVIEW), (tl!("Protect"), PROTECT)] {
+            widgets::section_title(ui, title);
+            for g in TOOL_GROUPS.iter().filter(|g| ids.contains(&g.id)) {
+                if tool_row(ui, t, g).clicked() {
+                    pick = Some(g.id);
+                }
             }
         }
-        ui.add_space(4.0);
-        let more = if app.all_tools_expanded { "View less" } else { "View more" };
-        if ui
-            .add(
-                egui::Label::new(egui::RichText::new(tl!(more)).color(t.accent_text).font(theme::medium(13.0)))
-                    .selectable(false)
-                    .sense(Sense::click()),
-            )
-            .on_hover_cursor(egui::CursorIcon::PointingHand)
-            .clicked()
+        let rest: Vec<&ToolGroup> = TOOL_GROUPS.iter().filter(|g| !sectioned(g.id)).collect();
+        if !rest.is_empty() {
+            if advanced_header(ui, t, rest.len(), app.all_tools_expanded).clicked() {
+                app.all_tools_expanded = !app.all_tools_expanded;
+            }
+            if app.all_tools_expanded {
+                for g in rest {
+                    if tool_row(ui, t, g).clicked() {
+                        pick = Some(g.id);
+                    }
+                }
+            }
+        }
+        #[cfg(not(target_arch = "wasm32"))]
         {
-            app.all_tools_expanded = !app.all_tools_expanded;
+            ui.add_space(6.0);
+            crate::vaults_ui::tools_panel_section(app, ui);
         }
     });
+    if let Some(id) = pick {
+        app.select_tool(id);
+    }
+}
+
+/// The search field at the top of All tools: it narrows the list as you type, Escape clears it.
+fn tools_filter(ui: &mut egui::Ui, t: &Tokens, text: &mut String, width: f32) {
+    let (rect, _) = ui.allocate_exact_size(vec2(width, 30.0), Sense::hover());
+    ui.painter().rect(rect, CornerRadius::same(8), t.field, Stroke::new(1.0, t.border), egui::StrokeKind::Inside);
+    icons::paint(ui, Rect::from_center_size(rect.left_center() + vec2(15.0, 0.0), vec2(15.0, 15.0)), "search", 14.0, t.text_faint);
+    let inner = Rect::from_min_max(rect.min + vec2(28.0, 0.0), rect.max - vec2(6.0, 0.0));
+    let resp = ui.put(
+        inner,
+        egui::TextEdit::singleline(text)
+            .hint_text(tl!("Filter tools"))
+            .frame(egui::Frame::NONE)
+            .font(theme::regular(13.0))
+            .vertical_align(Align::Center)
+            .char_limit(64)
+            .desired_width(inner.width()),
+    );
+    if resp.has_focus() {
+        ui.painter().rect_stroke(rect, CornerRadius::same(8), Stroke::new(1.0, t.accent), egui::StrokeKind::Inside);
+        if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
+            text.clear();
+        }
+    }
+}
+
+/// The Advanced heading, which folds the less common tools away. Its accessible name is the
+/// action it takes ("View more" / "View less").
+fn advanced_header(ui: &mut egui::Ui, t: &Tokens, count: usize, open: bool) -> egui::Response {
+    ui.add_space(10.0);
+    let (rect, resp) = ui.allocate_exact_size(vec2(ui.available_width(), 22.0), Sense::click());
+    let action = if open { tl!("View less") } else { tl!("View more") };
+    resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, action));
+    let hot = resp.hovered();
+    let title = format!("{} · {count}", tl!("Advanced").to_uppercase());
+    let color = if hot { t.text_muted } else { t.text_faint };
+    ui.painter().text(rect.left_center() + vec2(1.0, 0.0), Align2::LEFT_CENTER, title, theme::semibold(10.5), color);
+    let chevron = if open { "chevron-up" } else { "chevron-down" };
+    let tint = if hot { t.accent } else { t.text_faint };
+    icons::paint(ui, Rect::from_center_size(rect.right_center() - vec2(10.0, 0.0), vec2(14.0, 14.0)), chevron, 13.0, tint);
+    theme::hand(resp).on_hover_text(action)
 }
 
 /// Draw a one-line row label without painting into the status chip or beyond the sidebar.
@@ -89,15 +166,24 @@ fn row_label(ui: &mut egui::Ui, text: &str, font: egui::FontId, color: Color32, 
     elided
 }
 
+/// nads.site's list row: a quiet monochrome icon; on hover a soft wash, a red bar at the left
+/// edge and the icon turning red.
 fn tool_row(ui: &mut egui::Ui, t: &Tokens, g: &ToolGroup) -> egui::Response {
-    let (rect, resp) = ui.allocate_exact_size(vec2(ui.available_width(), 34.0), Sense::click());
+    let (rect, resp) = ui.allocate_exact_size(vec2(ui.available_width(), 32.0), Sense::click());
     resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, tl!(g.label)));
     let press = theme::Press::track(ui, &resp);
-    press.wash(ui, rect, 6, false);
+    press.wash(ui, rect, 8, false);
     let body = rect.translate(press.offset());
-    icons::paint(ui, Rect::from_min_size(body.min + vec2(6.0, 7.0), vec2(20.0, 20.0)), g.icon, 19.0, hue(g));
+    let hot = resp.hovered() || resp.has_focus();
+    if hot {
+        let bar = Rect::from_min_max(pos2(body.left(), body.top() + 8.0), pos2(body.left() + 2.0, body.bottom() - 8.0));
+        ui.painter().rect_filled(bar, CornerRadius::same(1), t.accent);
+    }
+    let icon = if hot { t.accent } else { t.text_muted };
+    icons::paint(ui, Rect::from_center_size(body.left_center() + vec2(19.0, 0.0), vec2(18.0, 18.0)), g.icon, 17.0, icon);
+    let badge_font = theme::semibold(9.5);
     let right_reserved = match (g.badge, g.availability) {
-        (Some(b), _) => ui.fonts_mut(|f| f.layout_no_wrap(tl!(b).to_owned(), theme::semibold(9.5), Color32::WHITE).size().x) + 26.0,
+        (Some(b), _) => widgets::text_width(ui, tl!(b), &badge_font) + 26.0,
         (None, Availability::Planned(m)) if resp.hovered() => {
             let hint = format!("{} · {m}", tl!("Planned"));
             ui.fonts_mut(|f| f.layout_no_wrap(hint, theme::medium(10.5), t.text_faint).size().x) + 18.0
@@ -105,17 +191,17 @@ fn tool_row(ui: &mut egui::Ui, t: &Tokens, g: &ToolGroup) -> egui::Response {
         _ => 8.0,
     };
     let clipped =
-        row_label(ui, tl!(g.label), theme::regular(13.5), t.text, body.left_center() + vec2(36.0, 0.0), rect.width() - 36.0 - right_reserved);
+        row_label(ui, tl!(g.label), theme::regular(13.0), t.text, body.left_center() + vec2(38.0, 0.0), rect.width() - 38.0 - right_reserved);
     match (g.badge, g.availability) {
         (Some(b), _) => {
-            let font = theme::semibold(9.5);
+            // An outlined tag rather than a filled one, so the list stays calm.
             let badge = tl!(b);
-            let w = ui.fonts_mut(|f| f.layout_no_wrap(badge.to_string(), font.clone(), Color32::WHITE).size().x);
-            let r = Rect::from_center_size(body.right_center() - vec2(w / 2.0 + 10.0, 0.0), vec2(w + 10.0, 16.0));
-            ui.painter().rect_filled(r, CornerRadius::same(4), t.badge_new);
-            ui.painter().text(r.center(), Align2::CENTER_CENTER, badge, font, Color32::WHITE);
+            let w = widgets::text_width(ui, badge, &badge_font);
+            let r = Rect::from_center_size(body.right_center() - vec2(w / 2.0 + 10.0, 0.0), vec2(w + 12.0, 16.0));
+            ui.painter().rect_stroke(r, CornerRadius::same(8), Stroke::new(1.0, t.accent), egui::StrokeKind::Inside);
+            ui.painter().text(r.center(), Align2::CENTER_CENTER, badge, badge_font, t.accent_text);
         }
-        // Planned tools: a quiet milestone hint instead of a chip, so the list stays calm.
+        // Planned tools: a quiet milestone hint instead of a chip.
         (None, Availability::Planned(m)) if resp.hovered() => {
             ui.painter().text(
                 body.right_center() - vec2(10.0, 0.0),
@@ -216,10 +302,10 @@ fn tool_detail(app: &mut PdfCraftApp, ui: &mut egui::Ui, t: &Tokens, g: &'static
                     Rect::from_min_size(body.min + vec2(6.0, 8.0), vec2(18.0, 18.0)),
                     item.icon,
                     17.0,
-                    if ready { hue(g) } else { t.text_faint },
+                    if ready { t.text_muted } else { t.text_faint },
                 );
                 let (chip, fill, cfg) = match item.availability {
-                    Availability::Ready => (tl!("Ready"), Color32::from_rgb(0xDD, 0xF3, 0xE4), Color32::from_rgb(0x1E, 0x7B, 0x43)),
+                    Availability::Ready => (tl!("Ready"), t.hover, t.text_faint),
                     Availability::Planned(m) => (m, t.pressed, t.text_muted),
                     Availability::Provider => ("AI", t.pressed, t.text_muted),
                 };
@@ -1055,7 +1141,7 @@ fn pages(ui: &mut egui::Ui, t: &Tokens, info: &DocInfo, view: &mut crate::DocVie
                 ui.painter().rect_stroke(rect, CornerRadius::same(8), Stroke::new(1.5, t.accent), egui::StrokeKind::Inside);
             }
             let pr = rect.translate(press.offset()).shrink(8.0);
-            ui.painter().rect_filled(pr, CornerRadius::ZERO, Color32::WHITE);
+            ui.painter().rect_filled(pr, CornerRadius::ZERO, view.dark.paper(true));
             if let Some(tex) = view.thumb(i) {
                 ui.painter().image(tex.id(), pr, Rect::from_min_max(pos2(0.0, 0.0), pos2(1.0, 1.0)), Color32::WHITE);
             }

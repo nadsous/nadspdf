@@ -27,6 +27,8 @@ default = ["mcp"]
 mcp = ["dep:base64"]
 
 [dev-dependencies]
+# Builds a small .docx for the doc_convert end-to-end test.
+zip = { version = "4.6", default-features = false, features = ["deflate-flate2"] }
 pdfcraft-fonts = { workspace = true }
 flate2.workspace = true
 pdfcraft-model = { workspace = true }

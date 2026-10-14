@@ -97,6 +97,16 @@ impl Exporter {
         encode_image(r.width, r.height, &r.rgba, format)
     }
 
+    /// Page `page` rendered at `dpi` (premultiplied RGBA), within the renderer's size limits.
+    pub fn render(&mut self, page: usize, dpi: f64) -> Result<pdfcraft_render::RenderedPage, String> {
+        self.check(page)?;
+        let r = self.renderer.render(RenderRequest { page, scale: (dpi.clamp(18.0, 1200.0) / 72.0) as f32, ..Default::default() });
+        match r.error {
+            Some(e) => Err(format!("page {}: {e}", page + 1)),
+            None => Ok(r),
+        }
+    }
+
     /// The reading-order text of a page.
     pub fn text(&mut self, page: usize) -> Result<String, String> {
         self.check(page)?;
@@ -181,7 +191,7 @@ impl ImageFormat {
 }
 
 /// Premultiplied RGBA composited over white → RGB.
-fn over_white(premultiplied: &[u8]) -> Vec<u8> {
+pub(crate) fn over_white(premultiplied: &[u8]) -> Vec<u8> {
     premultiplied
         .as_chunks::<4>()
         .0

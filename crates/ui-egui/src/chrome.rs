@@ -1,8 +1,9 @@
 //! Window chrome: tab strip (with the integrated macOS title bar), mode bar, right rail.
 
-use egui::{Align, Align2, Color32, CornerRadius, Layout, Rect, Sense, Stroke, vec2};
+use egui::{Align, Align2, Color32, CornerRadius, Layout, Rect, Sense, Stroke, pos2, vec2};
 
 use crate::canvas::{DocView, Fit, PageLayout};
+use crate::tab_groups::{self, GroupAction, Slot, TabGroups};
 use crate::theme::{self, ThemePreference, Tokens};
 use crate::{Dialog, Mode, PdfCraftApp, PropsTab, RightPanel, icons, widgets, window_controls};
 
@@ -38,6 +39,7 @@ pub fn tab_strip(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
         .frame(egui::Frame::NONE.fill(t.titlebar).inner_margin(egui::Margin { left, right: 10, top: 0, bottom: 0 }))
         .show(ui, |ui| {
             let full = ui.max_rect();
+            app.strip_rect = full;
             let drag = ui.interact(full, ui.id().with("titledrag"), Sense::click_and_drag());
             if drag.drag_started() {
                 ui.ctx().send_viewport_cmd(egui::ViewportCommand::StartDrag);
@@ -62,30 +64,42 @@ pub fn tab_strip(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                     });
                     ui.add_space(window_controls::SIDE_GAP - 4.0);
                 }
+                // The nads.site brand, as on the site's top bar, opens the main menu.
+                main_menu(app, ui, button);
+                ui.add_space(2.0);
                 if icons::button(ui, "house", button, app.active.is_none() && !app.combine_showing(), tl!("Home")).clicked() {
                     app.active = None;
                     app.combine_tab.focused = false;
                 }
-                // Keep the two icon buttons, Discord's text/padding and three gaps outside the scrolling tabs.
-                let controls_width = ui.fonts_mut(|f| f.layout_no_wrap("Discord".into(), theme::medium(13.0), t.text).size().x)
-                    + 2.0 * button
-                    + 50.0
-                    + window_controls::width(&controls.right);
+                // Keep the two icon buttons and the gaps outside the scrolling tabs.
+                let controls_width = 2.0 * button + 50.0 + window_controls::width(&controls.right);
                 // Open stays in sight after the tabs: its icon, text and padding, and the gaps around it.
                 let open_width = ui.fonts_mut(|f| f.layout_no_wrap(tl!("Open").into(), theme::medium(13.0), t.text).size().x) + 38.0 + 12.0;
                 let mut tabs_width = (ui.available_width() - controls_width - open_width).max(0.0);
                 // Tabs shrink to share the strip (names end in "…") and scroll only once they reach
                 // their narrowest; then arrows either side say so and step through them.
-                let mut natural: Vec<f32> = Vec::with_capacity(app.views.len() + 1);
-                for v in &app.views {
-                    if let Some(doc) = app.session.get(v.id) {
-                        natural.push(tab_natural_width(ui, &t, &doc.display_name()));
+                // Tab groups: each chip sits before its tabs, and a folded group hides them.
+                let docs: Vec<pdfcraft_engine::DocId> = app.views.iter().map(|v| v.id).collect();
+                app.tab_groups.prune(&docs);
+                let mut slots = app.tab_groups.layout(&docs, app.active);
+                // Bubbled documents float over the window instead.
+                slots.retain(|s| !matches!(*s, Slot::Tab(i) if docs.get(i).is_some_and(|d| app.bubbles.contains(*d))));
+                let gap = ui.spacing().item_spacing.x;
+                let mut natural: Vec<f32> = Vec::with_capacity(slots.len() + 1);
+                for slot in &slots {
+                    match *slot {
+                        Slot::Tab(i) => {
+                            if let Some(doc) = app.views.get(i).and_then(|v| app.session.get(v.id)) {
+                                natural.push(tab_natural_width(ui, &t, &doc.display_name()));
+                            }
+                        }
+                        // Chips keep their width: what they take comes out of the tabs' share.
+                        Slot::Chip(g) => tabs_width = (tabs_width - chip_width(ui, &app.tab_groups, g) - gap).max(0.0),
                     }
                 }
                 if app.combine_tab.open {
                     natural.push(tab_natural_width(ui, &t, tl!("Combine files")));
                 }
-                let gap = ui.spacing().item_spacing.x;
                 let overflow = tabs_overflow(&natural, tabs_width, gap, TAB_MIN_WIDTH);
                 if overflow {
                     tabs_width = (tabs_width - 2.0 * (TAB_ARROW + gap)).max(0.0);
@@ -107,6 +121,7 @@ pub fn tab_strip(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                 });
                 let mut action = None;
                 let mut close = None;
+                let mut group_action = None;
                 ui.scope(|ui| {
                     ui.style_mut().always_scroll_the_only_direction = true;
                     let mut area = egui::ScrollArea::horizontal().id_salt("document_tabs").max_width(tabs_width).auto_shrink([true, true]);
@@ -115,14 +130,24 @@ pub fn tab_strip(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                     }
                     let out = area.show(ui, |ui| {
                         ui.horizontal_centered(|ui| {
-                            for i in 0..app.views.len() {
-                                let Some(doc) = app.session.get(app.views[i].id) else { continue };
+                            for slot in &slots {
+                                let i = match *slot {
+                                    Slot::Chip(g) => {
+                                        if let Some(a) = group_chip(ui, &t, &mut app.tab_groups, g, tab_h) {
+                                            group_action = Some(a);
+                                        }
+                                        continue;
+                                    }
+                                    Slot::Tab(i) => i,
+                                };
+                                let Some(view_id) = app.views.get(i).map(|v| v.id) else { continue };
+                                let Some(doc) = app.session.get(view_id) else { continue };
                                 let (name, dirty) = (doc.display_name(), doc.dirty);
                                 // A tab showing the document's title names its file on hover.
                                 let file = (name != doc.name).then_some(doc.name.as_str());
                                 let response = tab(
                                     ui,
-                                    ui.id().with(("document-tab", app.views[i].id)),
+                                    ui.id().with(("document-tab", view_id)),
                                     &t,
                                     "file-text",
                                     &name,
@@ -137,7 +162,13 @@ pub fn tab_strip(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                                 if changed && app.active == Some(i) && !app.combine_showing() {
                                     response.scroll_to_me(Some(Align::Center));
                                 }
-                                let id = app.views[i].id;
+                                let id = view_id;
+                                let group = app.tab_groups.group_of(id);
+                                if let Some(g) = group.and_then(|g| app.tab_groups.get(g)) {
+                                    // The group's colour runs under its tabs.
+                                    let r = response.rect;
+                                    ui.painter().hline(r.x_range().shrink(4.0), r.bottom() - 1.5, Stroke::new(3.0, tab_groups::color(g.color)));
+                                }
                                 let reveal = cfg!(not(target_arch = "wasm32")) && doc.path.is_some();
                                 response.context_menu(|ui| {
                                     if ui.button(tl!("Close Tab")).clicked() {
@@ -153,6 +184,16 @@ pub fn tab_strip(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                                         action = Some(crate::tab_context::Action::Reveal(id));
                                         ui.close();
                                     }
+                                    if ui
+                                        .button(tl!("Float as a bubble"))
+                                        .on_hover_text(tl!("Show this PDF in a small window over the others"))
+                                        .clicked()
+                                    {
+                                        action = Some(crate::tab_context::Action::Float(id));
+                                        ui.close();
+                                    }
+                                    ui.separator();
+                                    tab_group_menu(ui, &app.tab_groups, id, group, &mut group_action);
                                 });
                                 if response.clicked() {
                                     app.active = Some(i);
@@ -163,8 +204,13 @@ pub fn tab_strip(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                             {
                                 action.get_or_insert(crate::tab_context::Action::Close(view.id));
                             }
-                            if let Some(action) = action {
-                                app.tab_action(action);
+                            match action {
+                                Some(crate::tab_context::Action::Float(id)) => app.float_tab(id, ui.ctx().content_rect()),
+                                Some(action) => app.tab_action(action),
+                                None => {}
+                            }
+                            if let Some(a) = group_action.take() {
+                                app.tab_group_action(a);
                             }
                             if app.combine_tab.open {
                                 // After the document tabs; its index can't clash with theirs.
@@ -239,10 +285,6 @@ pub fn tab_strip(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                     egui::Popup::context_menu(&response).id(response.id.with("theme_menu")).show(|ui| appearance_menu(app, ui));
                     if icons::button(ui, "circle-help", button, false, tl!("Keyboard shortcuts")).clicked() {
                         app.dialog = Some(Dialog::Shortcuts);
-                    }
-                    // One click to the community, from anywhere in the app.
-                    if widgets::ghost_button_sized(ui, "messages-square", "Discord", tab_h).on_hover_text(pdfcraft_engine::links::DISCORD).clicked() {
-                        app.execute("help.discord");
                     }
                 });
             });
@@ -329,6 +371,148 @@ fn tab_cap(natural: &[f32], budget: f32, gap: f32, min: f32) -> Option<f32> {
     None
 }
 
+/// The chip's text: the group's name, and how many tabs it hides while folded.
+fn chip_text(groups: &TabGroups, id: u32) -> String {
+    let Some(g) = groups.get(id) else { return String::new() };
+    let name = tab_name(&g.name);
+    if !g.collapsed {
+        return name;
+    }
+    let n = groups.members(id).len();
+    if name.is_empty() { n.to_string() } else { format!("{name} · {n}") }
+}
+
+/// A chip's height inside the strip.
+const CHIP_HEIGHT: f32 = 22.0;
+/// A chip with no name: a swatch of its colour.
+const CHIP_EMPTY: f32 = 18.0;
+/// A chip while its name is typed.
+const CHIP_EDITING: f32 = 132.0;
+
+/// The width group `id`'s chip takes in the strip.
+fn chip_width(ui: &egui::Ui, groups: &TabGroups, id: u32) -> f32 {
+    if groups.renaming == Some(id) {
+        return CHIP_EDITING;
+    }
+    let text = chip_text(groups, id);
+    if text.is_empty() {
+        return CHIP_EMPTY;
+    }
+    ui.fonts_mut(|f| f.layout_no_wrap(text, theme::medium(12.0), Color32::WHITE).size().x) + 18.0
+}
+
+/// A group's chip: a click folds or unfolds the group, a double-click renames it, and the
+/// right-click menu renames, recolours, ungroups or closes it.
+fn group_chip(ui: &mut egui::Ui, t: &Tokens, groups: &mut TabGroups, id: u32, height: f32) -> Option<GroupAction> {
+    let color = tab_groups::color(groups.get(id)?.color);
+    let width = chip_width(ui, groups, id);
+    let height = ui.available_height().max(height);
+    let (slot, _) = ui.allocate_exact_size(vec2(width, height), Sense::hover());
+    let rect = Rect::from_center_size(slot.center(), vec2(width, CHIP_HEIGHT));
+    if groups.renaming == Some(id) {
+        let g = groups.get_mut(id)?;
+        let edit = egui::TextEdit::singleline(&mut g.name)
+            .hint_text(tl!("Group name"))
+            .char_limit(tab_groups::MAX_NAME)
+            .font(theme::medium(12.0))
+            .margin(vec2(6.0, 2.0))
+            .desired_width(rect.width() - 12.0);
+        let resp = ui.put(rect, edit);
+        resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::TextEdit, true, tl!("Group name")));
+        ui.painter().rect_stroke(rect, CornerRadius::same(6), Stroke::new(1.5, color), egui::StrokeKind::Outside);
+        // Enter, Escape or a click elsewhere ends the edit; the name is kept as typed.
+        if resp.lost_focus() {
+            groups.renaming = None;
+        } else if !resp.has_focus() {
+            resp.request_focus();
+        }
+        return None;
+    }
+    let g = groups.get(id)?;
+    let text = chip_text(groups, id);
+    let a11y = if g.name.is_empty() { tab_groups::color_name(g.color).to_string() } else { g.name.clone() };
+    let resp = ui.interact(rect, ui.id().with(("tab-group", id)), Sense::click());
+    resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, &a11y));
+    let press = theme::Press::track(ui, &resp);
+    let fill = if resp.hovered() { color.gamma_multiply(0.85) } else { color };
+    ui.painter().rect_filled(rect.translate(press.offset()), CornerRadius::same(6), fill);
+    if !text.is_empty() {
+        // Dark text reads on every palette colour.
+        ui.painter().text(rect.center() + press.offset(), Align2::CENTER_CENTER, text, theme::medium(12.0), Color32::from_rgb(0x11, 0x11, 0x13));
+    }
+    // The colour also runs under the chip, joining the line under the group's tabs.
+    ui.painter().hline(slot.x_range().shrink(2.0), slot.bottom() - 1.5, Stroke::new(3.0, color));
+    let mut action = None;
+    let resp = theme::hand(resp).on_hover_text(tl!("Click to fold or unfold the group"));
+    if resp.double_clicked() {
+        action = Some(GroupAction::Rename(id));
+    } else if resp.clicked() {
+        action = Some(GroupAction::Toggle(id));
+    }
+    resp.context_menu(|ui| {
+        if ui.button(tl!("Rename Group")).clicked() {
+            action = Some(GroupAction::Rename(id));
+            ui.close();
+        }
+        ui.horizontal(|ui| {
+            ui.spacing_mut().item_spacing.x = 4.0;
+            for c in 0..tab_groups::COLORS.len() {
+                let Ok(c) = u8::try_from(c) else { continue };
+                let (r, swatch) = ui.allocate_exact_size(vec2(18.0, 18.0), Sense::click());
+                let current = groups.get(id).is_some_and(|g| g.color == c);
+                ui.painter().circle_filled(r.center(), 7.0, tab_groups::color(c));
+                if current || swatch.hovered() {
+                    ui.painter().circle_stroke(r.center(), 8.5, Stroke::new(1.5, t.text));
+                }
+                swatch.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, tab_groups::color_name(c)));
+                if theme::hand(swatch).on_hover_text(tab_groups::color_name(c)).clicked() {
+                    action = Some(GroupAction::Recolor(id, c));
+                    ui.close();
+                }
+            }
+        });
+        ui.separator();
+        if ui.button(tl!("Ungroup")).clicked() {
+            action = Some(GroupAction::Ungroup(id));
+            ui.close();
+        }
+        if ui.button(tl!("Close Group")).clicked() {
+            action = Some(GroupAction::Close(id));
+            ui.close();
+        }
+    });
+    action
+}
+
+/// The tab menu's group entries for the tab showing `doc`, which is in group `current`.
+fn tab_group_menu(ui: &mut egui::Ui, groups: &TabGroups, doc: pdfcraft_engine::DocId, current: Option<u32>, action: &mut Option<GroupAction>) {
+    if ui.button(tl!("Add Tab to New Group")).clicked() {
+        *action = Some(GroupAction::New(doc));
+        ui.close();
+    }
+    let others: Vec<&tab_groups::TabGroup> = groups.groups().iter().filter(|g| Some(g.id) != current).collect();
+    if !others.is_empty() {
+        ui.menu_button(tl!("Add Tab to Group"), |ui| {
+            for g in others {
+                let name = if g.name.is_empty() { tab_groups::color_name(g.color) } else { g.name.as_str() };
+                let dot = egui::RichText::new("●").color(tab_groups::color(g.color));
+                let resp = ui.horizontal(|ui| {
+                    ui.label(dot);
+                    ui.button(name)
+                });
+                if resp.inner.clicked() {
+                    *action = Some(GroupAction::Add(doc, g.id));
+                    ui.close();
+                }
+            }
+        });
+    }
+    if current.is_some() && ui.button(tl!("Remove from Group")).clicked() {
+        *action = Some(GroupAction::Remove(doc));
+        ui.close();
+    }
+}
+
 #[allow(clippy::too_many_arguments)]
 fn tab(
     ui: &mut egui::Ui,
@@ -371,13 +555,17 @@ fn tab(
         if bg.a() > 0 {
             ui.painter().rect_filled(rect, CornerRadius { nw: 7, ne: 7, sw: 0, se: 0 }, bg);
         }
-        icons::paint(
-            ui,
-            Rect::from_min_size(rect.min + vec2(6.0, (height - 16.0) / 2.0), vec2(16.0, 16.0)),
-            icon,
-            15.0,
-            if active { t.accent } else { t.text_muted },
-        );
+        let icon_rect = Rect::from_min_size(rect.min + vec2(6.0, (height - 16.0) / 2.0), vec2(16.0, 16.0));
+        if icon == "file-text" {
+            // A document tab shows the NadsPDF mark rather than a generic PDF file icon;
+            // background tabs show it faded.
+            let tint = if active { Color32::WHITE } else { Color32::WHITE.gamma_multiply(0.45) };
+            egui::Image::from_bytes("bytes://nads-n.svg", include_bytes!("../../../assets/app-icon/nads-n.svg"))
+                .tint(tint)
+                .paint_at(ui, Rect::from_center_size(icon_rect.center(), vec2(14.0, 14.0)));
+        } else {
+            icons::paint(ui, icon_rect, icon, 15.0, if active { t.accent } else { t.text_muted });
+        }
         ui.painter().text(rect.min + vec2(28.0, rect.height() / 2.0), Align2::LEFT_CENTER, label, font, if active { t.text } else { t.text_muted });
     });
     let x_rect = Rect::from_center_size(rect.right_center() - vec2(16.0, 0.0), vec2(20.0, 20.0));
@@ -406,23 +594,31 @@ fn tab(
 
 pub fn mode_bar(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
     let t = Tokens::get(ui.ctx());
-    egui::Panel::top("mode_bar")
-        .exact_size(48.0)
-        .frame(egui::Frame::NONE.fill(t.chrome).inner_margin(egui::Margin::symmetric(10, 0)).stroke(Stroke::new(1.0, t.divider)))
-        .show(ui, |ui| {
+    egui::Panel::top("mode_bar").exact_size(48.0).frame(egui::Frame::NONE.fill(t.titlebar).inner_margin(egui::Margin::symmetric(10, 0))).show(
+        ui,
+        |ui| {
             ui.horizontal_centered(|ui| {
                 ui.spacing_mut().item_spacing.x = 2.0;
-                main_menu(app, ui);
-                ui.add_space(6.0);
-                ui.painter().vline(ui.cursor().left(), ui.max_rect().y_range().shrink(12.0), Stroke::new(1.0, t.divider));
-                ui.add_space(10.0);
-                for (mode, label) in
-                    [(Mode::AllTools, "All tools"), (Mode::Read, "Read"), (Mode::Edit, "Edit"), (Mode::Convert, "Convert"), (Mode::Sign, "E-Sign")]
-                {
-                    if widgets::mode_tab(ui, tl!(label), app.mode == mode).clicked() {
-                        app.switch_mode(mode, true);
-                    }
-                }
+                // The modes sit in one rounded group, like the menus on nads.site's top bar.
+                egui::Frame::NONE.fill(t.panel).stroke(Stroke::new(1.0, t.border)).corner_radius(10).inner_margin(egui::Margin::same(3)).show(
+                    ui,
+                    |ui| {
+                        ui.horizontal(|ui| {
+                            ui.spacing_mut().item_spacing.x = 2.0;
+                            for (mode, label) in [
+                                (Mode::AllTools, "All tools"),
+                                (Mode::Read, "Read"),
+                                (Mode::Edit, "Edit"),
+                                (Mode::Convert, "Convert"),
+                                (Mode::Sign, "E-Sign"),
+                            ] {
+                                if widgets::mode_tab(ui, tl!(label), app.mode == mode).clicked() {
+                                    app.switch_mode(mode, true);
+                                }
+                            }
+                        });
+                    },
+                );
                 ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
                     ui.spacing_mut().item_spacing.x = 4.0;
                     let has_doc = app.active.is_some();
@@ -446,12 +642,28 @@ pub fn mode_bar(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                     }
                 });
             });
-        });
+        },
+    );
 }
 
-fn main_menu(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
+/// The logo at the strip's left end: it is the main menu's button (File, Edit, Pages, View…).
+fn logo_button(ui: &mut egui::Ui, t: &Tokens, size: f32) -> egui::Response {
+    let (rect, resp) = ui.allocate_exact_size(vec2(size + 8.0, size), Sense::click());
+    resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, tl!("Menu")));
+    let press = theme::Press::track(ui, &resp);
+    let open = egui::Popup::is_id_open(ui.ctx(), egui::Popup::default_response_id(&resp));
+    press.wash(ui, rect, 8, open);
+    let mark = Rect::from_center_size(rect.center() - vec2(3.0, 0.0) + press.offset(), vec2(18.0, 18.0));
+    egui::Image::from_bytes("bytes://nads-n.svg", include_bytes!("../../../assets/app-icon/nads-n.svg")).paint_at(ui, mark);
+    // A small chevron says the logo opens a menu.
+    let tint = if resp.hovered() || open { t.text } else { t.text_faint };
+    icons::paint(ui, Rect::from_center_size(pos2(mark.right() + 6.0, mark.bottom() - 2.0), vec2(9.0, 9.0)), "chevron-down", 9.0, tint);
+    theme::hand(resp).on_hover_text(tl!("Menu"))
+}
+
+fn main_menu(app: &mut PdfCraftApp, ui: &mut egui::Ui, size: f32) {
     let t = Tokens::get(ui.ctx());
-    let resp = widgets::ghost_button(ui, "panel-left", tl!("Menu"));
+    let resp = logo_button(ui, &t, size);
     egui::Popup::menu(&resp).show(|ui| {
         ui.set_min_width(230.0);
         ui.menu_button(tl!("File"), |ui| crate::commands::registry_menu(app, ui, "File"));
@@ -551,8 +763,15 @@ pub fn right_rail(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
     let labels: Vec<String> = doc.info.pages.iter().map(|p| p.label.clone()).collect();
     egui::Panel::right("rail")
         .resizable(false)
-        .exact_size(48.0)
-        .frame(egui::Frame::NONE.fill(t.chrome).inner_margin(egui::Margin::symmetric(6, 8)).stroke(Stroke::new(1.0, t.divider)))
+        .exact_size(56.0)
+        .frame(
+            egui::Frame::NONE
+                .fill(t.chrome)
+                .corner_radius(14)
+                .stroke(Stroke::new(1.0, t.border))
+                .outer_margin(egui::Margin { left: 0, right: 8, top: 0, bottom: 8 })
+                .inner_margin(egui::Margin::symmetric(6, 8)),
+        )
         .show(ui, |ui| {
             ui.spacing_mut().item_spacing.y = 4.0;
             let mut rail_button = |ui: &mut egui::Ui, panel: RightPanel, icon: &str, tip: &str, has: bool| {

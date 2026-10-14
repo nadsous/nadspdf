@@ -296,7 +296,7 @@ fn flattening_fields_drops_the_ones_on_no_page() {
 
 /// Flattening never makes a `?` permanent: it refuses, changing nothing, a text box without an
 /// appearance whose text Helvetica can't draw (another program's), and a comment or form field
-/// whose appearance PdfCraft drew with `?` (marked `PCUndrawn`). A comment another program drew
+/// whose appearance NadsPDF drew with `?` (marked `PCUndrawn`). A comment another program drew
 /// with a font that has those characters (an appearance, no mark) flattens as before.
 #[test]
 fn flattening_refuses_what_would_bake_in_question_marks() {
@@ -1512,7 +1512,7 @@ fn paragraphs_are_found_and_rewrapped() {
     assert_eq!(blocks[0].lines, [0, 1, 2]);
     let width = blocks[0].rect[2] - blocks[0].rect[0];
     let next = blocks[1].rect;
-    let long = "PdfCraft rewraps a paragraph to its own width when its text changes, keeping the font, size, colour and line spacing.";
+    let long = "NadsPDF rewraps a paragraph to its own width when its text changes, keeping the font, size, colour and line spacing.";
     assert_eq!(text::replace_block(&mut doc, 0, 0, long).unwrap().substituted, None);
     let doc = reopen(&doc);
     let lines = text::text_lines(&doc, 0).unwrap();
@@ -3442,4 +3442,18 @@ fn an_items_measured_face_is_the_face_it_is_written_as() {
     // Courier is monospaced in every style: equal widths here are correct, not a collapsed face.
     let courier = |italic| Family::Courier.width("Anna", 12.0, false, italic);
     assert_eq!(courier(false), courier(true));
+}
+
+#[test]
+fn a_textless_copy_keeps_the_artwork_and_leaves_the_original_alone() {
+    let doc = text_page("0 0 1 rg 10 10 50 50 re f BT /F1 12 Tf 72 700 Td (Hello) Tj T* [(Wor) -20 (ld)] TJ (again) ' ET");
+    let copy = crate::without_text(&doc);
+    let ops = pdfcraft_content::parse(&page_content_bytes(&copy, 0)).ops;
+    assert!(ops.iter().any(|o| o.is("re")) && ops.iter().any(|o| o.is("f")), "the rectangle stays");
+    assert!(!ops.iter().any(|o| o.is("Tj") || o.is("TJ") || o.is("'")), "no text is shown");
+    assert!(crate::reading_blocks(&copy, 0).unwrap().is_empty());
+    assert!(crate::reading_blocks(&doc, 0).unwrap().iter().any(|b| b.text.contains("Hello")), "the original is untouched");
+    // A page without text comes through unchanged.
+    let plain = text_page("10 10 50 50 re f");
+    assert_eq!(page_content_bytes(&crate::without_text(&plain), 0), page_content_bytes(&plain, 0));
 }

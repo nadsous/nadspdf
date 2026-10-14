@@ -1,4 +1,4 @@
-//! Action Wizard: the actions (PdfCraft's and your own), running one over files in the
+//! Action Wizard: the actions (NadsPDF's and your own), running one over files in the
 //! background, and creating or editing an action's steps. Your actions are remembered.
 
 use std::sync::{Arc, Mutex};
@@ -166,6 +166,7 @@ impl PdfCraftApp {
     /// Start: ask for the files, then run the selected action on them.
     fn start_selected_action(&mut self) {
         let Some(action) = self.wizard.selected.as_ref().and_then(|n| self.all_actions().into_iter().find(|a| &a.name == n)) else { return };
+        let action = localized(action);
         #[cfg(not(target_arch = "wasm32"))]
         {
             let title = crate::i18n::fmt(tl!("Files for {name}"), &[("name", &action.name)]);
@@ -200,6 +201,34 @@ impl PdfCraftApp {
             }
         }
     }
+}
+
+/// A built-in action as it runs in the interface language: its watermark text translated
+/// ("CONFIDENTIEL" in French). The user's own actions run exactly as written.
+pub(crate) fn localized(mut action: Action) -> Action {
+    if action.builtin {
+        for step in &mut action.steps {
+            if let Step::AddWatermark(text) | Step::AddFaintWatermark(text) = step {
+                *text = tl_ctx!("watermark text", text.as_str()).to_string();
+            }
+        }
+    }
+    action
+}
+
+/// An editable copy of `action` (built-in or not), named "<name> (copy)" in the interface language.
+pub(crate) fn duplicate(action: Action, taken: &[Action]) -> Action {
+    let builtin = action.builtin;
+    let mut copy = localized(action);
+    let shown = if builtin { tl!(&copy.name).to_string() } else { copy.name.clone() };
+    if builtin {
+        copy.description = tl!(&copy.description).to_string();
+    }
+    let base = crate::i18n::fmt(tl!("{name} (copy)"), &[("name", &shown)]);
+    copy.name =
+        (1..100).map(|n| if n == 1 { base.clone() } else { format!("{base} {n}") }).find(|n| !taken.iter().any(|a| &a.name == n)).unwrap_or(base);
+    copy.builtin = false;
+    copy
 }
 
 /// Saved actions as JSON (`[{name, description, steps: [[id, arg], …]}]`).
@@ -265,7 +294,8 @@ pub(crate) fn body(ui: &mut egui::Ui, app: &mut PdfCraftApp, t: &Tokens) -> bool
             }
             ui.add_space(6.0);
             ui.label(egui::RichText::new(tl!("Steps")).font(theme::semibold(13.0)));
-            for (i, s) in a.steps.iter().enumerate() {
+            let shown = localized(a.clone());
+            for (i, s) in shown.steps.iter().enumerate() {
                 let arg = s.arg().filter(|x| !x.is_empty()).map(|x| format!(": {x}")).unwrap_or_default();
                 ui.label(format!("{}. {}{arg}", i + 1, tl!(s.label())));
             }
@@ -277,6 +307,12 @@ pub(crate) fn body(ui: &mut egui::Ui, app: &mut PdfCraftApp, t: &Tokens) -> bool
     ui.horizontal(|ui| {
         if ui.button(tl!("New Action…")).clicked() {
             app.wizard.editing = Some((None, Action { name: String::new(), description: String::new(), steps: Vec::new(), builtin: false }));
+        }
+        // Ready-made actions can't be changed, but a copy of any action can.
+        if let Some(a) = app.wizard.selected.as_ref().and_then(|n| actions.iter().find(|a| &a.name == n))
+            && ui.button(tl!("Duplicate…")).clicked()
+        {
+            app.wizard.editing = Some((None, duplicate(a.clone(), &actions)));
         }
         if let Some(i) = selected_custom {
             if ui.button(tl!("Edit…")).clicked() {
@@ -383,4 +419,25 @@ fn edit_body(ui: &mut egui::Ui, app: &mut PdfCraftApp, t: &Tokens) -> bool {
         app.wizard.selected = Some(name);
     }
     false
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn ready_made_actions_duplicate_into_editable_translated_copies() {
+        let confidential = builtin().into_iter().find(|a| a.name == "Confidential").unwrap();
+        crate::i18n::set_current(crate::i18n::Lang::from_code("fr").unwrap());
+        let ran = localized(confidential.clone());
+        assert_eq!(ran.steps[0], Step::AddFaintWatermark("CONFIDENTIEL".into()));
+        let taken = vec![Action { name: "Confidentiel (copie)".into(), description: String::new(), steps: Vec::new(), builtin: false }];
+        let copy = duplicate(confidential.clone(), &taken);
+        assert_eq!(copy.name, "Confidentiel (copie) 2");
+        assert!(!copy.builtin && copy.steps.len() == 2);
+        // The user's own actions run exactly as written.
+        let mine = Action { builtin: false, ..confidential };
+        assert_eq!(localized(mine).steps[0], Step::AddFaintWatermark("CONFIDENTIAL".into()));
+        crate::i18n::set_current(crate::i18n::Lang::from_code("en").unwrap());
+    }
 }

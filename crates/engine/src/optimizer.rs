@@ -25,6 +25,8 @@ pub enum OptimizeStage {
     Merging,
     /// Writing the compressed copy.
     Writing,
+    /// Compress ▸ Rasterize pages: about to render page `done` (0-based) of `total`.
+    Rasterizing { done: usize, total: usize },
 }
 
 impl OptimizeStage {
@@ -37,6 +39,7 @@ impl OptimizeStage {
             OptimizeStage::CleaningUp => 0.8,
             OptimizeStage::Merging => 0.85,
             OptimizeStage::Writing => 0.9,
+            OptimizeStage::Rasterizing { done, total } => 0.9 * if total == 0 { 1.0 } else { done.min(total) as f32 / total as f32 },
         }
     }
 }

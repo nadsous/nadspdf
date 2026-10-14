@@ -2,7 +2,7 @@
 #
 # Clean-room translations from English source labels. Use standard Lithuanian computing terms;
 # consult the Lietuvos Respublikos terminų bankas (terminai.vlkk.lt) when selecting terminology.
-# Product and format names (PdfCraft, PDF, PDF/A, OCR, XFA, Word…) remain unchanged.
+# Product and format names (NadsPDF, PDF, PDF/A, OCR, XFA, Word…) remain unchanged.
 
 	Menu	Meniu
 	Edit	Redaguoti
@@ -136,7 +136,7 @@
 	Accessibility	Prieinamumas
 	Help…	Žinynas…
 	Check for updates…	Tikrinti, ar yra naujinimų…
-	About PdfCraft	Apie „PdfCraft“
+	About NadsPDF	Apie „NadsPDF“
 	Automatically	Automatiškai
 	Never	Niekada
 	Always	Visada
@@ -278,7 +278,6 @@
 	Applies to {n} pages	Taikoma {n} puslapiams
 	Apply redactions	Pašalinti pažymėtą konfidencialią informaciją
 	Apply scale	Taikyti mastelį
-	Asks GitHub for the latest release. Nothing is downloaded or installed automatically.	„GitHub“ tikrinama, ar yra naujausia laida. Nieko automatiškai neatsisiunčiama ir neįdiegiama.
 	At most	Daugiausia
 	Attachments	Priedai
 	Attachments Panel and Page	Priedų skydelis ir puslapis
@@ -549,7 +548,7 @@
 	Files are combined from top to bottom. Leave Pages empty to take every page.	Failai jungiami iš viršaus į apačią. Palikite lauką „Puslapiai“ tuščią, jei norite įtraukti visus puslapius.
 	Files are combined in the order shown. Drag them to change it.	Failai sujungiami rodoma tvarka. Vilkite juos, kad ją pakeistumėte.
 	Files for {name}	Failai: {name}
-	Files you open in PdfCraft appear here. Drop a PDF anywhere to open it.	Čia rodomi „PdfCraft“ atverti failai. Įkelkite PDF bet kurioje vietoje, kad jį atvertumėte.
+	Files you open in NadsPDF appear here. Drop a PDF anywhere to open it.	Čia rodomi „NadsPDF“ atverti failai. Įkelkite PDF bet kurioje vietoje, kad jį atvertumėte.
 	Fill & Sign dates	Datos pildymo ir pasirašymo įrankyje
 	Fill & Sign signature	Parašas pildymo ir pasirašymo įrankyje
 	Fill Color:	Užpildo spalva:
@@ -631,6 +630,8 @@
 	Icon	Piktograma
 	Images and text	Paveikslėliai ir tekstas
 	Images and text (converted to PDF)	Paveikslėliai ir tekstas (konvertuoti į PDF)
+	Images, text and documents (converted to PDF)	Paveikslėliai, tekstas ir dokumentai (konvertuojami į PDF)
+	PDF, images, text and documents	PDF, paveikslėliai, tekstas ir dokumentai
 	Import list…	Importuoti sąrašą…
 	Includes unsaved changes	Yra neįrašytų pakeitimų
 	Indent	Įtrauka
@@ -857,10 +858,10 @@
 	Pattern	Šablonas
 	Patterns	Šablonai
 	Patterns (graphics objects)	Šablonai (grafiniai objektai)
-	PdfCraft didn't shut down normally. These documents had changes that were autosaved:	„PdfCraft“ buvo uždaryta netinkamai. Šių dokumentų pakeitimai buvo automatiškai įrašyti:
-	PdfCraft works offline. No telemetry, no account, and no cloud processing unless you add a provider.	„PdfCraft“ veikia neprisijungus. Nerenkami telemetrijos duomenys, nereikia paskyros ir nenaudojamos debesijos paslaugos, nebent pridėtumėte jų teikėją.
-	PdfCraft {c} is up to date.	Naudojate naujausią „PdfCraft“ versiją {c}.
-	PdfCraft {v} is available.	Išleista „PdfCraft“ versija {v}.
+	NadsPDF didn't shut down normally. These documents had changes that were autosaved:	„NadsPDF“ buvo uždaryta netinkamai. Šių dokumentų pakeitimai buvo automatiškai įrašyti:
+	NadsPDF works offline. No telemetry, no account, and no cloud processing unless you add a provider.	„NadsPDF“ veikia neprisijungus. Nerenkami telemetrijos duomenys, nereikia paskyros ir nenaudojamos debesijos paslaugos, nebent pridėtumėte jų teikėją.
+	NadsPDF {c} is up to date.	Naudojate naujausią „NadsPDF“ versiją {c}.
+	NadsPDF {v} is available.	Išleista „NadsPDF“ versija {v}.
 	Percentage	Procentai
 	Permissions password	Teisių slaptažodis
 	Permitted actions after certifying	Po patvirtinimo leidžiami veiksmai
@@ -934,7 +935,7 @@
 	Remove {n} files	Pašalinti failų: {n}
 	Remove {n} pages	Pašalinti puslapių: {n}
 	Reopen Closed Tab	Vėl atverti užvertą kortelę
-	Reopen the files that were open when PdfCraft last closed	Vėl atverti failus, kurie buvo atverti paskutinį kartą užveriant „PdfCraft“
+	Reopen the files that were open when NadsPDF last closed	Vėl atverti failus, kurie buvo atverti paskutinį kartą užveriant „NadsPDF“
 	Repair log	Taisymo žurnalas
 	Repeat overlay text	Kartoti perdangos tekstą
 	Replace Image…	Pakeisti paveikslėlį…
@@ -1112,7 +1113,7 @@
 	Text alignment:	Teksto lygiuotė:
 	Text in images isn't found; recognise text (OCR) first.	Paveikslėliuose esantis tekstas nerandamas; pirmiausia atpažinkite tekstą (OCR).
 	Text is compared word by word; the differences are shown on the new file.	Tekstas lyginamas žodis po žodžio; skirtumai rodomi naujame faile.
-	Text recognition isn't installed: its model files are missing. Reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them.	Teksto atpažinimas neįdiegtas: trūksta modelio failų. Iš naujo įdiekite „PdfCraft“ arba nustatykite PDFCRAFT_MODELS aplanką, kuriame jie laikomi.
+	Text recognition isn't installed: its model files are missing. Reinstall NadsPDF, or set PDFCRAFT_MODELS to the folder that holds them.	Teksto atpažinimas neįdiegtas: trūksta modelio failų. Iš naujo įdiekite „NadsPDF“ arba nustatykite PDFCRAFT_MODELS aplanką, kuriame jie laikomi.
 	Text to find	Ieškomas tekstas
 	Text to insert	Įterpiamas tekstas
 	Text used as a clipping path cannot be moved with this selection.	Teksto, naudojamo kaip iškarpymo kelias, negalima perkelti pasirinkus šį objektą.
@@ -1127,9 +1128,9 @@
 	The document's security settings don't allow copying text and images	Dokumento saugos nuostatos neleidžia kopijuoti teksto ir paveikslėlių
 	The document's security settings don't allow this change	Dokumento saugos nuostatos neleidžia atlikti šio pakeitimo
 	The existing action will be preserved.	Esamas veiksmas bus išsaugotas.
-	The fonts PdfCraft writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	„PdfCraft“ naudojami šriftai negali atvaizduoti simbolio „{c}“ ({code}), todėl visose PDF žiūryklėse jis rodomas kaip ?. Tekstas įrašytas.
-	The key is in the Windows certificate store, which may ask to allow PdfCraft to use it.	Raktas saugomas „Windows“ sertifikatų saugykloje; gali būti paprašyta leisti „PdfCraft“ juo naudotis.
-	The key is in the macOS Keychain, which may ask to allow PdfCraft to use it.	Raktas saugomas „macOS“ raktinėje; gali būti paprašyta leisti „PdfCraft“ juo naudotis.
+	The fonts NadsPDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	„NadsPDF“ naudojami šriftai negali atvaizduoti simbolio „{c}“ ({code}), todėl visose PDF žiūryklėse jis rodomas kaip ?. Tekstas įrašytas.
+	The key is in the Windows certificate store, which may ask to allow NadsPDF to use it.	Raktas saugomas „Windows“ sertifikatų saugykloje; gali būti paprašyta leisti „NadsPDF“ juo naudotis.
+	The key is in the macOS Keychain, which may ask to allow NadsPDF to use it.	Raktas saugomas „macOS“ raktinėje; gali būti paprašyta leisti „NadsPDF“ juo naudotis.
 	The newest {n} of {total} PDFs	Naujausi PDF failai: {n} iš {total}
 	The password is only used to read the file; it isn't saved.	Slaptažodis naudojamas tik failui perskaityti ir nėra įrašomas.
 	The printer driver's own settings for this print: paper tray, paper type, finishing and more.	Šio spausdinimo spausdintuvo tvarkyklės nuostatos: popieriaus dėklas, popieriaus tipas, apdaila ir kita.
@@ -1170,7 +1171,7 @@
 	This file was damaged and has been repaired. Saving keeps the repaired version.	Failas buvo pažeistas ir pataisytas. Įrašius bus išsaugota pataisyta versija.
 	This folder isn't available right now. It may have moved, or its drive or cloud sync is offline.	Aplankas šiuo metu nepasiekiamas. Jis galėjo būti perkeltas arba diskas ar sinchronizavimas su debesija neveikia.
 	This form's scripts are turned off because one ran too long. Reopen the document to run them again.	Šios formos scenarijai išjungti, nes vienas jų veikė per ilgai. Atverkite dokumentą iš naujo, kad scenarijai būtų vykdomi vėl.
-	This is a dynamic XFA form, which PdfCraft can't display yet. What you see is the file's placeholder page.	Tai dinaminė XFA forma, kurios „PdfCraft“ dar negali rodyti. Matote faile esantį pakaitinį puslapį.
+	This is a dynamic XFA form, which NadsPDF can't display yet. What you see is the file's placeholder page.	Tai dinaminė XFA forma, kurios „NadsPDF“ dar negali rodyti. Matote faile esantį pakaitinį puslapį.
 	This measurement needs at least {n} points.	Šiam matavimui reikia bent {n} taškų.
 	This page contains objects that cannot be selected together.	Šiame puslapyje yra objektų, kurių negalima pasirinkti kartu.
 	This page couldn't be displayed.\n{e}	Nepavyko parodyti šio puslapio.\n{e}
@@ -1247,7 +1248,7 @@
 	Visible Rectangle	Matomo stačiakampio anotacija
 	Visual	Vaizdinis
 	Warnings	Įspėjimai
-	Welcome to PdfCraft	Sveiki atvykę į „PdfCraft“
+	Welcome to NadsPDF	Sveiki atvykę į „NadsPDF“
 	What word or phrase would you like to search for?	Kokio žodžio ar frazės norite ieškoti?
 	Whole words only	Tik ištisi žodžiai
 	Width:	Plotis:
@@ -1490,8 +1491,8 @@
 	Page options	Puslapio parinktys
 	Page transitions	Puslapių perėjimai
 	Paste pages	Įdėti puslapius
-	PdfCraft on GitHub	„PdfCraft“ „GitHub“ puslapis
-	PdfCraft web page	„PdfCraft“ svetainė
+	NadsPDF on GitHub	„NadsPDF“ „GitHub“ puslapis
+	NadsPDF web page	„NadsPDF“ svetainė
 	Perimeter	Perimetras
 	Pin folder to Home…	Prisegti aplanką prie pradžios lango…
 	PostScript / EPS	PostScript / EPS
@@ -1649,7 +1650,7 @@
 	Page {} has additional actions	Puslapis {} turi papildomų veiksmų
 	Panel layout could not be restored: {error}	Nepavyko atkurti skydelių išdėstymo: {error}
 	Panel move was not applied: {error}	Skydelio perkėlimas nepritaikytas: {error}
-	PdfCraft can't check this signature yet: {}.	„PdfCraft“ dar negali patikrinti šio parašo: {}.
+	NadsPDF can't check this signature yet: {}.	„NadsPDF“ dar negali patikrinti šio parašo: {}.
 	Previous (⇧⌘G)	Ankstesnis (⇧⌘G)
 	Print (⌘P)	Spausdinti (⌘P)
 	Producer	PDF kūrimo programa
@@ -1713,7 +1714,7 @@
 	The signed content is a constructed (segmented) OCTET STRING, as BER allows; it was read anyway.	Pasirašytas turinys yra sudėtinis (segmentuotas) OCTET STRING, kaip leidžia BER; jis vis tiek perskaitytas.
 	The signer's certificate does not allow digital signatures (its key usage has neither digital signature nor non-repudiation).	Pasirašiusiojo sertifikatas neleidžia skaitmeninių parašų (rakto paskirtyje nenurodyta nei pasirašymo, nei neišsižadėjimo paskirtis).
 	The signer's certificate has been revoked ({}).	Pasirašiusiojo sertifikatas atšauktas ({}).
-	The signer's certificate has critical extensions PdfCraft does not recognize ({}).	Pasirašiusiojo sertifikatas turi kritinių plėtinių, kurių „PdfCraft“ neatpažįsta ({}).
+	The signer's certificate has critical extensions NadsPDF does not recognize ({}).	Pasirašiusiojo sertifikatas turi kritinių plėtinių, kurių „NadsPDF“ neatpažįsta ({}).
 	The signer's certificate is not in the signature.	Paraše nėra pasirašiusiojo sertifikato.
 	The signer's certificate is not issued for signing documents (its extended key usage has no document-signing purpose).	Pasirašiusiojo sertifikatas neskirtas dokumentams pasirašyti (išplėstinėje rakto paskirtyje nenurodytas dokumentų pasirašymas).
 	The signer's certificate was not valid at the time of signing.	Pasirašiusiojo sertifikatas pasirašymo metu negaliojo.
@@ -2157,7 +2158,7 @@ comment menu	Edit	Redaguoti
 	Passed	Atitinka
 	Password protection will be applied when you save	Apsauga slaptažodžiu bus pritaikyta įrašant
 	Path	Kelias
-	PdfCraft is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	„PdfCraft“ atvaizduoja be grafikos procesoriaus, todėl gali veikti lėtai. Gali padėti grafikos tvarkyklės atnaujinimas.
+	NadsPDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	„NadsPDF“ atvaizduoja be grafikos procesoriaus, todėl gali veikti lėtai. Gali padėti grafikos tvarkyklės atnaujinimas.
 	People may need more time to respond. Check that nothing has a time limit.	Žmonėms gali reikėti daugiau laiko atsakyti. Patikrinkite, ar nėra laiko apribojimų.
 	Phone Number	Telefono numeris
 	Phone Numbers	Telefono numeriai
@@ -2313,7 +2314,7 @@ comment menu	Edit	Redaguoti
 	The document's security settings don't allow filling in form fields	Dokumento saugos nuostatos neleidžia pildyti formos laukų
 	The field properties could not be changed.	Nepavyko pakeisti lauko savybių.
 	The field properties dialog is no longer open.	Lauko savybių dialogas jau užvertas.
-	The form asks to be submitted to {u}; PdfCraft doesn't send form data. Save the document to keep your entries.	Forma prašo pateikti duomenis į {u}; „PdfCraft“ formos duomenų nesiunčia. Įrašykite dokumentą, kad išsaugotumėte įvestas reikšmes.
+	The form asks to be submitted to {u}; NadsPDF doesn't send form data. Save the document to keep your entries.	Forma prašo pateikti duomenis į {u}; „NadsPDF“ formos duomenų nesiunčia. Įrašykite dokumentą, kad išsaugotumėte įvestas reikšmes.
 	The form asks viewers to make appearances (NeedAppearances)	Forma prašo žiūryklių sukurti laukų išvaizdą (NeedAppearances)
 	The linked PDF opened, but its named destination was not applied.	Susietas PDF atvertas, tačiau pavadinta paskirties vieta nepritaikyta.
 	The linked PDF opened, but its page destination was out of range.	Susietas PDF atvertas, tačiau paskirties puslapis nepatenka į puslapių intervalą.
@@ -2334,7 +2335,7 @@ comment menu	Edit	Redaguoti
 	This document has no form fields.	Šiame dokumente nėra formos laukų.
 	This document has no layers.	Šiame dokumente nėra sluoksnių.
 	This file is already as small as it can be made ({size}). No copy was saved.	Šio failo daugiau sumažinti negalima ({size}). Kopija neįrašyta.
-	This form also contains XFA data, which PdfCraft doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Ši forma taip pat turi XFA duomenų, kurių „PdfCraft“ dar neskaito. Laukus galite pildyti, tačiau „Acrobat“ gali rodyti XFA reikšmes.
+	This form also contains XFA data, which NadsPDF doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Ši forma taip pat turi XFA duomenų, kurių „NadsPDF“ dar neskaito. Laukus galite pildyti, tačiau „Acrobat“ gali rodyti XFA reikšmes.
 	Thumbnails	Miniatiūros
 	Timed responses	Atsakymai per ribotą laiką
 	Type Password	Įveskite slaptažodį
@@ -2387,7 +2388,7 @@ comment menu	Edit	Redaguoti
 	the document is protected by a password	dokumentas apsaugotas slaptažodžiu
 	the image is empty	paveikslėlis tuščias
 	the password is incorrect	slaptažodis netinkamas
-	the text recognition models are not installed (reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them)	teksto atpažinimo modeliai neįdiegti (iš naujo įdiekite „PdfCraft“ arba nustatykite PDFCRAFT_MODELS aplanką, kuriame jie laikomi)
+	the text recognition models are not installed (reinstall NadsPDF, or set PDFCRAFT_MODELS to the folder that holds them)	teksto atpažinimo modeliai neįdiegti (iš naujo įdiekite „NadsPDF“ arba nustatykite PDFCRAFT_MODELS aplanką, kuriame jie laikomi)
 	the title must not be empty	pavadinimas negali būti tuščias
 	there are no pages to print	nėra spausdintinų puslapių
 	there are no redaction marks to apply	nėra pritaikytinų konfidencialios informacijos šalinimo žymų
@@ -2400,19 +2401,19 @@ comment menu	Edit	Redaguoti
 	{label} failed: {e}	Veiksmas {label} nepavyko: {e}
 	{name} has no action	{name} neturi veiksmo
 	{name} is too large for a word list (at most 1 MB).	{name} per didelis žodžių sąrašui (leidžiama iki 1 MB).
-	{name} submits the form to {url}; PdfCraft doesn't send form data. Save the document to keep your entries.	{name} pateikia formą į {url}; „PdfCraft“ formos duomenų nesiunčia. Įrašykite dokumentą, kad išsaugotumėte įvestas reikšmes.
+	{name} submits the form to {url}; NadsPDF doesn't send form data. Save the document to keep your entries.	{name} pateikia formą į {url}; „NadsPDF“ formos duomenų nesiunčia. Įrašykite dokumentą, kad išsaugotumėte įvestas reikšmes.
 	{name}: choosing images arrives on the web with file pickers for images	{name}: žiniatinklio versijoje paveikslėlius bus galima pasirinkti įdiegus jų failų pasirinkimą
 	{name}: the {other} action isn't supported yet	{name}: veiksmas {other} dar nepalaikomas
-	{who} in this document tried to open an address PdfCraft won't open: {e}.	Šiame dokumente {who} bandė atverti adresą, kurio „PdfCraft“ neatveria: {e}.
-	{who} in this document tried to open an address PdfCraft won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	Šiame dokumente {who} bandė atverti adresą, kurio „PdfCraft“ neatveria: {e}. Iš dokumentų atveriami tik žiniatinklio (http, https) ir el. pašto (mailto) saitai.
+	{who} in this document tried to open an address NadsPDF won't open: {e}.	Šiame dokumente {who} bandė atverti adresą, kurio „NadsPDF“ neatveria: {e}.
+	{who} in this document tried to open an address NadsPDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	Šiame dokumente {who} bandė atverti adresą, kurio „NadsPDF“ neatveria: {e}. Iš dokumentų atveriami tik žiniatinklio (http, https) ir el. pašto (mailto) saitai.
 animation effects	Off	Išjungta
 animation effects	On	Įjungta
 	View more	Rodyti daugiau
 	View less	Rodyti mažiau
 	Only continue if you trust this document. An address can carry information from the document, such as what you typed into its form.	Tęskite tik jei pasitikite šiuo dokumentu. Adresu gali būti perduota dokumento informacija, pavyzdžiui, tai, ką įvedėte į jo formą.
 	Print single-sided. Keep the sheets in order, cut at the marks, then stack the piles left to right, top to bottom.	Spausdinkite vienpusiškai. Išlaikykite lapų tvarką, pjaukite ties žymomis, tada sudėkite krūveles iš kairės į dešinę ir iš viršaus į apačią.
-	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: PdfCraft finds the signature and removes the paper.	Pasirašykite ant balto popieriaus lapo ir nufotografuokite jį esant ryškiam, tolygiam apšvietimui (naudokite blykstę). Pasirinkite nuotrauką arba nuvilkite ją čia: „PdfCraft“ suras parašą ir pašalins popieriaus foną.
-	This field's font can't draw “{c}” ({code}), so PdfCraft shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Šio lauko šriftas negali atvaizduoti simbolio „{c}“ ({code}), todėl „PdfCraft“ vietoj jo rodo ?. Reikšmė įrašoma, o kitos PDF žiūryklės pagal ją iš naujo atvaizduoja lauką.
+	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: NadsPDF finds the signature and removes the paper.	Pasirašykite ant balto popieriaus lapo ir nufotografuokite jį esant ryškiam, tolygiam apšvietimui (naudokite blykstę). Pasirinkite nuotrauką arba nuvilkite ją čia: „NadsPDF“ suras parašą ir pašalins popieriaus foną.
+	This field's font can't draw “{c}” ({code}), so NadsPDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Šio lauko šriftas negali atvaizduoti simbolio „{c}“ ({code}), todėl „NadsPDF“ vietoj jo rodo ?. Reikšmė įrašoma, o kitos PDF žiūryklės pagal ją iš naujo atvaizduoja lauką.
 	{chars} can't be written into the PDF yet: Fill & Sign text is Western European only. Pick a numeric format such as dd.mm.yyyy.	Simbolių {chars} dar negalima įrašyti į PDF: pildymo ir pasirašymo tekstui palaikomi tik Vakarų Europos simboliai. Pasirinkite skaitinį formatą, pvz., dd.mm.yyyy.
 	January	sausis
 	February	vasaris
@@ -2596,3 +2597,119 @@ key	Space	Tarpas
 	This document is trying to open a local file:	Šis dokumentas bando atverti vietinį failą:
 	Move tag earlier	Perkelti žymą anksčiau
 	Move tag later	Perkelti žymą vėliau
+
+# NadsPDF (nads.site)
+	NadsPDF tools	NadsPDF įrankiai
+	PdfCraft (upstream) on GitHub	PdfCraft (pirminis projektas) „GitHub“
+	Convert to PDF	Konvertuoti į PDF
+	Word, Excel, CSV, text, HTML, images	Word, Excel, CSV, tekstas, HTML, vaizdai
+	Compress	Suspausti
+	Make PDFs lighter	Sumažinti PDF dydį
+	Merge	Sujungti
+	Combine several PDFs	Sujungti kelis PDF
+	Split & organize	Skaidyti ir tvarkyti
+	Extract, delete, rotate pages	Išskleisti, šalinti, pasukti puslapius
+	Change the words of a PDF	Keisti PDF žodžius
+	PDF to images	PDF į vaizdus
+	Export pages as PNG or JPEG	Eksportuoti puslapius kaip PNG arba JPEG
+	Images to PDF	Vaizdai į PDF
+	PNG and JPEG into one PDF	PNG ir JPEG į vieną PDF
+	Pipelines	Veiksmų sekos
+	Chain steps over many files	Vykdyti veiksmų seką keliems failams
+	Stamp CONFIDENTIAL across pages	Pažymėti puslapius CONFIDENTIAL
+	Page numbers	Puslapių numeriai
+	Number pages like 1 / 10	Numeruoti puslapius: 1 / 10
+	Convert to PDF with NadsPDF	Konvertuoti į PDF su „NadsPDF“
+	Combine with NadsPDF	Sujungti su „NadsPDF“
+	Open with NadsPDF	Atverti su „NadsPDF“
+	Show NadsPDF in the File Explorer right-click menu	Rodyti „NadsPDF“ failų naršyklės kontekstiniame meniu
+	Added for all users when NadsPDF was installed.	Pridėta visiems naudotojams diegiant „NadsPDF“.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	Konvertuoti į PDF, Sujungti ir Atverti dokumentams, paveikslams ir PDF failams. „Windows 11“ – skiltyje „Rodyti daugiau parinkčių“.
+	Couldn't change the File Explorer menu: {e}	Nepavyko pakeisti failų naršyklės meniu: {e}
+	Couldn't find {name}	Nerasta: {name}
+# Vaults (Home ▸ Vaults)
+	Give the vault a name	Suteikite seifui pavadinimą
+	You can have up to {n} vaults. Delete one first.	Galite turėti iki {n} seifų. Pirma ištrinkite vieną.
+	That vault no longer exists	Šio seifo nebėra
+	Added {files} to {vault}	Pridėta į {vault}: {files}
+	Already in {vault}	Jau yra {vault}
+	A vault holds up to {n} files	Seife telpa iki {n} failų
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	Seifuose laikomi PDF ir failai, kuriuos NadsPDF gali konvertuoti, šiame kompiuteryje
+	No files to open in this vault	Šiame seife nėra failų, kuriuos būtų galima atidaryti
+	Opening the first {n} files	Atidaromi pirmieji {n} failai
+	Deleted the vault {vault}. Its files were not touched.	Seifas {vault} ištrintas. Jo failai nepaliesti.
+	Moved {file} to {vault}	{file} perkeltas į {vault}
+	Vaults need the desktop app	Seifams reikia darbalaukio programos
+	Locate {file}	Rasti {file}
+	Save this document to a file first, then add it to a vault	Pirma įrašykite dokumentą į failą, tada pridėkite jį į seifą
+	Vaults	Seifai
+	New vault	Naujas seifas
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	Grupuokite PDF iš bet kurios kompiuterio vietos į pavadintus seifus su spalva ir piktograma. Failai lieka savo vietose.
+	Click to show its files. Drag to reorder, or drop files here.	Spustelėkite, kad matytumėte failus. Vilkite, kad pakeistumėte tvarką, arba numeskite failus čia.
+	Open all	Atidaryti visus
+	Edit vault…	Redaguoti seifą…
+	Move left	Perkelti kairėn
+	Move right	Perkelti dešinėn
+	Delete vault…	Ištrinti seifą…
+	New vault…	Naujas seifas…
+	No files yet. Drop files here to add them.	Failų dar nėra. Numeskite failus čia, kad juos pridėtumėte.
+	Locate…	Rasti…
+	Missing	Trūksta
+	Remove {name} from this vault	Pašalinti {name} iš šio seifo
+	This file has moved or been deleted. Locate it, or remove it from the vault.	Šis failas perkeltas arba ištrintas. Raskite jį arba pašalinkite iš seifo.
+	Move to vault	Perkelti į seifą
+	Remove from vault	Pašalinti iš seifo
+	Show this vault on Home	Rodyti šį seifą pradžios puslapyje
+	Vault: {name}	Seifas: {name}
+	Vault	Seifas
+	Edit vault	Redaguoti seifą
+	Vault name	Seifo pavadinimas
+	Create vault	Sukurti seifą
+	Delete the vault {vault}?	Ištrinti seifą {vault}?
+	Its files stay where they are on your computer. Only the vault is deleted.	Failai lieka savo vietose kompiuteryje. Ištrinamas tik seifas.
+	Delete vault	Ištrinti seifą
+	Add to vault	Pridėti į seifą
+	Already in it	Jau čia
+	Add document to vault…	Pridėti dokumentą į seifą…
+	Dark pages	Tamsūs puslapiai
+	Rasterize pages (strong compression)…	Rastrinti puslapius (stiprus glaudinimas)…
+	Rasterize pages (strong compression)	Rastrinti puslapius (stiprus glaudinimas)
+	Rasterizing… page {d} of {t}	Rastrinama… {d} puslapis iš {t}
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	Kiekvienas puslapis tampa paveikslu: stipriausias glaudinimas, geriausias nuskaitytiems dokumentams. Teksto nebegalima pažymėti ar ieškoti, o nuorodos, žymelės ir formų laukai neišsaugomi. Rezultatas įrašomas kaip kopija.
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi, JPEG kokybė {q}
+compression level	Light	Lengvas
+compression level	Medium	Vidutinis
+compression level	Strong	Stiprus
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	Rastrinimas šio failo nesumažintų ({size}). Kopija neįrašyta.
+	Add faint watermark	Pridėti blankų vandenženklį
+	Recognize text if available	Atpažinti tekstą, jei įmanoma
+	Prepare for Sending	Paruošti siuntimui
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	Sunumeruoti puslapius „n / iš viso“ apačioje per vidurį, tada sumažinti failą siuntimui el. paštu.
+	Archive Scans	Archyvuoti nuskaitytus dokumentus
+	Make scans searchable (when text recognition is available), then make them smaller.	Padaryti nuskaitytus dokumentus ieškomus (jei įdiegtas teksto atpažinimas), tada juos sumažinti.
+	Confidential	Konfidencialu
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	Blankus įstrižas vandenženklis KONFIDENCIALU ir puslapių numeriai „n / iš viso“ kiekviename puslapyje.
+	{name} (copy)	{name} (kopija)
+watermark text	CONFIDENTIAL	KONFIDENCIALU
+	Group name	Grupės pavadinimas
+	Rename Group	Pervadinti grupę
+	Ungroup	Išgrupuoti
+	Close Group	Uždaryti grupę
+	Add Tab to New Group	Pridėti kortelę į naują grupę
+	Add Tab to Group	Pridėti kortelę į grupę
+	Remove from Group	Pašalinti iš grupės
+	Click to fold or unfold the group	Spustelėkite, kad suskleistumėte arba išskleistumėte grupę
+	Filter tools	Filtruoti įrankius
+	No tool matches	Nėra atitinkančių įrankių
+	Essentials	Pagrindiniai
+	Float as a bubble	Rodyti burbule
+	Show this PDF in a small window over the others	Rodyti šį PDF mažame lange virš kitų
+	Put back as a tab	Grąžinti į kortelę
+	Fold into a bubble	Sutraukti į burbulą
+	Click to open, drag onto the tabs to put it back	Spustelėkite, kad atidarytumėte, nutempkite ant kortelių, kad grąžintumėte
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	Turite {c} versiją. NadsPDF užsidarys, vietoj šios įdiegs naują versiją ir vėl atsidarys. Jūsų nustatymai išsaugomi.
+	You have version {c}.	Turite {c} versiją.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	Ši NadsPDF kopija gauta iš „Microsoft Store“, kuri pati įdiegia naujas versijas.
+	Downloading the update…	Atsisiunčiamas naujinys…
+	Couldn't install the update: {e}	Nepavyko įdiegti naujinio: {e}
+	Check for updates when NadsPDF starts (once a day)	Ieškoti naujinių paleidžiant NadsPDF (kartą per dieną)

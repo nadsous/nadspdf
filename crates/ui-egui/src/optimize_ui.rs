@@ -10,6 +10,7 @@ use std::sync::{Arc, Mutex};
 use egui::{Align, Layout};
 use pdfcraft_engine::optimize::{Compression, ImageSettings, QUALITIES, Settings};
 use pdfcraft_engine::optimizer::{OptimizeStage, Optimized};
+use pdfcraft_engine::rasterize::RasterLevel;
 use pdfcraft_engine::{DocId, EditError, Hidden, OptimizeReport};
 
 use crate::theme::{self, Tokens};
@@ -56,6 +57,8 @@ pub enum OptimizeKind {
     Reduce,
     /// Optimize PDF ▸ Advanced optimization (the dialog's choices).
     Advanced,
+    /// Compress ▸ Rasterize pages (every page becomes a JPEG).
+    Rasterize,
 }
 
 impl OptimizeKind {
@@ -64,6 +67,7 @@ impl OptimizeKind {
         match self {
             OptimizeKind::Reduce => "reduced",
             OptimizeKind::Advanced => "optimized",
+            OptimizeKind::Rasterize => "compressed",
         }
     }
 }
@@ -85,6 +89,10 @@ fn stage_label(stage: OptimizeStage) -> String {
         OptimizeStage::CleaningUp => tl!("Optimizing… cleaning up").to_string(),
         OptimizeStage::Merging => tl!("Optimizing… merging identical objects").to_string(),
         OptimizeStage::Writing => tl!("Optimizing… writing the copy").to_string(),
+        OptimizeStage::Rasterizing { done, total } => crate::i18n::fmt(
+            tl!("Rasterizing… page {d} of {t}"),
+            &[("d", &(done + 1).min(total.max(1)).to_string()), ("t", &total.max(1).to_string())],
+        ),
     }
 }
 
@@ -225,6 +233,41 @@ pub(crate) fn body(ui: &mut egui::Ui, d: &mut OptimizeDraft, t: &Tokens) -> (boo
     (ok, cancel)
 }
 
+/// Compress ▸ Rasterize pages: the explanation and the three levels. Returns the level to run,
+/// and whether the dialog closes.
+pub(crate) fn rasterize_body(ui: &mut egui::Ui, level: &mut RasterLevel, t: &Tokens) -> (Option<RasterLevel>, bool) {
+    ui.label(egui::RichText::new(tl!("Rasterize pages (strong compression)")).font(theme::semibold(18.0)));
+    ui.add_space(6.0);
+    ui.set_max_width(460.0);
+    ui.label(
+        egui::RichText::new(tl!(
+            "Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy."
+        ))
+        .color(t.text_muted),
+    );
+    ui.add_space(10.0);
+    for l in RasterLevel::ALL {
+        let s = l.settings();
+        let detail = crate::i18n::fmt(tl!("{dpi} dpi, JPEG quality {q}"), &[("dpi", &format!("{:.0}", s.dpi)), ("q", &s.quality.to_string())]);
+        ui.horizontal(|ui| {
+            widgets::radio_value(ui, level, l, tl_ctx!("compression level", l.label()));
+            ui.label(egui::RichText::new(detail).small().color(t.text_muted));
+        });
+    }
+    ui.add_space(12.0);
+    let (mut run, mut close) = (None, false);
+    ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
+        if widgets::pill_button(ui, tl!("Compress"), true).clicked() {
+            run = Some(*level);
+            close = true;
+        }
+        if widgets::pill_button(ui, tl!("Cancel"), false).clicked() {
+            close = true;
+        }
+    });
+    (run, close)
+}
+
 /// Audit Space Usage: bytes and share of the file per kind of content.
 pub(crate) fn audit_body(ui: &mut egui::Ui, rows: &[pdfcraft_engine::optimize::SpaceUse], t: &Tokens) -> bool {
     ui.label(egui::RichText::new(tl!("Space Audit")).font(crate::theme::semibold(18.0)));
@@ -282,10 +325,38 @@ impl PdfCraftApp {
             Ok(job) => job,
             Err(e) => return self.save_optimized(id, kind, Err(e)),
         };
+        self.run_optimize_job(id, kind, move |p| job.run(p));
+    }
+
+    /// Compress ▸ Rasterize pages at `level`, in the background like the optimizer; the copy is
+    /// saved when it is done.
+    pub fn start_rasterize(&mut self, level: RasterLevel) {
+        if !self.commit_form_typing() {
+            return;
+        }
+        let Some((_, id)) = self.active_ids() else { return };
+        if self.optimize_run.is_some() {
+            self.notify_tr("Optimization is already running");
+            return;
+        }
+        self.raster_level = level;
+        let job = match self.session.rasterize_job(id, level.settings()) {
+            Ok(job) => job,
+            Err(e) => return self.save_optimized(id, OptimizeKind::Rasterize, Err(e)),
+        };
+        self.run_optimize_job(id, OptimizeKind::Rasterize, move |p| job.run(p));
+    }
+
+    /// Run `job` on a worker thread (inline in tests and on the web), reporting into a progress
+    /// notice with a Cancel button.
+    fn run_optimize_job<J>(&mut self, id: DocId, kind: OptimizeKind, job: J)
+    where
+        J: FnOnce(&mut dyn FnMut(OptimizeStage) -> bool) -> Result<Optimized, EditError> + Send + 'static,
+    {
         let progress = Arc::new(Mutex::new(OptimizeProgress::default()));
         let p = progress.clone();
         let work = move || {
-            let result = job.run(|stage| {
+            let result = job(&mut |stage| {
                 let Ok(mut s) = p.lock() else { return false };
                 s.stage = stage;
                 !s.cancel

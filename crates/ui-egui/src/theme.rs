@@ -1,5 +1,6 @@
-//! Design tokens and egui style (plan/acrobat/02-ui-ux.md §1: neutral chrome, white panels,
-//! one blue accent; Dark Gray keeps pages white). Every custom widget reads `Tokens::get`.
+//! Design tokens and egui style, in the nads.site look: a near-black base under rounded
+//! floating panels, the Onest typeface and one red accent (the NadsPDF logo's). Dark is the
+//! default; Light keeps the same accent. Every custom widget reads `Tokens::get`.
 
 use std::sync::Arc;
 
@@ -8,8 +9,8 @@ use egui::{Color32, CornerRadius, FontData, FontDefinitions, FontFamily, FontId,
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Default, serde::Serialize, serde::Deserialize)]
 pub enum ThemeKind {
-    #[default]
     Light,
+    #[default]
     Dark,
 }
 
@@ -17,14 +18,14 @@ pub enum ThemeKind {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Default, serde::Serialize, serde::Deserialize)]
 pub enum ThemePreference {
     System,
-    #[default]
     Light,
+    #[default]
     Dark,
 }
 
 impl ThemePreference {
     /// The colours to draw. `system` is what the operating system says, `None` when it says
-    /// nothing; `fallback` is supplied by the caller. PdfCraft uses Light for an unknown desktop.
+    /// nothing; `fallback` is supplied by the caller. NadsPDF uses Light for an unknown desktop.
     pub fn resolve(self, system: Option<bool>, fallback: ThemeKind) -> ThemeKind {
         match self {
             Self::Light => ThemeKind::Light,
@@ -85,44 +86,46 @@ impl Tokens {
                 icon: Color32::from_rgb(0x44, 0x44, 0x4B),
                 hover: Color32::from_rgb(0xF0, 0xF0, 0xF3),
                 pressed: Color32::from_rgb(0xE4, 0xE4, 0xE9),
-                selected: Color32::from_rgb(0xE6, 0xEE, 0xFD),
-                accent: Color32::from_rgb(0x1B, 0x63, 0xE0),
-                accent_text: Color32::from_rgb(0x17, 0x55, 0xC4),
-                accent_soft: Color32::from_rgb(0xE3, 0xEC, 0xFD),
+                selected: Color32::from_rgb(0xFB, 0xDC, 0xDA),
+                accent: Color32::from_rgb(0xD9, 0x2D, 0x26),
+                accent_text: Color32::from_rgb(0xB5, 0x22, 0x1C),
+                accent_soft: Color32::from_rgb(0xFD, 0xE9, 0xE8),
                 field: Color32::from_rgb(0xFF, 0xFF, 0xFF),
-                badge_new: Color32::from_rgb(0x1B, 0x63, 0xE0),
+                badge_new: Color32::from_rgb(0xD9, 0x2D, 0x26),
                 page_shadow: Color32::from_black_alpha(34),
-                radius: 6,
+                radius: 8,
             },
+            // nads.site's "nads" theme: base #111113, panels #1b1b1e, raised #26262a,
+            // hairline borders (white at 7 %), red accent.
             ThemeKind::Dark => Self {
                 kind,
-                titlebar: Color32::from_rgb(0x1B, 0x1B, 0x1E),
-                chrome: Color32::from_rgb(0x26, 0x26, 0x2A),
-                panel: Color32::from_rgb(0x26, 0x26, 0x2A),
-                pasteboard: Color32::from_rgb(0x19, 0x19, 0x1C),
-                card: Color32::from_rgb(0x2E, 0x2E, 0x33),
-                border: Color32::from_rgb(0x3C, 0x3C, 0x43),
-                divider: Color32::from_rgb(0x33, 0x33, 0x39),
-                text: Color32::from_rgb(0xEC, 0xEC, 0xEF),
-                text_muted: Color32::from_rgb(0xAE, 0xAE, 0xB6),
-                text_faint: Color32::from_rgb(0x97, 0x97, 0x9E),
-                icon: Color32::from_rgb(0xD4, 0xD4, 0xDA),
-                hover: Color32::from_rgb(0x34, 0x34, 0x3A),
-                pressed: Color32::from_rgb(0x3E, 0x3E, 0x45),
-                selected: Color32::from_rgb(0x23, 0x3A, 0x63),
-                accent: Color32::from_rgb(0x4B, 0x8B, 0xF5),
-                accent_text: Color32::from_rgb(0x8C, 0xB6, 0xFA),
-                accent_soft: Color32::from_rgb(0x24, 0x36, 0x57),
-                field: Color32::from_rgb(0x1E, 0x1E, 0x22),
-                badge_new: Color32::from_rgb(0x3D, 0x7D, 0xEE),
-                page_shadow: Color32::from_black_alpha(120),
-                radius: 6,
+                titlebar: Color32::from_rgb(0x11, 0x11, 0x13),
+                chrome: Color32::from_rgb(0x1B, 0x1B, 0x1E),
+                panel: Color32::from_rgb(0x1B, 0x1B, 0x1E),
+                pasteboard: Color32::from_rgb(0x18, 0x18, 0x1B),
+                card: Color32::from_rgb(0x22, 0x22, 0x26),
+                border: Color32::from_rgb(0x2D, 0x2D, 0x32),
+                divider: Color32::from_rgb(0x26, 0x26, 0x2A),
+                text: Color32::from_rgb(0xF4, 0xF4, 0xF5),
+                text_muted: Color32::from_rgb(0xB4, 0xB4, 0xBC),
+                text_faint: Color32::from_rgb(0x9A, 0x9A, 0xA4),
+                icon: Color32::from_rgb(0xC9, 0xC9, 0xD0),
+                hover: Color32::from_rgb(0x2A, 0x2A, 0x2F),
+                pressed: Color32::from_rgb(0x33, 0x33, 0x39),
+                selected: Color32::from_rgb(0x4A, 0x22, 0x22),
+                accent: Color32::from_rgb(0xEF, 0x3E, 0x36),
+                accent_text: Color32::from_rgb(0xFF, 0x7A, 0x72),
+                accent_soft: Color32::from_rgb(0x3A, 0x1E, 0x1E),
+                field: Color32::from_rgb(0x15, 0x15, 0x18),
+                badge_new: Color32::from_rgb(0xEF, 0x3E, 0x36),
+                page_shadow: Color32::from_black_alpha(140),
+                radius: 8,
             },
         }
     }
 
     pub fn get(ctx: &egui::Context) -> Self {
-        ctx.data(|d| d.get_temp::<Tokens>(egui::Id::new("pdfcraft-theme"))).unwrap_or_else(|| Self::for_kind(ThemeKind::Light))
+        ctx.data(|d| d.get_temp::<Tokens>(egui::Id::new("pdfcraft-theme"))).unwrap_or_else(|| Self::for_kind(ThemeKind::Dark))
     }
 
     pub fn dark(&self) -> bool {
@@ -312,7 +315,7 @@ fn font_definitions_for_platform(prefer_hans: bool, platform: FontPolicyPlatform
     let mut fonts = FontDefinitions::default();
     let add = |fonts: &mut FontDefinitions, name: &str, bytes: &'static [u8]| {
         let data = FontData::from_static(bytes);
-        let data = if ["Inter", "Inter-Medium", "Inter-SemiBold", "JetBrainsMono"].contains(&name) {
+        let data = if ["Onest", "Onest-Medium", "Onest-SemiBold", "Inter", "Inter-Medium", "Inter-SemiBold", "JetBrainsMono"].contains(&name) {
             data.tweak(primary_font_tweak(platform, name))
         } else {
             data
@@ -324,7 +327,12 @@ fn font_definitions_for_platform(prefer_hans: bool, platform: FontPolicyPlatform
     add(&mut fonts, "Inter-Medium", include_bytes!("../../../assets/fonts/Inter-Medium.ttf"));
     add(&mut fonts, "Inter-SemiBold", include_bytes!("../../../assets/fonts/Inter-SemiBold.ttf"));
     add(&mut fonts, "JetBrainsMono", include_bytes!("../../../assets/fonts/JetBrainsMono-Regular.ttf"));
+    // nads.site's interface face; Inter stays right behind it for the scripts Onest lacks (Greek…).
+    add(&mut fonts, "Onest", include_bytes!("../../../assets/fonts/Onest-Regular.ttf"));
+    add(&mut fonts, "Onest-Medium", include_bytes!("../../../assets/fonts/Onest-Medium.ttf"));
+    add(&mut fonts, "Onest-SemiBold", include_bytes!("../../../assets/fonts/Onest-SemiBold.ttf"));
     fonts.families.entry(FontFamily::Proportional).or_default().insert(0, "Inter".to_owned());
+    fonts.families.entry(FontFamily::Proportional).or_default().insert(0, "Onest".to_owned());
     fonts.families.entry(FontFamily::Monospace).or_default().insert(0, "JetBrainsMono".to_owned());
     // The same static bytes pdfcraft-fonts uses for Japanese/Chinese text in PDFs: one copy, not two.
     for face in pdfcraft_fonts::ui_cjk_fonts(prefer_hans) {
@@ -358,8 +366,8 @@ fn font_definitions_for_platform(prefer_hans: bool, platform: FontPolicyPlatform
         }
     }
     let fallback: Vec<String> = fonts.families[&FontFamily::Proportional].clone();
-    for (fam, primary) in [("medium", "Inter-Medium"), ("semibold", "Inter-SemiBold")] {
-        let mut stack = vec![primary.to_owned()];
+    for (fam, primary, second) in [("medium", "Onest-Medium", "Inter-Medium"), ("semibold", "Onest-SemiBold", "Inter-SemiBold")] {
+        let mut stack = vec![primary.to_owned(), second.to_owned()];
         stack.extend(fallback.iter().cloned());
         fonts.families.insert(FontFamily::Name(fam.into()), stack);
     }
@@ -393,8 +401,8 @@ pub fn apply(ctx: &egui::Context, kind: ThemeKind) {
     v.selection.stroke = Stroke::new(1.0, t.accent);
     v.hyperlink_color = t.accent_text;
     v.override_text_color = Some(t.text);
-    v.window_corner_radius = CornerRadius::same(10);
-    v.menu_corner_radius = CornerRadius::same(8);
+    v.window_corner_radius = CornerRadius::same(14);
+    v.menu_corner_radius = CornerRadius::same(10);
     v.window_shadow = egui::Shadow { offset: [0, 8], blur: 28, spread: 0, color: Color32::from_black_alpha(if t.dark() { 110 } else { 38 }) };
     v.popup_shadow = egui::Shadow { offset: [0, 4], blur: 16, spread: 0, color: Color32::from_black_alpha(if t.dark() { 90 } else { 30 }) };
     for w in [&mut v.widgets.noninteractive, &mut v.widgets.inactive, &mut v.widgets.hovered, &mut v.widgets.active, &mut v.widgets.open] {

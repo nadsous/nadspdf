@@ -159,6 +159,8 @@ impl PdfCraftApp {
             "file.clear_recent" if self.recent.is_empty() => self.notify_tr("No recent files"),
             "file.clear_recent" => self.recent.clear(),
             "file.pin_folder" => self.pin_folder_dialog(),
+            "vault.new" => self.new_vault_dialog(Vec::new()),
+            "vault.add_current" => self.add_current_to_vault(),
             "page.combine" => self.open_combine_tab(),
             "file.save" => {
                 self.save_active(SaveTarget::InPlace);
@@ -268,6 +270,8 @@ impl PdfCraftApp {
             "view.theme.system" => self.set_theme_preference(ThemePreference::System),
             "view.theme.light" => self.set_theme_preference(ThemePreference::Light),
             "view.theme.dark" => self.set_theme_preference(ThemePreference::Dark),
+            "view.dark_pages" => self.toggle_dark_pages(),
+            "view.group_tab" => return self.group_active_tab(),
             "comment.list" => self.choose_right_panel(Some(RightPanel::Comments)),
             tool if crate::comments::CommentTool::from_command(tool).is_some() => {
                 let Some(tool) = crate::comments::CommentTool::from_command(tool) else { return false };
@@ -590,6 +594,7 @@ impl PdfCraftApp {
             "create.images" => self.create_from_images_dialog(),
             "create.clipboard" => self.create_from_clipboard(),
             "optimize.reduce" => self.reduce_file_size(),
+            "optimize.rasterize" => self.dialog = Some(Dialog::Rasterize),
             "page.duplicate" => {
                 self.apply_edit(Edit::DuplicatePages { pages: targets });
             }
@@ -725,7 +730,9 @@ pub(crate) fn registry_menu(app: &mut PdfCraftApp, ui: &mut egui::Ui, menu: &str
         }
         let shortcut = spec.shortcut.map(|s| shortcut_label(ui.ctx(), s)).unwrap_or_default();
         let enabled = app.command_enabled(spec);
-        let resp = ui.add_enabled(enabled, egui::Button::new(label).shortcut_text(shortcut));
+        // A toggle shows whether it is on.
+        let on = spec.id == "view.dark_pages" && app.view_defaults.dark.pages;
+        let resp = ui.add_enabled(enabled, egui::Button::new(label).shortcut_text(shortcut).selected(on));
         if resp.clicked() {
             app.execute(spec.id);
             ui.close();

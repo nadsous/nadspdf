@@ -1169,7 +1169,7 @@ fn unicode_hex(ch: char) -> String {
 /// This build has no Japanese face to draw replacement text with.
 fn no_japanese_font() -> EditError {
     EditError::Invalid(
-        "this text needs PdfCraft's Japanese fallback font, which this build doesn't include \
+        "this text needs NadsPDF's Japanese fallback font, which this build doesn't include \
          (official releases do; to build it in, set CRAFT_FONTS_DIR to a craft-fonts checkout)"
             .into(),
     )
@@ -1183,7 +1183,7 @@ fn fallback_face<'a>(faces: &[&'a CraftFont], chars: &[char], has_glyph: impl Fn
 /// This build has no Hebrew face to draw replacement text with.
 fn no_hebrew_font() -> EditError {
     EditError::Invalid(
-        "this text needs PdfCraft's Hebrew fallback font (Noto Sans Hebrew), which this build doesn't include \
+        "this text needs NadsPDF's Hebrew fallback font (Noto Sans Hebrew), which this build doesn't include \
          (to build it in, set CRAFT_FONTS_DIR to a craft-fonts checkout that has it)"
             .into(),
     )
@@ -1603,6 +1603,14 @@ pub fn clear_block(doc: &mut Document, page: usize, block: usize) -> Result<(), 
 pub fn reading_blocks(doc: &Document, page: usize) -> Result<Vec<TextBlock>, EditError> {
     let lines = reading_lines(doc, page)?;
     Ok(regions::group_reading_blocks(&lines))
+}
+
+/// [`reading_blocks`] together with the lines their `lines` and `rows` index, so an export can
+/// keep each visual row and its styled runs (Export to Word's layout mode).
+pub fn reading_layout(doc: &Document, page: usize) -> Result<(Vec<TextBlock>, Vec<TextLine>), EditError> {
+    let lines = reading_lines(doc, page)?;
+    let blocks = regions::group_reading_blocks(&lines);
+    Ok((blocks, lines))
 }
 
 // An ideographic space carries intentional Japanese spacing, including paragraph indentation.

@@ -36,10 +36,10 @@ pub const ALLOWED_LICENCES: &[&str] = &[
 ];
 
 /// The closed list of Adobe-authored, non-visual technical data (AGENTS.md §1.1): (crate, path).
-/// Storyteller's own brand marks (the ArtCraft name and logos): shipped in the app and docs, but
-/// not licensed for reuse by forks. Allowed only for `kind = "logo"` entries under `docs/brand/`
-/// (AGENTS.md §1.2).
-pub const BRAND_LICENCE: &str = "LicenseRef-Storyteller-Trademark";
+/// The nads brand (the nads mark, the NadsPDF logo and the app icons rendered from them): shipped
+/// in the app and docs, but not licensed for reuse by forks. Allowed only for `logo` and `icon`
+/// entries under `docs/brand/` and `assets/app-icon/` (terms in docs/brand/LICENSE-brand.txt).
+pub const BRAND_LICENCE: &str = "LicenseRef-Nads-Trademark";
 
 pub const ADOBE_DATA_ALLOWED: &[(&str, &str)] = &[("hayro-cmap", "assets/cmaps.brotli"), ("hayro-interpret", "src/font/generated/metrics.rs")];
 
@@ -193,7 +193,14 @@ fn repo_files(root: &Path) -> Result<Vec<String>> {
     if !out.status.success() {
         bail!("git ls-files failed");
     }
-    Ok(out.stdout.split(|b| *b == 0).filter(|s| !s.is_empty()).map(|s| String::from_utf8_lossy(s).into_owned()).collect())
+    Ok(out
+        .stdout
+        .split(|b| *b == 0)
+        .filter(|s| !s.is_empty())
+        .map(|s| String::from_utf8_lossy(s).into_owned())
+        // The old NadsPDF Electron app, kept for reference only: never built or shipped.
+        .filter(|p| !p.starts_with("legacy-electron/"))
+        .collect())
 }
 
 fn cargo_lock_versions(root: &Path) -> Result<BTreeSet<(String, String)>> {
@@ -241,7 +248,9 @@ pub fn check(root: &Path, m: &Manifest, repo_files: &[String], lock: &BTreeSet<(
         if !seen.insert(a.path.clone()) {
             problems.push(format!("{}: listed twice", a.path));
         }
-        let brand = a.licence == BRAND_LICENCE && a.kind == "logo" && a.path.starts_with("docs/brand/");
+        let brand = a.licence == BRAND_LICENCE
+            && (a.kind == "logo" || a.kind == "icon")
+            && (a.path.starts_with("docs/brand/") || a.path.starts_with("assets/app-icon/"));
         if !brand {
             licence_ok(&a.path, &a.licence, &mut problems);
         }
@@ -553,11 +562,12 @@ mod tests {
     fn brand_licence_only_for_brand_logos() {
         let root = super::root();
         for (path, kind, pass) in [
-            ("docs/brand/artcraft-mark.svg", "logo", true),
-            ("docs/brand/artcraft-mark.svg", "icon", false),
+            ("docs/brand/nads-mark.svg", "logo", true),
+            ("assets/app-icon/pdfcraft.svg", "icon", true),
+            ("docs/brand/nads-mark.svg", "font", false),
             ("assets/icons/mark.svg", "logo", false),
         ] {
-            let mut a = asset(path, "Storyteller", kind, BRAND_LICENCE);
+            let mut a = asset(path, "nads", kind, BRAND_LICENCE);
             a.licence_file = "docs/brand/LICENSE-brand.txt".into();
             let m = Manifest { asset: vec![a], ..Default::default() };
             let p = check(&root, &m, &[], &BTreeSet::new());

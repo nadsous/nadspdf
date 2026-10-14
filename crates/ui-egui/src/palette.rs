@@ -15,6 +15,8 @@ struct Hit {
     icon: &'static str,
     command: Option<&'static str>,
     ready: bool,
+    /// The vault to show on Home.
+    vault: Option<u64>,
 }
 
 /// Where `needle` (folded with [`pdfcraft_render::text::fold_case`]) matches `hay`, for ranking.
@@ -68,6 +70,7 @@ pub fn show(app: &mut PdfCraftApp, ctx: &egui::Context) {
                     icon: spec.icon,
                     command: Some(spec.id),
                     ready: app.command_enabled(spec),
+                    vault: None,
                 },
             ));
         }
@@ -83,6 +86,7 @@ pub fn show(app: &mut PdfCraftApp, ctx: &egui::Context) {
                     icon: g.icon,
                     command: None,
                     ready: g.availability == Availability::Ready,
+                    vault: None,
                 },
             ));
         }
@@ -101,11 +105,15 @@ pub fn show(app: &mut PdfCraftApp, ctx: &egui::Context) {
                             icon: i.icon,
                             command: Some(i.command),
                             ready: i.availability == Availability::Ready,
+                            vault: None,
                         },
                     ));
                 }
             }
         }
+    }
+    for (s, id, label, icon) in crate::vaults_ui::palette_hits(app, |hay| score(hay, &q)) {
+        hits.push((s, Hit { group: None, label, detail: tl!("Vault").into(), icon, command: None, ready: true, vault: Some(id) }));
     }
     hits.sort_by_key(|(s, h)| (*s, !h.ready));
     hits.truncate(12);
@@ -142,7 +150,7 @@ pub fn show(app: &mut PdfCraftApp, ctx: &egui::Context) {
         app.palette_query.clear();
         return;
     }
-    let mut chosen: Option<(Option<&'static str>, Option<&'static str>)> = None;
+    let mut chosen: Option<(Option<&'static str>, Option<&'static str>, Option<u64>)> = None;
     let area_response = egui::Area::new(egui::Id::new("palette"))
         .order(egui::Order::Foreground)
         .pivot(Align2::CENTER_TOP)
@@ -164,7 +172,7 @@ pub fn show(app: &mut PdfCraftApp, ctx: &egui::Context) {
                         && ui.input(|i| i.key_pressed(egui::Key::Enter))
                         && let Some((_, h)) = hits.get(selected)
                     {
-                        chosen = Some((h.command, h.group));
+                        chosen = Some((h.command, h.group, h.vault));
                     }
                     // Re-requesting existing focus interrupts native IME composition.
                     if !r.has_focus() {
@@ -197,7 +205,7 @@ pub fn show(app: &mut PdfCraftApp, ctx: &egui::Context) {
                         (rect.width() - 36.0 - detail_w - 24.0).max(0.0),
                     );
                     if theme::hand(resp).clicked() {
-                        chosen = Some((h.command, h.group));
+                        chosen = Some((h.command, h.group, h.vault));
                     }
                 }
                 if hits.is_empty() {
@@ -212,7 +220,10 @@ pub fn show(app: &mut PdfCraftApp, ctx: &egui::Context) {
         data.insert_temp(palette_rect_id, area_response.response.rect);
     });
 
-    if let Some((command, group)) = chosen {
+    if let Some((command, group, vault)) = chosen {
+        if let Some(id) = vault {
+            app.show_vault(id);
+        }
         app.palette_open = false;
         app.palette_query.clear();
         if let Some(g) = group {

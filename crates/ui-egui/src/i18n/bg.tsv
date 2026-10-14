@@ -4,7 +4,7 @@
 # Clean-room: every entry was written from the plain meaning of the English label using ordinary
 # Bulgarian computing vocabulary. No proprietary localisation resource, string table or product UI
 # (Acrobat's included) was consulted or copied; add entries the same way.
-# Product and technology names (PdfCraft, PDF, Acrobat JavaScript ...) stay in Latin letters;
+# Product and technology names (NadsPDF, PDF, Acrobat JavaScript ...) stay in Latin letters;
 # the trailing "…" of dialog commands is kept.
 
 	About	За програмата
@@ -445,12 +445,11 @@
 	Check for updates	Провери за актуализации
 	No check has run yet.	Още не е извършвана проверка.
 	Checking for a newer version…	Проверка за по-нова версия…
-	PdfCraft {v} is available.	Налична е PdfCraft {v}.
+	NadsPDF {v} is available.	Налична е NadsPDF {v}.
 	You have version {c}. Download the new version from its release page.	Имате версия {c}. Изтеглете новата версия от страницата на изданието.
-	PdfCraft {c} is up to date.	PdfCraft {c} е актуална.
+	NadsPDF {c} is up to date.	NadsPDF {c} е актуална.
 	Couldn't check for updates: {e}	Неуспешна проверка за актуализации: {e}
 	You have version {c}. All releases are listed at {page}.	Имате версия {c}. Всички издания са изброени на {page}.
-	Asks GitHub for the latest release. Nothing is downloaded or installed automatically.	Запитва GitHub за най-новото издание. Нищо не се изтегля и не се инсталира автоматично.
 	Download	Изтегли
 	Later	По-късно
 	none	няма
@@ -560,8 +559,8 @@
 	No changes allowed	Не се разрешават промени
 	Annotations, form fill-in, and digital signatures	Анотации, попълване на формуляри и цифрови подписи
 	Form fill-in and digital signatures	Попълване на формуляри и цифрови подписи
-	The key is in the macOS Keychain, which may ask to allow PdfCraft to use it.	Ключът е в macOS Keychain, който може да поиска разрешение PdfCraft да го използва.
-	The key is in the Windows certificate store, which may ask to allow PdfCraft to use it.	Ключът е в хранилището за сертификати на Windows, което може да поиска разрешение PdfCraft да го използва.
+	The key is in the macOS Keychain, which may ask to allow NadsPDF to use it.	Ключът е в macOS Keychain, който може да поиска разрешение NadsPDF да го използва.
+	The key is in the Windows certificate store, which may ask to allow NadsPDF to use it.	Ключът е в хранилището за сертификати на Windows, което може да поиска разрешение NadsPDF да го използва.
 	Digital ID password	Парола за цифровия идентификатор
 	Back	Назад
 	Validate all	Провери всички
@@ -940,7 +939,7 @@
 	Downsample to	Намали разделителната способност до
 	Also recognize pages that already have text	Разпознай и страници, които вече съдържат текст
 	Pictures on those pages are recognized too; words already in the page's text are not added again	Изображенията на тези страници също се разпознават; думите, които вече са в текста на страницата, не се добавят отново
-	Text recognition isn't installed: its model files are missing. Reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them.	Разпознаването на текст не е инсталирано: файловете на моделите му липсват. Инсталирайте PdfCraft отново или задайте в PDFCRAFT_MODELS папката, която ги съдържа.
+	Text recognition isn't installed: its model files are missing. Reinstall NadsPDF, or set PDFCRAFT_MODELS to the folder that holds them.	Разпознаването на текст не е инсталирано: файловете на моделите му липсват. Инсталирайте NadsPDF отново или задайте в PDFCRAFT_MODELS папката, която ги съдържа.
 	Settings	Настройки
 	Protect	Защита
 	Advanced options	Разширени опции
@@ -1331,7 +1330,7 @@
 	Anyone opening the document will need this password. It's applied when you save.	Всеки, който отваря документа, ще се нуждае от тази парола. Тя се прилага при записване.
 	The document opens without a password; this password is needed to change the restrictions. It's applied when you save.	Документът се отваря без парола; тази парола е нужна за промяна на ограниченията. Тя се прилага при записване.
 	Recover unsaved documents?	Да се възстановят ли незаписаните документи?
-	PdfCraft didn't shut down normally. These documents had changes that were autosaved:	PdfCraft не беше затворен нормално. Тези документи имат автоматично записани промени:
+	NadsPDF didn't shut down normally. These documents had changes that were autosaved:	NadsPDF не беше затворен нормално. Тези документи имат автоматично записани промени:
 	just now	току-що
 	{n} min ago	преди {n} мин
 	{n} h ago	преди {n} ч
@@ -1499,10 +1498,10 @@
 	On the web, open or drop an image to convert it	В уеб версията отворете или пуснете изображение, за да го конвертирате
 	Couldn't optimize the file: {e}	Файлът не можа да бъде оптимизиран: {e}
 	Couldn't write {path}: {e}	Не можа да се запише {path}: {e}
-	The form asks to be submitted to {u}; PdfCraft doesn't send form data. Save the document to keep your entries.	Формулярът изисква да бъде изпратен до {u}; PdfCraft не изпраща данни от формуляри. Запишете документа, за да запазите въведеното.
+	The form asks to be submitted to {u}; NadsPDF doesn't send form data. Save the document to keep your entries.	Формулярът изисква да бъде изпратен до {u}; NadsPDF не изпраща данни от формуляри. Запишете документа, за да запазите въведеното.
 	This PDF uses the unsupported {s} action.	Този PDF използва неподдържаното действие {s}.
 	{name}: the {other} action isn't supported yet	{name}: действието {other} все още не се поддържа
-	{name} submits the form to {url}; PdfCraft doesn't send form data. Save the document to keep your entries.	{name} изпраща формуляра до {url}; PdfCraft не изпраща данни от формуляри. Запишете документа, за да запазите въведеното.
+	{name} submits the form to {url}; NadsPDF doesn't send form data. Save the document to keep your entries.	{name} изпраща формуляра до {url}; NadsPDF не изпраща данни от формуляри. Запишете документа, за да запазите въведеното.
 	Export stopped: {e}	Експортирането е спряно: {e}
 	Exported 1 image	Експортирано е 1 изображение
 	Exported {n} images	Експортирани са {n} изображения
@@ -1664,7 +1663,7 @@
 	Couldn't open {name}: {e}	{name} не можа да бъде отворен: {e}
 	Couldn't read {name}: {e}	{name} не можа да бъде прочетен: {e}
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	Преносимият режим е изключен: в {folder} не може да се записва ({error}). Вместо това настройките се пазят в потребителската ви папка.
-	PdfCraft is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	PdfCraft рисува без графичен процесор, затова може да е бавен. Обновяването на графичния драйвер може да помогне.
+	NadsPDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	NadsPDF рисува без графичен процесор, затова може да е бавен. Обновяването на графичния драйвер може да помогне.
 	Couldn't save: {e}	Записването не бе успешно: {e}
 	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Изтеглянето на прикачени файлове в уеб версията ще стане достъпно с M3.10 ({n} байта готови)
 	`{command}` {when}	`{command}` {when}
@@ -1738,8 +1737,8 @@
 	Signed and all signatures are valid.	Подписан, всички подписи са валидни.
 	At least one signature has problems.	Поне един подпис има проблеми.
 	This document is secured. Some changes are restricted by its security settings.	Този документ е защитен. Някои промени са ограничени от настройките му за защита.
-	This is a dynamic XFA form, which PdfCraft can't display yet. What you see is the file's placeholder page.	Това е динамичен XFA формуляр, който PdfCraft все още не може да показва. Виждате заместващата страница на файла.
-	This form also contains XFA data, which PdfCraft doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Този формуляр съдържа и XFA данни, които PdfCraft все още не чете. Можете да попълвате полетата му, но Acrobat може да покаже вместо това XFA стойностите.
+	This is a dynamic XFA form, which NadsPDF can't display yet. What you see is the file's placeholder page.	Това е динамичен XFA формуляр, който NadsPDF все още не може да показва. Виждате заместващата страница на файла.
+	This form also contains XFA data, which NadsPDF doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Този формуляр съдържа и XFA данни, които NadsPDF все още не чете. Можете да попълвате полетата му, но Acrobat може да покаже вместо това XFA стойностите.
 	This document contains {n} interactive form fields.	Този документ съдържа {n} интерактивни полета на формуляр.
 	This file was damaged and has been repaired. Saving keeps the repaired version.	Този файл беше повреден и е поправен. При записване се запазва поправената версия.
 	Dismiss	Скрий
@@ -1778,7 +1777,7 @@
 	Read	Четене
 	Convert	Конвертиране
 	E-Sign	Е-подпис
-	Welcome to PdfCraft	Добре дошли в PdfCraft
+	Welcome to NadsPDF	Добре дошли в NadsPDF
 	An open-source PDF workbench — local, private, and scriptable.	PDF работна среда с отворен код — локална, поверителна и програмируема.
 	Recommended tools	Препоръчани инструменти
 	Use now	Използвай сега
@@ -1817,11 +1816,11 @@
 	Join the ArtCraft community	Присъедини се към общността на ArtCraft
 	Get help, share feedback and follow development on Discord.	Получете помощ, споделете мнение и следете разработката в Discord.
 	Join our Discord	Присъедини се към нашия Discord
-	PdfCraft web page	Уебстраница на PdfCraft
-	PdfCraft on GitHub	PdfCraft в GitHub
+	NadsPDF web page	Уебстраница на NadsPDF
+	NadsPDF on GitHub	NadsPDF в GitHub
 	ArtCraft website	Уебсайт на ArtCraft
 	Check for updates…	Провери за актуализации…
-	About PdfCraft	За PdfCraft
+	About NadsPDF	За NadsPDF
 	JavaScript console…	JavaScript конзола…
 	Document JavaScripts…	JavaScript на документа…
 	Recognize text…	Разпознай текст…
@@ -1831,8 +1830,8 @@
 	Add background…	Добави фон…
 	Prepare a form	Подготви формуляр
 	Digitally sign	Подпиши цифрово
-	Files you open in PdfCraft appear here. Drop a PDF anywhere to open it.	Файловете, които отваряте в PdfCraft, се показват тук. Пуснете PDF файл където и да е, за да го отворите.
-	PdfCraft works offline. No telemetry, no account, and no cloud processing unless you add a provider.	PdfCraft работи офлайн. Без телеметрия, без акаунт и без обработка в облака, освен ако не добавите доставчик.
+	Files you open in NadsPDF appear here. Drop a PDF anywhere to open it.	Файловете, които отваряте в NadsPDF, се показват тук. Пуснете PDF файл където и да е, за да го отворите.
+	NadsPDF works offline. No telemetry, no account, and no cloud processing unless you add a provider.	NadsPDF работи офлайн. Без телеметрия, без акаунт и без обработка в облака, освен ако не добавите доставчик.
 	Measure distance	Измери разстояние
 	Measure perimeter	Измери периметър
 	Measure area	Измери площ
@@ -1972,6 +1971,8 @@
 	Go to page {p}	Отиди на страница {p}
 	Images and text	Изображения и текст
 	Images and text (converted to PDF)	Изображения и текст (конвертирани в PDF)
+	Images, text and documents (converted to PDF)	Изображения, текст и документи (конвертирани в PDF)
+	PDF, images, text and documents	PDF, изображения, текст и документи
 	Import {name}	Импортирай {name}
 	Insert pages from {name}	Вмъкни страници от {name}
 	Insert pages from {name} — 1 field renamed	Вмъкни страници от {name} — 1 поле е преименувано
@@ -2039,7 +2040,7 @@
 	the image is empty	изображението е празно
 	The operation failed.	Операцията е неуспешна.
 	the password is incorrect	паролата е грешна
-	the text recognition models are not installed (reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them)	моделите за разпознаване на текст не са инсталирани (инсталирайте PdfCraft отново или задайте в PDFCRAFT_MODELS папката, която ги съдържа)
+	the text recognition models are not installed (reinstall NadsPDF, or set PDFCRAFT_MODELS to the folder that holds them)	моделите за разпознаване на текст не са инсталирани (инсталирайте NadsPDF отново или задайте в PDFCRAFT_MODELS папката, която ги съдържа)
 	The title in the metadata and the document information differ	Заглавието в метаданните и в информацията за документа се различават
 	the title must not be empty	заглавието не може да е празно
 	there are no pages to print	няма страници за печат
@@ -2118,14 +2119,14 @@ comment menu	Edit	Редактирай
 signature pad	Type	Въвеждане
 action wizard	Start	Старт
 	Margins (in)	Полета (in)
-	Reopen the files that were open when PdfCraft last closed	Отваряй отново файловете, които бяха отворени при последното затваряне на PdfCraft
+	Reopen the files that were open when NadsPDF last closed	Отваряй отново файловете, които бяха отворени при последното затваряне на NadsPDF
 	Clear Recent Files	Изчисти последно отваряните файлове
 	Remove from Recent	Премахни от последно отваряните
 	Remove {name} from Recent	Премахни {name} от последно отваряните
 	The PDF text fonts can't draw “{c}” ({code}). Choose supported text.	Шрифтовете за PDF текст не могат да изобразят „{c}“ ({code}). Изберете поддържан текст.
 	The standard fonts can't draw “{c}” ({code}). Only Western European characters can be added as text for now.	Стандартните шрифтове не могат да покажат „{c}“ ({code}). Засега като текст могат да се добавят само западноевропейски символи.
-	This field's font can't draw “{c}” ({code}), so PdfCraft shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Шрифтът на това поле не може да покаже „{c}“ ({code}), затова PdfCraft показва ? на негово място. Стойността е запазена и другите програми за PDF преначертават полето по нея.
-	The fonts PdfCraft writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	Шрифтовете, с които PdfCraft пише, не могат да покажат „{c}“ ({code}), затова във всяка програма за PDF то се показва като ?. Текстът е запазен.
+	This field's font can't draw “{c}” ({code}), so NadsPDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Шрифтът на това поле не може да покаже „{c}“ ({code}), затова NadsPDF показва ? на негово място. Стойността е запазена и другите програми за PDF преначертават полето по нея.
+	The fonts NadsPDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	Шрифтовете, с които NadsPDF пише, не могат да покажат „{c}“ ({code}), затова във всяка програма за PDF то се показва като ?. Текстът е запазен.
 	Larger pages	По-големи страници
 	Smaller pages	По-малки страници
 	Reset page size	Възстанови размера на страниците
@@ -2283,7 +2284,7 @@ animation effects	Off	Изключени
 	no output folder was chosen	не е избрана папка за изхода
 @plural	Downloaded {n} PDF|Downloaded {n} PDFs	Изтеглен е {n} PDF|Изтеглени са {n} PDF файла
 	Scan	Сканиране
-	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: PdfCraft finds the signature and removes the paper.	Подпишете се на лист бяла хартия и го снимайте на ярка, равномерна светлина (със светкавица). Изберете снимката или я пуснете тук: PdfCraft открива подписа и премахва хартията.
+	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: NadsPDF finds the signature and removes the paper.	Подпишете се на лист бяла хартия и го снимайте на ярка, равномерна светлина (със светкавица). Изберете снимката или я пуснете тук: NadsPDF открива подписа и премахва хартията.
 	Choose photo…	Избор на снимка…
 	No photo chosen	Няма избрана снимка
 	Photo	Снимка
@@ -2315,3 +2316,103 @@ animation effects	Off	Изключени
 	This document is trying to open a local file:	Този документ се опитва да отвори локален файл:
 	Move tag earlier	Преместване на етикета по-рано
 	Move tag later	Преместване на етикета по-късно
+
+# NadsPDF (nads.site)
+	NadsPDF tools	Инструменти на NadsPDF
+	PdfCraft (upstream) on GitHub	PdfCraft (оригиналният проект) в GitHub
+	Convert to PDF with NadsPDF	Преобразуване в PDF с NadsPDF
+	Combine with NadsPDF	Обединяване с NadsPDF
+	Open with NadsPDF	Отваряне с NadsPDF
+	Show NadsPDF in the File Explorer right-click menu	Показване на NadsPDF в контекстното меню на File Explorer
+	Added for all users when NadsPDF was installed.	Добавено за всички потребители при инсталирането на NadsPDF.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	„Преобразуване в PDF“, „Обединяване“ и „Отваряне“ за документи, изображения и PDF файлове. В Windows 11 – под „Показване на още опции“.
+	Couldn't change the File Explorer menu: {e}	Менюто на File Explorer не може да бъде променено: {e}
+	Couldn't find {name}	{name} не е намерен
+# Vaults (Home ▸ Vaults)
+@plural	{n} file|{n} files	{n} файл|{n} файла
+	Give the vault a name	Дайте име на сейфа
+	You can have up to {n} vaults. Delete one first.	Може да имате до {n} сейфа. Първо изтрийте един.
+	That vault no longer exists	Този сейф вече не съществува
+	Added {files} to {vault}	Добавено в {vault}: {files}
+	Already in {vault}	Вече е в {vault}
+	A vault holds up to {n} files	Един сейф побира до {n} файла
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	Сейфовете съдържат PDF и файлове, които NadsPDF може да преобразува, на този компютър
+	No files to open in this vault	В този сейф няма файлове за отваряне
+	Opening the first {n} files	Отварят се първите {n} файла
+	Deleted the vault {vault}. Its files were not touched.	Сейфът {vault} е изтрит. Файловете му не са засегнати.
+	Moved {file} to {vault}	{file} е преместен в {vault}
+	Vaults need the desktop app	Сейфовете изискват настолното приложение
+	Locate {file}	Намиране на {file}
+	Save this document to a file first, then add it to a vault	Първо запазете документа във файл, след това го добавете в сейф
+	Vaults	Сейфове
+	New vault	Нов сейф
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	Групирайте PDF файлове от всяко място на компютъра в именувани сейфове с цвят и икона. Файловете остават там, където са.
+	Click to show its files. Drag to reorder, or drop files here.	Щракнете, за да видите файловете. Плъзнете за пренареждане или пуснете файлове тук.
+	Open all	Отвори всички
+	Edit vault…	Редактиране на сейфа…
+	Move left	Премести наляво
+	Move right	Премести надясно
+	Delete vault…	Изтриване на сейфа…
+	New vault…	Нов сейф…
+	No files yet. Drop files here to add them.	Все още няма файлове. Пуснете файлове тук, за да ги добавите.
+	Locate…	Намери…
+	Missing	Липсва
+	Remove {name} from this vault	Премахни {name} от този сейф
+	This file has moved or been deleted. Locate it, or remove it from the vault.	Този файл е преместен или изтрит. Намерете го или го премахнете от сейфа.
+	Move to vault	Премести в сейф
+	Remove from vault	Премахни от сейфа
+	Show this vault on Home	Покажи този сейф в Начало
+	Vault: {name}	Сейф: {name}
+	Vault	Сейф
+	Edit vault	Редактиране на сейфа
+	Vault name	Име на сейфа
+	Create vault	Създай сейф
+	Delete the vault {vault}?	Да се изтрие ли сейфът {vault}?
+	Its files stay where they are on your computer. Only the vault is deleted.	Файловете остават там, където са на компютъра. Изтрива се само сейфът.
+	Delete vault	Изтрий сейфа
+	Add to vault	Добави в сейф
+	Already in it	Вече е тук
+	Add document to vault…	Добавяне на документа в сейф…
+	Dark pages	Тъмни страници
+	Rasterize pages (strong compression)…	Растеризиране на страниците (силно компресиране)…
+	Rasterize pages (strong compression)	Растеризиране на страниците (силно компресиране)
+	Rasterizing… page {d} of {t}	Растеризиране… страница {d} от {t}
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	Всяка страница става изображение: най-силното компресиране, най-добро за сканирани документи. Текстът вече не може да се избира или търси, а връзките, отметките и полетата на формуляри не се запазват. Резултатът се записва като копие.
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi, качество на JPEG {q}
+compression level	Light	Слабо
+compression level	Medium	Средно
+compression level	Strong	Силно
+	Compress	Компресиране
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	Растеризирането не би намалило този файл ({size}). Не е записано копие.
+	Add faint watermark	Добавяне на бледен воден знак
+	Recognize text if available	Разпознаване на текст, ако е налично
+	Prepare for Sending	Подготовка за изпращане
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	Номериране на страниците „n / общо“ долу в средата, след което файлът се намалява за изпращане по имейл.
+	Archive Scans	Архивиране на сканирани документи
+	Make scans searchable (when text recognition is available), then make them smaller.	Сканираните документи стават търсими (ако разпознаването на текст е инсталирано), след което се намаляват.
+	Confidential	Поверително
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	Бледен диагонален воден знак ПОВЕРИТЕЛНО и номера на страниците „n / общо“ на всяка страница.
+	{name} (copy)	{name} (копие)
+watermark text	CONFIDENTIAL	ПОВЕРИТЕЛНО
+	Group name	Име на групата
+	Rename Group	Преименуване на групата
+	Ungroup	Разгрупиране
+	Close Group	Затваряне на групата
+	Add Tab to New Group	Добавяне на раздела към нова група
+	Add Tab to Group	Добавяне на раздела към група
+	Remove from Group	Премахване от групата
+	Click to fold or unfold the group	Щракнете, за да свиете или разгънете групата
+	Filter tools	Филтриране на инструментите
+	No tool matches	Няма съвпадащи инструменти
+	Essentials	Основни
+	Float as a bubble	Като балонче
+	Show this PDF in a small window over the others	Показване на този PDF в малък прозорец над другите
+	Put back as a tab	Връщане като раздел
+	Fold into a bubble	Свиване в балонче
+	Click to open, drag onto the tabs to put it back	Щракнете за отваряне, плъзнете към разделите за връщане
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	Имате версия {c}. NadsPDF ще се затвори, ще инсталира новата версия на мястото на тази и ще се отвори отново. Настройките ви се запазват.
+	You have version {c}.	Имате версия {c}.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	Това копие на NadsPDF е от Microsoft Store, който сам инсталира новите версии.
+	Downloading the update…	Изтегляне на актуализацията…
+	Couldn't install the update: {e}	Актуализацията не можа да се инсталира: {e}
+	Check for updates when NadsPDF starts (once a day)	Проверка за актуализации при стартиране на NadsPDF (веднъж на ден)

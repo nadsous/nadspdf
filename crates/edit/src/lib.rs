@@ -621,15 +621,17 @@ pub mod objects;
 pub use objects::{EditableObject, MAX_MOVE_OBJECTS, ObjectKind, ObjectTarget, editable_objects, move_objects};
 
 mod flatten;
+mod textless;
 pub use flatten::{flatten, flatten_fill_sign};
+pub use textless::without_text;
 pub mod images;
 pub use images::{ImageChange, PageImage, change_image, page_images, reading_images, rect_to_rect, turn_about_centre};
 pub mod bidi;
 pub mod indic;
 pub mod text;
 pub use text::{
-    BlockStyle, LineEdit, RangeStyle, TextBlock, TextLine, clear_block, reading_blocks, replace_block, replace_line, rewrite_block, text_blocks,
-    text_lines,
+    BlockStyle, LineEdit, RangeStyle, TextBlock, TextLine, clear_block, reading_blocks, reading_layout, replace_block, replace_line, rewrite_block,
+    text_blocks, text_lines,
 };
 pub mod added;
 pub use added::{

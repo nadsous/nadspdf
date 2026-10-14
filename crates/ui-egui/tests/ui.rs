@@ -32,7 +32,7 @@ fn harness(setup: impl FnOnce(&mut PdfCraftApp) + 'static) -> Harness<'static, P
 #[test]
 fn home_shows_welcome_and_tools() {
     let h = harness(|_| {});
-    h.get_by_label_contains("Welcome to PdfCraft");
+    h.get_by_label_contains("Welcome to NadsPDF");
     assert!(h.query_all_by_label("Organize pages").count() >= 2, "tool list + home card");
     h.get_by_label("Open file");
 }
@@ -109,7 +109,7 @@ fn home_removes_one_recent_file_or_clears_them_all() {
     h.get_by_label("Clear Recent Files").click();
     h.run_steps(2);
     assert!(h.state().recent.is_empty(), "Clear empties the list");
-    h.get_by_label_contains("Files you open in PdfCraft appear here");
+    h.get_by_label_contains("Files you open in NadsPDF appear here");
     assert!(h.query_by_label("Clear Recent Files").is_none(), "and goes away with nothing left to clear");
 }
 
@@ -134,7 +134,7 @@ fn opening_a_pdf_shows_comments_and_bookmarks() {
     h.get_by_label("Beta section");
 }
 
-/// #1590: side panes the user closed stay closed when PdfCraft restarts and opens another PDF,
+/// #1590: side panes the user closed stay closed when NadsPDF restarts and opens another PDF,
 /// even one with comments and bookmarks, which would otherwise open on the Comments panel.
 #[test]
 fn closed_side_panes_stay_closed_after_a_restart_and_opening_a_pdf() {
@@ -328,8 +328,8 @@ fn tabs_shrink_to_fit_then_arrows_step_through_them_and_open_stays_in_sight() {
         }
     });
     let open = h.get_by_label("Open").rect();
-    let discord = h.get_by_label("Discord").rect();
-    assert!(open.right() <= discord.left(), "Open {open:?} must not run under Discord {discord:?}");
+    let discord = h.get_by_label("Keyboard shortcuts").rect();
+    assert!(open.right() <= discord.left(), "Open {open:?} must not run under the help button {discord:?}");
     let mut previous_right = f32::MIN;
     for i in 0..5 {
         let tab = h.get_by_label(&name(i)).rect();
@@ -353,15 +353,15 @@ fn tabs_shrink_to_fit_then_arrows_step_through_them_and_open_stays_in_sight() {
     assert_eq!(enabled(&h, "Scroll tabs right"), Some(true), "and then there is more to the right");
     let open = h.get_by_label("Open").rect();
     let right = h.get_by_label("Scroll tabs right").rect();
-    assert!(right.right() <= open.left() + 0.5 && open.right() <= h.get_by_label("Discord").rect().left());
-    // Twenty: Open stays in sight left of Discord.
+    assert!(right.right() <= open.left() + 0.5 && open.right() <= h.get_by_label("Keyboard shortcuts").rect().left());
+    // Twenty: Open stays in sight left of the help button.
     for i in 0..13 {
         h.state_mut().open_bytes(&format!("more-{i:02}.pdf"), None, FIXTURE.to_vec()).unwrap();
     }
     h.run_steps(4);
     let open = h.get_by_label("Open").rect();
-    let discord = h.get_by_label("Discord").rect();
-    assert!(open.left() > 0.0 && open.right() <= discord.left(), "Open {open:?} stays in sight left of Discord {discord:?}");
+    let discord = h.get_by_label("Keyboard shortcuts").rect();
+    assert!(open.left() > 0.0 && open.right() <= discord.left(), "Open {open:?} stays in sight left of the help button {discord:?}");
 }
 
 /// macOS (#789): with the integrated title bar, the strip is the 28 pt band AppKit centres the
@@ -374,7 +374,7 @@ fn the_integrated_title_bar_is_the_traffic_light_band() {
         app.open_bytes("band.pdf", None, FIXTURE.to_vec()).unwrap();
     });
     let band = 28.0;
-    for label in ["Home", "band.pdf", "Open", "Discord", "Keyboard shortcuts"] {
+    for label in ["Home", "band.pdf", "Open", "Keyboard shortcuts"] {
         let r = h.get_by_label(label).rect();
         assert!(r.top() >= 0.0 && r.bottom() <= band, "{label}: {r:?} inside the {band} pt title bar");
         assert!(r.height() >= 24.0, "{label}: {r:?} stays clickable");
@@ -681,7 +681,7 @@ fn dropping_a_pdf_on_the_window_opens_it() {
     assert!(h.state().views.is_empty());
     let file: egui::DroppedFileHandle = std::sync::Arc::new(Dropped { path: "dropped.pdf".into(), bytes: FIXTURE.to_vec() });
     h.input_mut().dropped_files.push(file);
-    h.run_steps(3);
+    wait_until(&mut h, |app| !app.views.is_empty());
     assert_eq!(h.state().views.len(), 1, "the dropped PDF opens in a tab");
     h.get_by_label_contains("dropped.pdf");
 }
@@ -782,6 +782,8 @@ fn files_and_quit_from_the_operating_system() {
     let queue = std::rc::Rc::new(std::cell::RefCell::new(vec![OsEvent::Open(vec![path.to_string_lossy().into_owned()])]));
     let q = queue.clone();
     let mut h = harness(move |app| app.os_events = Some(Box::new(move || q.borrow_mut().drain(..).collect())));
+    // The file is read off the UI thread: keep it until the tab is there.
+    wait_until(&mut h, |app| !app.views.is_empty());
     std::fs::remove_file(&path).ok();
     assert_eq!(h.state().views.len(), 1, "the file opens in a tab");
     h.get_by_label_contains(&name);
@@ -1058,7 +1060,7 @@ fn closing_the_last_active_tab_selects_the_previous_one_then_home() {
         assert!(app.session.get(ids[removed]).is_none());
     }
     assert_eq!(h.state().active, None);
-    h.get_by_label_contains("Welcome to PdfCraft");
+    h.get_by_label_contains("Welcome to NadsPDF");
 }
 
 #[test]
@@ -1179,4 +1181,101 @@ fn combine_tab_uses_tab_interaction_without_changing_close_or_document_state() {
     close_named_tab(&mut h, "Combine files");
     assert!(h.query_by_role_and_label(Role::Tab, "Combine files").is_none());
     assert_eq!(h.state().views.iter().map(|v| v.id).collect::<Vec<_>>(), document_ids);
+}
+
+/// Step until `done` holds (a file opens on a worker thread), for at most five seconds.
+fn wait_until(h: &mut Harness<'static, PdfCraftApp>, done: impl Fn(&PdfCraftApp) -> bool) {
+    for _ in 0..500 {
+        if done(h.state()) {
+            return;
+        }
+        h.run_steps(1);
+        std::thread::sleep(std::time::Duration::from_millis(10));
+    }
+}
+
+#[test]
+fn tabs_gather_into_a_named_coloured_group_that_folds_away() {
+    let mut h = harness(|app| {
+        for name in ["a.pdf", "b.pdf", "c.pdf"] {
+            app.open_bytes(name, None, FIXTURE.to_vec()).unwrap();
+        }
+    });
+    // Right-click a tab: a new group starts with its name being typed.
+    h.get_by_label("c.pdf").click_secondary();
+    h.run_steps(3);
+    h.get_by_label("Add Tab to New Group").click();
+    h.run_steps(3);
+    assert_eq!(h.state().tab_groups.groups().len(), 1);
+    h.get_by_label("Group name").type_text("Factures");
+    h.run_steps(2);
+    h.key_press(egui::Key::Enter);
+    h.run_steps(3);
+    let group = h.state().tab_groups.groups()[0].clone();
+    assert_eq!(group.name, "Factures");
+    // a.pdf joins it from its own menu, and moves next to c.pdf, behind the chip.
+    h.get_by_label("a.pdf").click_secondary();
+    h.run_steps(3);
+    h.get_by_label("Add Tab to Group ⏵").hover();
+    h.run_steps(3);
+    // The chip and the menu entry share the name; the menu is drawn last.
+    h.query_all_by_label("Factures").last().unwrap().click();
+    h.run_steps(3);
+    let (chip, a, b, c) =
+        (h.get_by_label("Factures").rect(), h.get_by_label("a.pdf").rect(), h.get_by_label("b.pdf").rect(), h.get_by_label("c.pdf").rect());
+    assert!(chip.right() <= a.left() && a.right() <= c.left() + 0.5 && c.right() <= b.left() + 0.5, "chip, a, c, then b: {chip:?} {a:?} {c:?} {b:?}");
+    // A click on the chip folds the group: only its active tab (c.pdf, opened last) stays.
+    h.get_by_label("Factures").click();
+    h.run_steps(3);
+    assert!(h.query_by_label("a.pdf").is_none() && h.query_by_label("c.pdf").is_some(), "folded");
+    h.get_by_label("Factures").click();
+    h.run_steps(3);
+    assert!(h.query_by_label("a.pdf").is_some(), "unfolded");
+    // c.pdf leaves the group; ungrouping keeps every tab open.
+    h.get_by_label("c.pdf").click_secondary();
+    h.run_steps(3);
+    h.get_by_label("Remove from Group").click();
+    h.run_steps(3);
+    h.get_by_label("Factures").click_secondary();
+    h.run_steps(3);
+    h.get_by_label("Ungroup").click();
+    h.run_steps(3);
+    assert!(h.state().tab_groups.groups().is_empty() && h.state().views.len() == 3);
+}
+
+#[test]
+fn a_tab_floats_as_a_bubble_folds_into_a_head_and_docks_again() {
+    let mut h = harness(|app| {
+        for name in ["a.pdf", "b.pdf"] {
+            app.open_bytes(name, None, FIXTURE.to_vec()).unwrap();
+        }
+    });
+    let b = h.state().views[1].id;
+    // Right-click b.pdf: it leaves the strip and floats, open, while a.pdf shows.
+    h.get_by_label("b.pdf").click_secondary();
+    h.run_steps(3);
+    h.get_by_label("Float as a bubble").click();
+    h.run_steps(4);
+    assert!(h.state().bubbles.is_open(b));
+    assert_eq!(h.state().active, Some(0));
+    assert!(h.query_by_label("b.pdf").is_none(), "no tab for the bubble");
+    if let Ok(dir) = std::env::var("PDFCRAFT_BUBBLE_SHOTS") {
+        h.render().unwrap().save(std::path::Path::new(&dir).join("bubble-open.png")).unwrap();
+    }
+    // A click elsewhere folds it into a round head named after the document.
+    h.get_by_label("a.pdf").click();
+    h.run_steps(3);
+    assert!(h.state().bubbles.contains(b) && !h.state().bubbles.is_open(b));
+    if let Ok(dir) = std::env::var("PDFCRAFT_BUBBLE_SHOTS") {
+        h.render().unwrap().save(std::path::Path::new(&dir).join("bubble-head.png")).unwrap();
+    }
+    // Clicking the head opens it again; Put back as a tab docks it, showing.
+    h.get_by_label("b.pdf").click();
+    h.run_steps(3);
+    assert!(h.state().bubbles.is_open(b));
+    h.get_by_label("Put back as a tab").click();
+    h.run_steps(3);
+    assert!(!h.state().bubbles.contains(b));
+    assert_eq!(h.state().active, Some(1));
+    h.get_by_label("b.pdf");
 }

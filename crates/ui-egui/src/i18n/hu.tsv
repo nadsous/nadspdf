@@ -7,7 +7,7 @@
 # Hungarian computing vocabulary (informal "te", nouns for commands such as Mentés and Megnyitás).
 # No proprietary localisation resource, string table or product UI (Acrobat's included) was
 # consulted or copied; add entries the same way.
-# Product and technology names (PdfCraft, PDF, Acrobat JavaScript ...) are not translated;
+# Product and technology names (NadsPDF, PDF, Acrobat JavaScript ...) are not translated;
 # the trailing "…" of dialog commands is kept.
 	Menu	Menü
 	File	Fájl
@@ -130,7 +130,7 @@
 	Next page	Következő oldal
 	Previous page	Előző oldal
 	Current page — type a page number or label (such as iv) and press Enter	Aktuális oldal — írj be egy oldalszámot vagy címkét (például iv), majd nyomd meg az Entert
-	Welcome to PdfCraft	Üdvözöljük a PdfCraftban
+	Welcome to NadsPDF	Üdvözöljük a NadsPDFban
 	An open-source PDF workbench — local, private, and scriptable.	Nyílt forráskódú PDF-munkapad — helyi, privát és parancsfájlokkal vezérelhető.
 	Join the ArtCraft community	Csatlakozz az ArtCraft közösséghez
 	Get help, share feedback and follow development on Discord.	Kérj segítséget, oszd meg a véleményed, és kövesd a fejlesztést a Discordon.
@@ -138,9 +138,9 @@
 	Use now	Használat most
 	Open file	Fájl megnyitása
 	Recent	Legutóbbiak
-	Files you open in PdfCraft appear here. Drop a PDF anywhere to open it.	A PdfCraftban megnyitott fájlok itt jelennek meg. Húzz ide egy PDF-et a megnyitáshoz.
+	Files you open in NadsPDF appear here. Drop a PDF anywhere to open it.	A NadsPDFban megnyitott fájlok itt jelennek meg. Húzz ide egy PDF-et a megnyitáshoz.
 	Privacy	Adatvédelem
-	PdfCraft works offline. No telemetry, no account, and no cloud processing unless you add a provider.	A PdfCraft offline működik. Nincs telemetria, nincs fiók, és nincs felhőfeldolgozás, amíg nem adsz hozzá szolgáltatót.
+	NadsPDF works offline. No telemetry, no account, and no cloud processing unless you add a provider.	A NadsPDF offline működik. Nincs telemetria, nincs fiók, és nincs felhőfeldolgozás, amíg nem adsz hozzá szolgáltatót.
 	Scripts run in a sandbox without file or network access. With JavaScript off, Acrobat's standard format, validate and calculate functions still work.	A szkriptek homokozóban futnak, fájl- és hálózat-hozzáférés nélkül. Kikapcsolt JavaScript mellett az Acrobat szabványos formázó, ellenőrző és számoló függvényei továbbra is működnek.
 	Back to all tools	Vissza az összes eszközhöz
 	Close panel	Panel bezárása
@@ -279,11 +279,11 @@
 	Number pages…	Oldalak számozása…
 	Keyboard shortcuts	Billentyűparancsok
 	Join the ArtCraft Discord	Csatlakozás az ArtCraft Discordhoz
-	PdfCraft web page	A PdfCraft weblapja
-	PdfCraft on GitHub	PdfCraft a GitHubon
+	NadsPDF web page	A NadsPDF weblapja
+	NadsPDF on GitHub	NadsPDF a GitHubon
 	ArtCraft website	Az ArtCraft webhelye
 	Check for updates…	Frissítések keresése…
-	About PdfCraft	A PdfCraftról
+	About NadsPDF	A NadsPDFról
 	Export a PDF	PDF exportálása
 	Export to	Exportálás ide
 	Microsoft Word (.docx)	Microsoft Word (.docx)
@@ -740,12 +740,11 @@
 	Check for updates	Frissítések keresése
 	No check has run yet.	Még nem futott ellenőrzés.
 	Checking for a newer version…	Újabb verzió keresése…
-	PdfCraft {v} is available.	Elérhető a PdfCraft {v}.
+	NadsPDF {v} is available.	Elérhető a NadsPDF {v}.
 	You have version {c}. Download the new version from its release page.	A jelenlegi verzió: {c}. Töltsd le az újat a kiadási oldaláról.
-	PdfCraft {c} is up to date.	A PdfCraft {c} naprakész.
+	NadsPDF {c} is up to date.	A NadsPDF {c} naprakész.
 	Couldn't check for updates: {e}	A frissítések keresése nem sikerült: {e}
 	You have version {c}. All releases are listed at {page}.	A jelenlegi verzió: {c}. Minden kiadás itt található: {page}.
-	Asks GitHub for the latest release. Nothing is downloaded or installed automatically.	A GitHubtól kéri le a legújabb kiadást. Semmi sem töltődik le vagy települ automatikusan.
 	Download	Letöltés
 	Later	Később
 	none	nincs
@@ -856,8 +855,8 @@
 	No changes allowed	Semmilyen módosítás nem engedélyezett
 	Annotations, form fill-in, and digital signatures	Széljegyzetek, űrlapkitöltés és digitális aláírások
 	Form fill-in and digital signatures	Űrlapkitöltés és digitális aláírások
-	The key is in the macOS Keychain, which may ask to allow PdfCraft to use it.	A kulcs a macOS Kulcskarikában van, amely megkérdezheti, engedélyezed-e a PdfCraftnak a használatát.
-	The key is in the Windows certificate store, which may ask to allow PdfCraft to use it.	A kulcs a Windows tanúsítványtárolójában van, amely megkérdezheti, engedélyezed-e a PdfCraftnak a használatát.
+	The key is in the macOS Keychain, which may ask to allow NadsPDF to use it.	A kulcs a macOS Kulcskarikában van, amely megkérdezheti, engedélyezed-e a NadsPDFnak a használatát.
+	The key is in the Windows certificate store, which may ask to allow NadsPDF to use it.	A kulcs a Windows tanúsítványtárolójában van, amely megkérdezheti, engedélyezed-e a NadsPDFnak a használatát.
 	Digital ID password	A digitális azonosító jelszava
 	Back	Vissza
 	Validate all	Összes ellenőrzése
@@ -1216,7 +1215,7 @@
 	Downsample to	Feloldás csökkentése erre
 	Also recognize pages that already have text	A már szöveget tartalmazó oldalak felismerése is
 	Pictures on those pages are recognized too; words already in the page's text are not added again	Az ezeken az oldalakon lévő képeket is felismeri; az oldal szövegében már szereplő szavakat nem adja hozzá újra
-	Text recognition isn't installed: its model files are missing. Reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them.	A szövegfelismerés nincs telepítve: hiányoznak a modellfájljai. Telepítsd újra a PdfCraftot, vagy állítsd a PDFCRAFT_MODELS változót az őket tartalmazó mappára.
+	Text recognition isn't installed: its model files are missing. Reinstall NadsPDF, or set PDFCRAFT_MODELS to the folder that holds them.	A szövegfelismerés nincs telepítve: hiányoznak a modellfájljai. Telepítsd újra a NadsPDFot, vagy állítsd a PDFCRAFT_MODELS változót az őket tartalmazó mappára.
 	Settings	Beállítások
 	Optional	Nem kötelező
 	Planned · {m}	Tervezett · {m}
@@ -1359,7 +1358,7 @@
 	Anyone opening the document will need this password. It's applied when you save.	A dokumentumot megnyitóknak erre a jelszóra lesz szükségük. Mentéskor lép életbe.
 	The document opens without a password; this password is needed to change the restrictions. It's applied when you save.	A dokumentum jelszó nélkül nyílik meg; ez a jelszó a korlátozások módosításához kell. Mentéskor lép életbe.
 	Recover unsaved documents?	Visszaállítod a nem mentett dokumentumokat?
-	PdfCraft didn't shut down normally. These documents had changes that were autosaved:	A PdfCraft nem szabályosan állt le. Ezekben a dokumentumokban automatikusan mentett módosítások voltak:
+	NadsPDF didn't shut down normally. These documents had changes that were autosaved:	A NadsPDF nem szabályosan állt le. Ezekben a dokumentumokban automatikusan mentett módosítások voltak:
 	just now	épp most
 	{n} min ago	{n} perce
 	{n} h ago	{n} órája
@@ -1517,10 +1516,10 @@
 	On the web, open or drop an image to convert it	A weben nyiss meg vagy húzz ide egy képet a konvertáláshoz
 	Couldn't optimize the file: {e}	A fájlt nem sikerült optimalizálni: {e}
 	Couldn't write {path}: {e}	Nem sikerült írni ide: {path}: {e}
-	The form asks to be submitted to {u}; PdfCraft doesn't send form data. Save the document to keep your entries.	Az űrlap ide kéri a beküldést: {u}; a PdfCraft nem küld űrlapadatot. Mentsd a dokumentumot, hogy megmaradjanak a beírásaid.
+	The form asks to be submitted to {u}; NadsPDF doesn't send form data. Save the document to keep your entries.	Az űrlap ide kéri a beküldést: {u}; a NadsPDF nem küld űrlapadatot. Mentsd a dokumentumot, hogy megmaradjanak a beírásaid.
 	This PDF uses the unsupported {s} action.	Ez a PDF nem támogatott {s} műveletet használ.
 	{name}: the {other} action isn't supported yet	{name}: ez a művelet még nem támogatott ({other})
-	{name} submits the form to {url}; PdfCraft doesn't send form data. Save the document to keep your entries.	{name} ide küldi az űrlapot: {url}; a PdfCraft nem küld űrlapadatot. Mentsd a dokumentumot, hogy megmaradjanak a beírásaid.
+	{name} submits the form to {url}; NadsPDF doesn't send form data. Save the document to keep your entries.	{name} ide küldi az űrlapot: {url}; a NadsPDF nem küld űrlapadatot. Mentsd a dokumentumot, hogy megmaradjanak a beírásaid.
 	Export stopped: {e}	Az exportálás leállt: {e}
 	Exported 1 image	1 kép exportálva
 	Exported {n} images	{n} kép exportálva
@@ -1622,7 +1621,7 @@
 	Couldn't open {name}: {e}	{name} megnyitása nem sikerült: {e}
 	Couldn't read {name}: {e}	{name} olvasása nem sikerült: {e}
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	A hordozható mód ki van kapcsolva: {folder} nem írható ({error}). A beállítások helyette a felhasználói mappádban maradnak.
-	PdfCraft is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	A PdfCraft grafikus processzor nélkül rajzol, ezért lassú lehet. A grafikus illesztőprogram frissítése segíthet.
+	NadsPDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	A NadsPDF grafikus processzor nélkül rajzol, ezért lassú lehet. A grafikus illesztőprogram frissítése segíthet.
 	Couldn't save: {e}	A mentés nem sikerült: {e}
 	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	A mellékletek letöltése a weben az M3.10-zel érkezik ({n} bájt kész)
 	`{command}` {when}	`{command}` {when}
@@ -1696,8 +1695,8 @@
 	Signed and all signatures are valid.	Aláírva, és minden aláírás érvényes.
 	At least one signature has problems.	Legalább egy aláírásnak problémája van.
 	This document is secured. Some changes are restricted by its security settings.	Ez a dokumentum védett. Egyes módosításokat a biztonsági beállításai korlátoznak.
-	This is a dynamic XFA form, which PdfCraft can't display yet. What you see is the file's placeholder page.	Ez egy dinamikus XFA-űrlap, amelyet a PdfCraft még nem tud megjeleníteni. Amit látsz, a fájl helyőrző oldala.
-	This form also contains XFA data, which PdfCraft doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Ez az űrlap XFA-adatokat is tartalmaz, amelyeket a PdfCraft még nem olvas. Kitöltheted a mezőit, de az Acrobat helyettük az XFA-értékeket mutathatja.
+	This is a dynamic XFA form, which NadsPDF can't display yet. What you see is the file's placeholder page.	Ez egy dinamikus XFA-űrlap, amelyet a NadsPDF még nem tud megjeleníteni. Amit látsz, a fájl helyőrző oldala.
+	This form also contains XFA data, which NadsPDF doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Ez az űrlap XFA-adatokat is tartalmaz, amelyeket a NadsPDF még nem olvas. Kitöltheted a mezőit, de az Acrobat helyettük az XFA-értékeket mutathatja.
 	This document contains {n} interactive form fields.	Ez a dokumentum {n} interaktív űrlapmezőt tartalmaz.
 	This file was damaged and has been repaired. Saving keeps the repaired version.	Ez a fájl sérült volt, és javítottuk. A mentés megtartja a javított változatot.
 	Dismiss	Elvetés
@@ -1746,7 +1745,7 @@
 	there are no pages to print	nincs nyomtatható oldal
 	the document has no tags	a dokumentumnak nincs címkéje
 	{0}: {1}	{0}: {1}
-	the text recognition models are not installed (reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them)	a szövegfelismerés modelljei nincsenek telepítve (telepítsd újra a PdfCraftot, vagy állítsd a PDFCRAFT_MODELS változót az őket tartalmazó mappára)
+	the text recognition models are not installed (reinstall NadsPDF, or set PDFCRAFT_MODELS to the folder that holds them)	a szövegfelismerés modelljei nincsenek telepítve (telepítsd újra a NadsPDFot, vagy állítsd a PDFCRAFT_MODELS változót az őket tartalmazó mappára)
 	the image is empty	a kép üres
 	this file isn't XFDF, FDF, XML or text form data	ez a fájl nem XFDF, FDF, XML vagy szöveges űrlapadat
 	nothing in the file matches this document	a fájlban semmi sem illeszkedik ehhez a dokumentumhoz
@@ -1792,6 +1791,8 @@
 	Draw your {what} below.	Rajzold le alább a következőt: {what}.
 	Your name	A neved
 	Images and text (converted to PDF)	Képek és szöveg (PDF-fé alakítva)
+	Images, text and documents (converted to PDF)	Képek, szöveg és dokumentumok (PDF-be konvertálva)
+	PDF, images, text and documents	PDF, képek, szöveg és dokumentumok
 	Images and text	Képek és szöveg
 	Check Box Style:	Jelölőnégyzet stílusa:
 	Button Style:	Gomb stílusa:
@@ -2110,7 +2111,7 @@ comment menu	Edit	Szerkesztés
 	Redo {action}	{action} megismétlése
 signature pad	Type	Gépelés
 action wizard	Start	Indítás
-	Reopen the files that were open when PdfCraft last closed	A PdfCraft legutóbbi bezárásakor megnyitott fájlok újranyitása
+	Reopen the files that were open when NadsPDF last closed	A NadsPDF legutóbbi bezárásakor megnyitott fájlok újranyitása
 	Clear Recent Files	Legutóbbi fájlok listájának törlése
 	Remove from Recent	Eltávolítás a legutóbbiak közül
 	Remove {name} from Recent	{name} eltávolítása a legutóbbiak közül
@@ -2123,8 +2124,8 @@ action wizard	Start	Indítás
 	A link	Egy hivatkozás
 	A button	Egy gomb
 	A script	Egy szkript
-	{who} in this document tried to open an address PdfCraft won't open: {e}.	{who} ebben a dokumentumban olyan címet próbált megnyitni, amelyet a PdfCraft nem nyit meg: {e}.
-	{who} in this document tried to open an address PdfCraft won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} ebben a dokumentumban olyan címet próbált megnyitni, amelyet a PdfCraft nem nyit meg: {e}. Dokumentumokból csak webes (http, https) és e-mail (mailto) hivatkozások nyílnak meg.
+	{who} in this document tried to open an address NadsPDF won't open: {e}.	{who} ebben a dokumentumban olyan címet próbált megnyitni, amelyet a NadsPDF nem nyit meg: {e}.
+	{who} in this document tried to open an address NadsPDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} ebben a dokumentumban olyan címet próbált megnyitni, amelyet a NadsPDF nem nyit meg: {e}. Dokumentumokból csak webes (http, https) és e-mail (mailto) hivatkozások nyílnak meg.
 	Another file dialog is still open. Finish with it first.	Egy másik fájlpárbeszédablak még nyitva van. Előbb fejezd be azt.
 	Couldn't show the file picker. Please try again.	Nem sikerült megjeleníteni a fájlválasztót. Próbáld újra.
 	The document changed while you were choosing a file, so nothing was changed.	A dokumentum megváltozott, amíg fájlt választottál, ezért semmi sem módosult.
@@ -2158,8 +2159,8 @@ action wizard	Start	Indítás
 	Slash	Perjel
 	The PDF text fonts can't draw “{c}” ({code}). Choose supported text.	A PDF szövegének betűtípusai nem tudják megjeleníteni ezt: „{c}” ({code}). Válasszon támogatott szöveget.
 	The standard fonts can't draw “{c}” ({code}). Only Western European characters can be added as text for now.	A szabványos betűtípusok nem tudják megjeleníteni ezt: „{c}” ({code}). Egyelőre csak nyugat-európai karakterek adhatók hozzá szövegként.
-	This field's font can't draw “{c}” ({code}), so PdfCraft shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	A mező betűtípusa nem tudja megjeleníteni ezt: „{c}” ({code}), ezért a PdfCraft ? jelet mutat a helyén. Az érték mentve van, és a többi PDF-megjelenítő ebből rajzolja újra a mezőt.
-	The fonts PdfCraft writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	A PdfCraft által íráshoz használt betűtípusok nem tudják megjeleníteni ezt: „{c}” ({code}), ezért minden PDF-megjelenítőben ? látszik a helyén. A szöveg mentve van.
+	This field's font can't draw “{c}” ({code}), so NadsPDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	A mező betűtípusa nem tudja megjeleníteni ezt: „{c}” ({code}), ezért a NadsPDF ? jelet mutat a helyén. Az érték mentve van, és a többi PDF-megjelenítő ebből rajzolja újra a mezőt.
+	The fonts NadsPDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	A NadsPDF által íráshoz használt betűtípusok nem tudják megjeleníteni ezt: „{c}” ({code}), ezért minden PDF-megjelenítőben ? látszik a helyén. A szöveg mentve van.
 	Larger pages	Nagyobb oldalak
 	Smaller pages	Kisebb oldalak
 	Reset page size	Oldalméret visszaállítása
@@ -2319,7 +2320,7 @@ animation effects	Off	Ki
 	no output folder was chosen	nincs kiválasztva kimeneti mappa
 @plural	Downloaded {n} PDF|Downloaded {n} PDFs	{n} PDF letöltve|{n} PDF letöltve
 	Scan	Beolvasás
-	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: PdfCraft finds the signature and removes the paper.	Írja alá a nevét egy fehér papírlapon, és fényképezze le erős, egyenletes fényben (vakuval). Válassza ki a fényképet, vagy húzza ide: a PdfCraft megkeresi az aláírást, és eltávolítja a papírt.
+	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: NadsPDF finds the signature and removes the paper.	Írja alá a nevét egy fehér papírlapon, és fényképezze le erős, egyenletes fényben (vakuval). Válassza ki a fényképet, vagy húzza ide: a NadsPDF megkeresi az aláírást, és eltávolítja a papírt.
 	Choose photo…	Fénykép kiválasztása…
 	No photo chosen	Nincs kiválasztott fénykép
 	Photo	Fénykép
@@ -2351,3 +2352,103 @@ animation effects	Off	Ki
 	This document is trying to open a local file:	Ez a dokumentum egy helyi fájlt próbál megnyitni:
 	Move tag earlier	Címke korábbra helyezése
 	Move tag later	Címke későbbre helyezése
+
+# NadsPDF (nads.site)
+	NadsPDF tools	NadsPDF-eszközök
+	PdfCraft (upstream) on GitHub	PdfCraft (eredeti projekt) a GitHubon
+	Convert to PDF with NadsPDF	Konvertálás PDF-be a NadsPDF-fel
+	Combine with NadsPDF	Egyesítés a NadsPDF-fel
+	Open with NadsPDF	Megnyitás a NadsPDF-fel
+	Show NadsPDF in the File Explorer right-click menu	A NadsPDF megjelenítése a Fájlkezelő helyi menüjében
+	Added for all users when NadsPDF was installed.	A NadsPDF telepítésekor minden felhasználó számára hozzáadva.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	Konvertálás PDF-be, Egyesítés és Megnyitás dokumentumokon, képeken és PDF-eken. Windows 11 alatt a „További lehetőségek megjelenítése” menüben.
+	Couldn't change the File Explorer menu: {e}	Nem sikerült módosítani a Fájlkezelő menüjét: {e}
+	Couldn't find {name}	{name} nem található
+# Vaults (Home ▸ Vaults)
+@plural	{n} file|{n} files	{n} fájl|{n} fájl
+	Give the vault a name	Adjon nevet a széfnek
+	You can have up to {n} vaults. Delete one first.	Legfeljebb {n} széfje lehet. Előbb töröljön egyet.
+	That vault no longer exists	Ez a széf már nem létezik
+	Added {files} to {vault}	Hozzáadva ehhez: {vault}: {files}
+	Already in {vault}	Már benne van: {vault}
+	A vault holds up to {n} files	Egy széfben legfeljebb {n} fájl lehet
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	A széfek PDF-eket és a NadsPDF által átalakítható fájlokat tárolnak ezen a számítógépen
+	No files to open in this vault	Ebben a széfben nincs megnyitható fájl
+	Opening the first {n} files	Az első {n} fájl megnyitása
+	Deleted the vault {vault}. Its files were not touched.	A(z) {vault} széf törölve. A fájljai érintetlenek maradtak.
+	Moved {file} to {vault}	{file} áthelyezve ide: {vault}
+	Vaults need the desktop app	A széfekhez az asztali alkalmazás kell
+	Locate {file}	{file} megkeresése
+	Save this document to a file first, then add it to a vault	Előbb mentse fájlba a dokumentumot, aztán adja hozzá egy széfhez
+	Vaults	Széfek
+	New vault	Új széf
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	Csoportosítsa a számítógépen bárhol lévő PDF-eket elnevezett, színes, ikonos széfekbe. A fájlok a helyükön maradnak.
+	Click to show its files. Drag to reorder, or drop files here.	Kattintson a fájlok megjelenítéséhez. Húzza az átrendezéshez, vagy ejtsen ide fájlokat.
+	Open all	Összes megnyitása
+	Edit vault…	Széf szerkesztése…
+	Move left	Mozgatás balra
+	Move right	Mozgatás jobbra
+	Delete vault…	Széf törlése…
+	New vault…	Új széf…
+	No files yet. Drop files here to add them.	Még nincsenek fájlok. Ejtsen ide fájlokat a hozzáadásukhoz.
+	Locate…	Megkeresés…
+	Missing	Hiányzik
+	Remove {name} from this vault	{name} eltávolítása ebből a széfből
+	This file has moved or been deleted. Locate it, or remove it from the vault.	Ezt a fájlt áthelyezték vagy törölték. Keresse meg, vagy távolítsa el a széfből.
+	Move to vault	Áthelyezés széfbe
+	Remove from vault	Eltávolítás a széfből
+	Show this vault on Home	A széf megjelenítése a Kezdőlapon
+	Vault: {name}	Széf: {name}
+	Vault	Széf
+	Edit vault	Széf szerkesztése
+	Vault name	Széf neve
+	Create vault	Széf létrehozása
+	Delete the vault {vault}?	Törli a(z) {vault} széfet?
+	Its files stay where they are on your computer. Only the vault is deleted.	A fájlok a helyükön maradnak a számítógépen. Csak a széf törlődik.
+	Delete vault	Széf törlése
+	Add to vault	Hozzáadás széfhez
+	Already in it	Már benne van
+	Add document to vault…	Dokumentum hozzáadása széfhez…
+	Dark pages	Sötét oldalak
+	Rasterize pages (strong compression)…	Oldalak raszterizálása (erős tömörítés)…
+	Rasterize pages (strong compression)	Oldalak raszterizálása (erős tömörítés)
+	Rasterizing… page {d} of {t}	Raszterizálás… {d}. oldal / {t}
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	Minden oldal képpé válik: a legerősebb tömörítés, beolvasott dokumentumokhoz ideális. A szöveg többé nem jelölhető ki és nem kereshető, a hivatkozások, könyvjelzők és űrlapmezők pedig nem maradnak meg. Az eredmény másolatként mentődik.
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi, JPEG-minőség {q}
+compression level	Light	Enyhe
+compression level	Medium	Közepes
+compression level	Strong	Erős
+	Compress	Tömörítés
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	A raszterizálás nem tenné kisebbé ezt a fájlt ({size}). Nem készült másolat.
+	Add faint watermark	Halvány vízjel hozzáadása
+	Recognize text if available	Szövegfelismerés, ha elérhető
+	Prepare for Sending	Előkészítés küldésre
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	Oldalszámozás „n / összes” formában lent középen, majd a fájl kicsinyítése e-mailes küldéshez.
+	Archive Scans	Beolvasások archiválása
+	Make scans searchable (when text recognition is available), then make them smaller.	A beolvasások kereshetővé tétele (ha a szövegfelismerés telepítve van), majd kicsinyítésük.
+	Confidential	Bizalmas
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	Halvány átlós BIZALMAS vízjel és „n / összes” oldalszámok minden oldalon.
+	{name} (copy)	{name} (másolat)
+watermark text	CONFIDENTIAL	BIZALMAS
+	Group name	Csoport neve
+	Rename Group	Csoport átnevezése
+	Ungroup	Csoport bontása
+	Close Group	Csoport bezárása
+	Add Tab to New Group	Lap hozzáadása új csoporthoz
+	Add Tab to Group	Lap hozzáadása csoporthoz
+	Remove from Group	Eltávolítás a csoportból
+	Click to fold or unfold the group	Kattintson a csoport összecsukásához vagy kibontásához
+	Filter tools	Eszközök szűrése
+	No tool matches	Nincs egyező eszköz
+	Essentials	Alapok
+	Float as a bubble	Lebegő buborék
+	Show this PDF in a small window over the others	A PDF megjelenítése kis ablakban a többi fölött
+	Put back as a tab	Visszahelyezés lapként
+	Fold into a bubble	Buborékká csukás
+	Click to open, drag onto the tabs to put it back	Kattintson a megnyitáshoz, húzza a lapokra a visszahelyezéshez
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	Az Ön verziója: {c}. A NadsPDF bezárul, a jelenlegi helyére telepíti az új verziót, majd újra megnyílik. A beállítások megmaradnak.
+	You have version {c}.	Az Ön verziója: {c}.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	A NadsPDF ezen példánya a Microsoft Store-ból származik, amely maga telepíti az új verziókat.
+	Downloading the update…	A frissítés letöltése…
+	Couldn't install the update: {e}	Nem sikerült telepíteni a frissítést: {e}
+	Check for updates when NadsPDF starts (once a day)	Frissítések keresése a NadsPDF indításakor (naponta egyszer)

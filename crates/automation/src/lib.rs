@@ -1,4 +1,4 @@
-//! pdfcraft-automation — agent control for PdfCraft (architecture §13).
+//! pdfcraft-automation — agent control for NadsPDF (architecture §13).
 //!
 //! - **Layer:** L7. Headless: depends on the engine, never on a UI toolkit.
 //! - [`Automation`] is a tool set over an engine [`Session`]: open, inspect, render, extract and
@@ -103,7 +103,7 @@ type PageTexts = Vec<(usize, std::result::Result<Arc<PageText>, String>)>;
 const FIND_MAX_WARNINGS: usize = 100;
 const FIND_MAX_WARNING_BYTES: usize = 1024;
 
-/// A headless PdfCraft session driven by tool calls.
+/// A headless NadsPDF session driven by tool calls.
 pub struct Automation {
     session: Session,
     root: Option<PathBuf>,
@@ -353,6 +353,7 @@ impl Automation {
             }
             "page_set_box" => self.page_set_box(&a)?,
             "doc_create" => self.doc_create(&a)?,
+            "doc_convert" => self.doc_convert(&a)?,
             "doc_flatten" => {
                 let (comments, fields) = (a.opt_bool("comments")?.unwrap_or(true), a.opt_bool("fields")?.unwrap_or(true));
                 if !comments && !fields {
@@ -373,6 +374,7 @@ impl Automation {
                 json!({ "path": path.to_string_lossy(), "written": written, "bytes_before": before, "bytes_after": bytes.len(), "merged_objects": merged })
             }
             "doc_optimize" => self.doc_optimize(&a)?,
+            "doc_rasterize_compress" => self.doc_rasterize_compress(&a)?,
             "doc_initial_view" => self.doc_initial_view(&a)?,
             "doc_revisions" => self.doc_revisions(&a)?,
             "text_lines" => {
@@ -1070,6 +1072,43 @@ impl Automation {
         }))
     }
 
+    /// Compress ▸ Rasterize pages: every page as a JPEG at a level's (or the given) resolution
+    /// and quality, written only when smaller.
+    fn doc_rasterize_compress(&mut self, a: &Args) -> Result<Value> {
+        use pdfcraft_engine::rasterize::RasterLevel;
+        let id = self.doc(a)?.id;
+        let before = self.doc(a)?.bytes.len();
+        let path = self.resolve(a.str("path")?, true)?;
+        let level = match a.get("level").map(|v| v.as_str()) {
+            None => RasterLevel::default(),
+            Some(Some(l)) => RasterLevel::from_id(l).ok_or_else(|| ToolError::InvalidArgs(format!("unknown level {l:?} (light, medium, strong)")))?,
+            Some(None) => return Err(ToolError::InvalidArgs("level must be a string (light, medium, strong)".into())),
+        };
+        let mut settings = level.settings();
+        if let Some(v) = a.get("dpi") {
+            let dpi = v.as_f64().filter(|d| d.is_finite() && (36.0..=600.0).contains(d));
+            settings.dpi = dpi.ok_or_else(|| ToolError::InvalidArgs("dpi must be a number from 36 to 600".into()))?;
+        }
+        if let Some(v) = a.get("quality") {
+            let q = v.as_u64().filter(|q| (1..=100).contains(q));
+            settings.quality = q.ok_or_else(|| ToolError::InvalidArgs("quality must be an integer from 1 to 100".into()))? as u8;
+        }
+        let bytes = self.session.rasterized_bytes(id, settings).map_err(failed)?;
+        let written = bytes.len() < before;
+        if written {
+            write_atomic(&path, &bytes)?;
+        }
+        Ok(json!({
+            "path": path.to_string_lossy(),
+            "written": written,
+            "level": level.id(),
+            "dpi": settings.dpi,
+            "quality": settings.quality,
+            "bytes_before": before,
+            "bytes_after": bytes.len(),
+        }))
+    }
+
     /// A watermark or background picture: `file` (an image or a PDF) and `file_page` (1-based).
     fn mark_file(&self, a: &Args) -> Result<Option<pdfcraft_engine::MarkFile>> {
         let Some(p) = a.opt_str("file")? else { return Ok(None) };
@@ -1272,6 +1311,30 @@ impl Automation {
         let name = a.opt_str("name")?.map(str::to_owned).unwrap_or(name);
         let id = self.session.open_new(name, bytes).map_err(failed)?;
         Ok(summary(self.session.get(id).ok_or_else(|| failed("the document vanished"))?))
+    }
+
+    fn doc_convert(&mut self, a: &Args) -> Result<Value> {
+        let path = self.resolve(a.str("path")?, false)?;
+        let bytes = std::fs::read(&path).map_err(|e| failed(format!("{}: {e}", path.display())))?;
+        let file = path.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default();
+        // The readers parse untrusted bytes: a panic in one must not take the session down.
+        let converted = pdfcraft_engine::guard(|| self.session.create_from_document(&file, &bytes))
+            .map_err(|_| failed(format!("{file}: the file could not be read")))?;
+        let (pdf, report) = converted.map_err(|e| match e {
+            pdfcraft_engine::EditError::Convert(pdfcraft_engine::ConvertError::Unsupported(m)) => ToolError::InvalidArgs(m),
+            e => failed(format!("{file}: {e}")),
+        })?;
+        let stem = path.file_stem().map(|s| s.to_string_lossy().into_owned()).unwrap_or_else(|| "document".into());
+        let name = a.opt_str("name")?.map(str::to_owned).unwrap_or_else(|| format!("{stem}.pdf"));
+        let id = self.session.open_new(name, pdf).map_err(failed)?;
+        let mut out = summary(self.session.get(id).ok_or_else(|| failed("the document vanished"))?);
+        out["conversion"] = json!({
+            "pages": report.pages,
+            "escaped": report.escaped,
+            "images_skipped": report.images_skipped,
+            "notes": report.notes,
+        });
+        Ok(out)
     }
 
     fn page_set_box(&mut self, a: &Args) -> Result<Value> {
@@ -2150,7 +2213,7 @@ fn info(d: &Document) -> Value {
         "tagged": i.tagged,
         "has_javascript": i.has_javascript,
         // XFA forms: "static" (the PDF's own fields work; the XFA data is ignored) or "dynamic"
-        // (laid out from the template by PdfCraft, see xfa_layout; placeholder pages when that failed).
+        // (laid out from the template by NadsPDF, see xfa_layout; placeholder pages when that failed).
         "xfa": i.xfa.map(|x| match x { pdfcraft_render::Xfa::Static => "static", pdfcraft_render::Xfa::Dynamic => "dynamic" }),
         "xfa_layout": d.xfa.as_ref().map(|x| json!({ "pages": x.pages, "fields": x.fields, "warnings": x.warnings })),
         // A script of the form ran too long and was abandoned: its scripts no longer run in this

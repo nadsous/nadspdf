@@ -10,6 +10,8 @@ use crate::{DocId, Edit, EditError, Session};
 pub enum Step {
     /// Scan & OCR ▸ Recognize text (pages without text).
     RecognizeText,
+    /// Recognize text when the recognition models are installed; skipped (and logged) otherwise.
+    RecognizeTextIfAvailable,
     /// Reduce file size.
     ReduceFileSize,
     /// Remove hidden information (every category).
@@ -20,6 +22,8 @@ pub enum Step {
     FlattenFields,
     /// Add a text watermark (diagonal, 50% opaque).
     AddWatermark(String),
+    /// Add a faint text watermark (diagonal, 18% opaque), light enough to read through.
+    AddFaintWatermark(String),
     /// Add a footer with this centre text (tokens such as `<<Page 1 of n>>` work).
     AddFooter(String),
     /// Add a header with this centre text.
@@ -37,12 +41,14 @@ impl Step {
     pub fn all() -> Vec<Step> {
         vec![
             Step::RecognizeText,
+            Step::RecognizeTextIfAvailable,
             Step::ReduceFileSize,
             Step::RemoveHiddenInformation,
             Step::Sanitize,
             Step::FlattenComments,
             Step::FlattenFields,
             Step::AddWatermark(String::new()),
+            Step::AddFaintWatermark(String::new()),
             Step::AddHeader(String::new()),
             Step::AddFooter(String::new()),
             Step::SetTitle(String::new()),
@@ -55,12 +61,14 @@ impl Step {
     pub fn id(&self) -> &'static str {
         match self {
             Step::RecognizeText => "recognize_text",
+            Step::RecognizeTextIfAvailable => "recognize_text_if_available",
             Step::ReduceFileSize => "reduce_file_size",
             Step::RemoveHiddenInformation => "remove_hidden_information",
             Step::Sanitize => "sanitize",
             Step::FlattenComments => "flatten_comments",
             Step::FlattenFields => "flatten_fields",
             Step::AddWatermark(_) => "add_watermark",
+            Step::AddFaintWatermark(_) => "add_faint_watermark",
             Step::AddHeader(_) => "add_header",
             Step::AddFooter(_) => "add_footer",
             Step::SetTitle(_) => "set_title",
@@ -72,12 +80,14 @@ impl Step {
     pub fn label(&self) -> &'static str {
         match self {
             Step::RecognizeText => "Recognize text",
+            Step::RecognizeTextIfAvailable => "Recognize text if available",
             Step::ReduceFileSize => "Reduce file size",
             Step::RemoveHiddenInformation => "Remove hidden information",
             Step::Sanitize => "Sanitize document",
             Step::FlattenComments => "Flatten comments",
             Step::FlattenFields => "Flatten form fields",
             Step::AddWatermark(_) => "Add watermark",
+            Step::AddFaintWatermark(_) => "Add faint watermark",
             Step::AddHeader(_) => "Add header",
             Step::AddFooter(_) => "Add footer",
             Step::SetTitle(_) => "Set document title",
@@ -89,14 +99,24 @@ impl Step {
     /// The step's text argument, if it takes one.
     pub fn arg(&self) -> Option<&str> {
         match self {
-            Step::AddWatermark(s) | Step::AddHeader(s) | Step::AddFooter(s) | Step::SetTitle(s) | Step::RunJavaScript(s) => Some(s),
+            Step::AddWatermark(s)
+            | Step::AddFaintWatermark(s)
+            | Step::AddHeader(s)
+            | Step::AddFooter(s)
+            | Step::SetTitle(s)
+            | Step::RunJavaScript(s) => Some(s),
             _ => None,
         }
     }
 
     pub fn arg_mut(&mut self) -> Option<&mut String> {
         match self {
-            Step::AddWatermark(s) | Step::AddHeader(s) | Step::AddFooter(s) | Step::SetTitle(s) | Step::RunJavaScript(s) => Some(s),
+            Step::AddWatermark(s)
+            | Step::AddFaintWatermark(s)
+            | Step::AddHeader(s)
+            | Step::AddFooter(s)
+            | Step::SetTitle(s)
+            | Step::RunJavaScript(s) => Some(s),
             _ => None,
         }
     }
@@ -117,7 +137,7 @@ pub struct Action {
     pub name: String,
     pub description: String,
     pub steps: Vec<Step>,
-    /// One of PdfCraft's own actions (can't be edited or deleted).
+    /// One of NadsPDF's own actions (can't be edited or deleted).
     pub builtin: bool,
 }
 
@@ -134,8 +154,31 @@ pub fn builtin() -> Vec<Action> {
         a("Add Page Numbers", "Number every page in the footer.", vec![Step::AddFooter("Page <<1>> of <<n>>".into())]),
         a("Mark as Confidential", "A diagonal CONFIDENTIAL watermark on every page.", vec![Step::AddWatermark("CONFIDENTIAL".into())]),
         a("Sanitize Documents", "Remove hidden information, metadata, scripts and embedded content, and rewrite the files.", vec![Step::Sanitize]),
+        // Ready-made pipelines (NadsPDF). There is no password step: an action runs unattended
+        // over many files, so it can't ask for one. Protect each result afterwards.
+        a(
+            "Prepare for Sending",
+            "Number the pages \"n / total\" at the bottom centre, then make the file smaller to send by email.",
+            vec![Step::AddFooter(PAGE_OF_TOTAL.into()), Step::ReduceFileSize],
+        ),
+        a(
+            "Archive Scans",
+            "Make scans searchable (when text recognition is available), then make them smaller.",
+            vec![Step::RecognizeTextIfAvailable, Step::ReduceFileSize],
+        ),
+        a(
+            "Confidential",
+            "A faint diagonal CONFIDENTIAL watermark and \"n / total\" page numbers on every page.",
+            vec![Step::AddFaintWatermark("CONFIDENTIAL".into()), Step::AddFooter(PAGE_OF_TOTAL.into())],
+        ),
     ]
 }
+
+/// The footer of the ready-made pipelines: "3 / 12".
+const PAGE_OF_TOTAL: &str = "<<1>> / <<n>>";
+
+/// The opacity of [`Step::AddFaintWatermark`].
+pub const FAINT_OPACITY: f64 = 0.18;
 
 /// What running an action on one file did.
 #[derive(Clone, Debug, PartialEq)]
@@ -150,7 +193,11 @@ fn apply_step(s: &mut Session, id: DocId, step: &Step, log: &mut Vec<String>) ->
     let pages = s.get(id).map_or(0, |d| d.info.pages.len());
     let all: Vec<usize> = (0..pages).collect();
     let edit = match step {
-        Step::RecognizeText => {
+        Step::RecognizeTextIfAvailable if !crate::ocr::available() => {
+            log.push("Recognize text: skipped, text recognition isn't installed".into());
+            return Ok(None);
+        }
+        Step::RecognizeText | Step::RecognizeTextIfAvailable => {
             let found = s.recognize_text(id, &[], crate::ocr::OcrSettings::default()).map_err(EditError::Invalid)?;
             log.push(format!("Recognize text: {} words", found.iter().map(|p| p.words.len()).sum::<usize>()));
             return Ok(None);
@@ -171,6 +218,12 @@ fn apply_step(s: &mut Session, id: DocId, step: &Step, log: &mut Vec<String>) ->
         Step::AddWatermark(t) => {
             Edit::AddWatermark { pages: all, settings: crate::Watermark { text: t.clone(), ..Default::default() }, replace: false, file: None }
         }
+        Step::AddFaintWatermark(t) => Edit::AddWatermark {
+            pages: all,
+            settings: crate::Watermark { text: t.clone(), opacity: FAINT_OPACITY, ..Default::default() },
+            replace: false,
+            file: None,
+        },
         Step::AddHeader(t) | Step::AddFooter(t) => {
             let mut settings = crate::HeaderFooter::default();
             settings.text[if matches!(step, Step::AddHeader(_)) { 1 } else { 4 }] = t.clone();

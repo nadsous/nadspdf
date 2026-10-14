@@ -1,4 +1,4 @@
-//! PdfCraft desktop app.
+//! NadsPDF desktop app.
 //!
 //! Usage: `pdfcraft [options] [files…]`
 //! `--create-images [images…]` stages the images in one PDF and asks for the page DPI.
@@ -11,7 +11,13 @@
 //!  --combine-view grid|list  --combine-zoom 60..200`
 //!
 //! `--new-window` opens a window of its own. Without it, on Windows, a launch that only names files
-//! hands them to the PdfCraft already running, where they open as tabs (`single_instance`).
+//! hands them to the NadsPDF already running, where they open as tabs (`single_instance`).
+//!
+//! `--combine [files…]` adds the files to the Combine files list instead of opening them (File
+//! Explorer's "Combine with NadsPDF"); launches that arrive together share one list.
+//! `--register-shell` / `--unregister-shell` (Windows) add or remove this user's File Explorer
+//! right-click entries for this program (Preferences has the same switch) and exit, with status
+//! 1 on failure.
 //!
 //! `--control <file>` enables the UI control channel (off by default): the app listens on a random
 //! loopback port and writes `{"port", "token", "pid"}` to `<file>` (owner-only permissions). The
@@ -58,13 +64,13 @@ const APP_ICON_PNG: &[u8] = include_bytes!("../../../assets/app-icon/hicolor/256
 const LEGACY_STORAGE_KEY: &str = "printcraft";
 
 /// The settings folder: `app.ron` and the `logs` folder (docs/development.md). In portable mode
-/// it is `PdfCraftData` beside the executable (#157). eframe would otherwise derive it from the
-/// app id; keep it under "PdfCraft".
+/// it is `NadsPDFData` beside the executable (#157). eframe would otherwise derive it from the
+/// app id; keep it under "NadsPDF".
 fn settings_dir() -> Option<std::path::PathBuf> {
     if let Some(dir) = pdfcraft_ui_egui::portable::data_dir() {
         return Some(dir.to_path_buf());
     }
-    eframe::storage_dir("PdfCraft")
+    eframe::storage_dir("NadsPDF")
 }
 
 /// Move the settings and crash-recovery folders of the app's former name, PrintCraft, to the new
@@ -79,7 +85,7 @@ fn migrate_legacy_folders() {
     // Recovery lives in the settings folder except on Windows, where it is under %LOCALAPPDATA%.
     if cfg!(windows) {
         let local = std::env::var_os("LOCALAPPDATA").filter(|v| !v.is_empty()).map(std::path::PathBuf::from);
-        moves.push((local.as_ref().map(|d| d.join("PrintCraft")), local.map(|d| d.join("PdfCraft"))));
+        moves.push((local.as_ref().map(|d| d.join("PrintCraft")), local.map(|d| d.join("NadsPDF"))));
     }
     for (old, new) in moves {
         let (Some(old), Some(new)) = (old, new) else { continue };
@@ -156,6 +162,53 @@ fn rejoin_split_paths(args: Vec<String>, exists: impl Fn(&str) -> bool) -> Vec<S
     out
 }
 
+/// What the command line asks for.
+#[derive(Debug, PartialEq)]
+enum Parsed {
+    /// `--version`.
+    Version,
+    /// `--register-shell` (true) or `--unregister-shell` (false).
+    ExplorerMenu(bool),
+    /// Start the app.
+    Run(Args),
+}
+
+/// The options of a launch that starts the app.
+#[derive(Debug, Default, PartialEq)]
+struct Args {
+    files: Vec<String>,
+    options: Vec<(String, String)>,
+    control_file: Option<String>,
+    create_images: bool,
+    new_window: bool,
+    combine: bool,
+}
+
+/// Read the command line (without the program name). The first of `--version`,
+/// `--register-shell` and `--unregister-shell` wins over everything else; any other `--option`
+/// takes the next argument as its value.
+fn parse_args(args: impl IntoIterator<Item = String>) -> Parsed {
+    let mut out = Args::default();
+    let mut args = args.into_iter();
+    while let Some(a) = args.next() {
+        match a.as_str() {
+            "--version" => return Parsed::Version,
+            "--register-shell" => return Parsed::ExplorerMenu(true),
+            "--unregister-shell" => return Parsed::ExplorerMenu(false),
+            "--control" => out.control_file = args.next(),
+            "--create-images" => out.create_images = true,
+            "--new-window" => out.new_window = true,
+            "--combine" => out.combine = true,
+            flag if flag.starts_with("--") => {
+                let value = args.next().unwrap_or_default();
+                out.options.push((flag.trim_start_matches("--").to_string(), value));
+            }
+            _ => out.files.push(path_from_arg(a)),
+        }
+    }
+    Parsed::Run(out)
+}
+
 fn main() -> eframe::Result {
     // First, so the panic hook and every start-up warning are recorded (`logging`).
     let logger = logging::install();
@@ -176,28 +229,14 @@ fn main() -> eframe::Result {
             let _ = std::io::Write::write_fmt(&mut std::io::stderr(), format_args!("pdfcraft: {report}\n"));
         }
     }));
-    let mut files = Vec::new();
-    let mut options: Vec<(String, String)> = Vec::new();
-    let mut control_file: Option<String> = None;
-    let mut create_images = false;
-    let mut new_window = false;
-    let mut args = std::env::args().skip(1);
-    while let Some(a) = args.next() {
-        match a.as_str() {
-            "--version" => {
-                println!("pdfcraft {}", pdfcraft_engine::build_info::version());
-                return Ok(());
-            }
-            "--control" => control_file = args.next(),
-            "--create-images" => create_images = true,
-            "--new-window" => new_window = true,
-            flag if flag.starts_with("--") => {
-                let value = args.next().unwrap_or_default();
-                options.push((flag.trim_start_matches("--").to_string(), value));
-            }
-            _ => files.push(path_from_arg(a)),
+    let Args { files, options, control_file, create_images, new_window, combine } = match parse_args(std::env::args().skip(1)) {
+        Parsed::Version => {
+            println!("pdfcraft {}", pdfcraft_engine::build_info::version());
+            return Ok(());
         }
-    }
+        Parsed::ExplorerMenu(register) => return explorer_menu(register),
+        Parsed::Run(args) => args,
+    };
     let files = rejoin_split_paths(files, |p| std::path::Path::new(p).is_file());
     let integrated = cfg!(target_os = "macos");
     // GNOME on Wayland leaves the window frame to the app (src/decorations.rs).
@@ -208,22 +247,31 @@ fn main() -> eframe::Result {
     // Records logged until now are written to it first.
     if let (Some(logger), Some(dir)) = (logger, settings_dir()) {
         match logger.attach_dir(&dir.join("logs")) {
-            Ok(path) => log::info!("PdfCraft {}, log file {}", pdfcraft_engine::build_info::version(), path.display()),
+            Ok(path) => log::info!("NadsPDF {}, log file {}", pdfcraft_engine::build_info::version(), path.display()),
             // Standard error only by now (`attach_dir` gave up on the file); unlike `eprintln!`, never panics.
             Err(e) => log::warn!("no log file: {e}"),
         }
     }
     // Windows: a launch that only names files (an Outlook attachment, an Explorer double-click)
-    // hands them to the PdfCraft already running and exits (#282, #317). Any option means the
-    // caller wants this launch's own window.
+    // hands them to the NadsPDF already running and exits (#282, #317). Any option means the
+    // caller wants this launch's own window. `--combine` files go to the running app's Combine
+    // files list instead.
     let may_hand_off = !new_window && !files.is_empty() && options.is_empty() && control_file.is_none() && !create_images;
-    let instance = match single_instance::claim(&single_instance::absolute(&files), may_hand_off) {
+    let absolute = single_instance::absolute(&files);
+    let request = if combine { single_instance::Request::Combine(absolute.clone()) } else { single_instance::Request::Open(absolute.clone()) };
+    let (instance, files) = match single_instance::claim(&request, may_hand_off) {
         single_instance::Claim::HandedOff => return Ok(()),
-        single_instance::Claim::Primary(server) => Some(server),
-        single_instance::Claim::Alone => None,
+        // This launch's own files to combine wait in the inbox with those of the launches
+        // Explorer started beside it, so they all join the list together.
+        single_instance::Claim::Primary(server) if combine && !absolute.is_empty() => {
+            server.deliver(single_instance::Request::Combine(absolute));
+            (Some(server), Vec::new())
+        }
+        single_instance::Claim::Primary(server) => (Some(server), files),
+        single_instance::Claim::Alone => (None, files),
     };
     let choice = renderer_choice(std::env::var("PDFCRAFT_RENDERER").ok().as_deref());
-    let launch = Launch { files, options, control_file, create_images, integrated, window_controls };
+    let launch = Launch { files, options, control_file, create_images, combine, integrated, window_controls };
     // Finder, Open With and the Dock deliver files as Apple events, not arguments; catch the one
     // that launched us as well as later ones. Lives until the event loop returns.
     #[cfg(target_os = "macos")]
@@ -232,7 +280,7 @@ fn main() -> eframe::Result {
     let started = Rc::new(Cell::new(false));
     let first = if choice == RendererChoice::Gl { eframe::Renderer::Glow } else { eframe::Renderer::Wgpu };
     let result = eframe::run_native(
-        "PdfCraft",
+        "NadsPDF",
         native_options(launch.integrated, launch.window_controls.is_some(), first),
         app_creator(
             launch.clone(),
@@ -250,7 +298,7 @@ fn main() -> eframe::Result {
             // usually still works there, so that's better than quitting.
             log::error!("the GPU renderer (wgpu) didn't start: {e}. Starting with OpenGL instead; set PDFCRAFT_RENDERER=gl to skip wgpu.");
             eframe::run_native(
-                "PdfCraft",
+                "NadsPDF",
                 native_options(launch.integrated, launch.window_controls.is_some(), eframe::Renderer::Glow),
                 app_creator(
                     launch,
@@ -262,6 +310,31 @@ fn main() -> eframe::Result {
             )
         }
         other => other,
+    }
+}
+
+/// `--register-shell` / `--unregister-shell`: add or remove this user's File Explorer entries for
+/// this program (named in the system's display language) and exit; status 1 on failure, so an
+/// installer or script can tell (release builds have no console to print to).
+fn explorer_menu(register: bool) -> eframe::Result {
+    use std::io::Write as _;
+    let result = if register {
+        pdfcraft_ui_egui::i18n::set_current(pdfcraft_ui_egui::i18n::system_lang());
+        pdfcraft_ui_egui::explorer_menu::register()
+    } else {
+        pdfcraft_ui_egui::explorer_menu::unregister()
+    };
+    match result {
+        Ok(()) => {
+            let done = if register { "added to" } else { "removed from" };
+            // Unlike `println!`, never panics on a closed stream.
+            let _ = writeln!(std::io::stdout(), "NadsPDF {done} the File Explorer right-click menu");
+            Ok(())
+        }
+        Err(e) => {
+            let _ = writeln!(std::io::stderr(), "pdfcraft: File Explorer menu: {e}");
+            std::process::exit(1)
+        }
     }
 }
 
@@ -293,7 +366,7 @@ fn retry_with_gl(choice: RendererChoice, app_started: bool) -> bool {
 /// The window and renderer settings for one run.
 fn native_options(integrated: bool, app_frame: bool, renderer: eframe::Renderer) -> eframe::NativeOptions {
     let mut viewport = egui::ViewportBuilder::default()
-        .with_title("PdfCraft")
+        .with_title("NadsPDF")
         .with_inner_size([1440.0, 920.0])
         .with_min_inner_size([820.0, 520.0])
         .with_drag_and_drop(true)
@@ -327,6 +400,9 @@ struct Launch {
     options: Vec<(String, String)>,
     control_file: Option<String>,
     create_images: bool,
+    /// `--combine`: `files` (none when the single-instance inbox has them) join the Combine files
+    /// list, which shows.
+    combine: bool,
     integrated: bool,
     /// The window buttons the app draws, when the desktop leaves the frame to it.
     window_controls: Option<pdfcraft_ui_egui::window_controls::Layout>,
@@ -338,7 +414,7 @@ fn app_creator<'a>(
     instance: Option<&'a single_instance::Server>,
     #[cfg(target_os = "macos")] apple_events: &'a apple_events::AppleEvents,
 ) -> eframe::AppCreator<'a> {
-    let Launch { files, options, control_file, create_images, integrated, window_controls } = launch;
+    let Launch { files, options, control_file, create_images, combine, integrated, window_controls } = launch;
     Box::new(move |cc| {
         started.set(true);
         let mut app = PdfCraftApp::new();
@@ -361,6 +437,11 @@ fn app_creator<'a>(
             app.motion.source = Some(motion::source());
         }
         app.update_source = Some(std::sync::Arc::new(updates::latest_release));
+        // The MSI's copy installs new versions itself; the Store's is updated by the Store.
+        app.updates_from_store = updates::running_from_store();
+        if updates::can_install() {
+            app.update_installer = Some(std::sync::Arc::new(updates::install));
+        }
         app.printer_source = Some(pdfcraft_ui_egui::system_printers());
         app.os_key_store_ids = cfg!(any(target_os = "macos", target_os = "windows"));
         #[cfg(target_os = "macos")]
@@ -402,6 +483,9 @@ fn app_creator<'a>(
             if let Err(e) = app.begin_image_import_paths(&files) {
                 app.notify(e);
             }
+        } else if combine {
+            app.reopen_last_files(&[]);
+            app.combine_paths(&files);
         } else {
             // With the preference on, last session's files come back first; files named on
             // the command line open after them, in front (#442).
@@ -425,7 +509,7 @@ fn app_creator<'a>(
 /// `unsafe` calls.
 fn notify_software_renderer(app: &mut PdfCraftApp, device_type: eframe::wgpu::DeviceType) {
     if device_type == eframe::wgpu::DeviceType::Cpu {
-        app.notify_tr("PdfCraft is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.");
+        app.notify_tr("NadsPDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.");
     }
 }
 
@@ -520,7 +604,7 @@ fn write_control_file(path: &str, port: u16, token: &str) -> std::io::Result<()>
 ///   on the discrete one.
 /// - On Windows, use Direct3D 12, falling back to OpenGL, and never load Vulkan drivers unless
 ///   `WGPU_BACKEND` asks for them. Creating a Vulkan instance loads every installed Vulkan driver
-///   into the process, and a faulty one (an Intel driver in issue #37) crashed PdfCraft before
+///   into the process, and a faulty one (an Intel driver in issue #37) crashed NadsPDF before
 ///   its window appeared. D3D12 is the native, best-supported backend there.
 fn configure_gpu(native: &mut eframe::NativeOptions) {
     let eframe::egui_wgpu::WgpuSetup::CreateNew(setup) = &mut native.wgpu_options.wgpu_setup else { return };
@@ -761,6 +845,36 @@ mod tests {
     }
 
     #[test]
+    fn combine_and_explorer_menu_flags_are_read() {
+        use super::{Args, Parsed, parse_args};
+        let args = |a: &[&str]| a.iter().map(|s| s.to_string()).collect::<Vec<_>>();
+        // File Explorer's "Combine with NadsPDF": `nadspdf.exe --combine "%1"`.
+        assert_eq!(
+            parse_args(args(&["--combine", r"C:\in\a.pdf"])),
+            Parsed::Run(Args { files: args(&[r"C:\in\a.pdf"]), combine: true, ..Args::default() })
+        );
+        // Several files after it, and `--combine-view` stays an option with a value.
+        assert_eq!(
+            parse_args(args(&["--combine", "a.pdf", "b.docx", "--combine-view", "list"])),
+            Parsed::Run(Args {
+                files: args(&["a.pdf", "b.docx"]),
+                options: vec![("combine-view".into(), "list".into())],
+                combine: true,
+                ..Args::default()
+            })
+        );
+        assert_eq!(parse_args(args(&["a.pdf"])), Parsed::Run(Args { files: args(&["a.pdf"]), ..Args::default() }));
+        assert_eq!(parse_args(args(&["--register-shell"])), Parsed::ExplorerMenu(true));
+        assert_eq!(parse_args(args(&["a.pdf", "--unregister-shell", "b.pdf"])), Parsed::ExplorerMenu(false));
+        assert_eq!(parse_args(args(&["--version", "--register-shell"])), Parsed::Version);
+        // An option's value is never read as a flag.
+        assert_eq!(
+            parse_args(args(&["--control", "--register-shell"])),
+            Parsed::Run(Args { control_file: Some("--register-shell".into()), ..Args::default() })
+        );
+    }
+
+    #[test]
     fn path_from_arg_decodes_file_uris() {
         assert_eq!(super::path_from_arg("file:///home/alice/report.pdf".to_string()), "/home/alice/report.pdf");
         assert_eq!(super::path_from_arg("file:///home/alice/my%20report.pdf".to_string()), "/home/alice/my report.pdf");
@@ -968,8 +1082,8 @@ mod tests {
     fn a_gpu_error_while_a_window_is_set_up_is_returned_not_a_panic() {
         // Issue #519: on a 2015 Intel GPU, wgpu's GL backend couldn't configure the window's
         // surface (`GpuWaitTimeout`), and wgpu's default error handler panicked before the app was
-        // created, so PdfCraft never got to retry with OpenGL. vendor/egui-wgpu configures a new
-        // window's surface inside `catch_errors`. A real device on PdfCraft's own GPU settings,
+        // created, so NadsPDF never got to retry with OpenGL. vendor/egui-wgpu configures a new
+        // window's surface inside `catch_errors`. A real device on NadsPDF's own GPU settings,
         // and an error wgpu raises before anything reaches the driver: a texture one pixel wider
         // than the device allows.
         use eframe::wgpu;

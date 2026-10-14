@@ -1,0 +1,25 @@
+[package]
+name = "pdfcraft-convert"
+description = "Convert Office and text documents (DOCX, XLSX, ODS, CSV, HTML, plain text) to PDF, in pure Rust"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+pdfcraft-cos = { workspace = true }
+pdfcraft-fonts = { workspace = true }
+# Images embedded in Word documents, and the text decoding (BOM, UTF-8, Windows code pages).
+pdfcraft-create = { workspace = true }
+thiserror = { workspace = true }
+# Already in the workspace (xfa, xfdf): DOCX, XLSX and ODS are zipped XML.
+roxmltree = "0.20"
+# Reading only, Deflate through flate2's Rust backend (already in the tree); no other codecs.
+zip = { version = "4.6", default-features = false, features = ["deflate-flate2"] }
+flate2 = { workspace = true }
+
+[dev-dependencies]
+hayro-syntax = { workspace = true }
+png = "0.18"

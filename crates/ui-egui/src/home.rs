@@ -1,4 +1,4 @@
-//! Home tab: recommended tools, open card, pinned folders and recent files (local only, never
+//! Home tab: recommended tools, vaults, open card, pinned folders and recent files (local only, never
 //! another app's list).
 
 use egui::{Align2, CornerRadius, Rect, Sense, Stroke, vec2};
@@ -8,6 +8,65 @@ use crate::theme::{self, Tokens};
 use crate::{PdfCraftApp, icons, panels::human_size, widgets};
 
 const RECOMMENDED: [&str; 5] = ["organize", "comment", "form", "edit", "protect"];
+
+/// What a NadsPDF quick tool does when clicked: run a registry command, or open a tool panel.
+#[derive(Clone, Copy)]
+enum Quick {
+    Command(&'static str),
+    Tool(&'static str),
+}
+
+/// The old NadsPDF toolbox, one click each: (label, blurb, icon, action).
+const QUICK_TOOLS: [(&str, &str, &str, Quick); 10] = [
+    ("Convert to PDF", "Word, Excel, CSV, text, HTML, images", "file-input", Quick::Command("create.multiple")),
+    ("Compress", "Make PDFs lighter", "minimize-2", Quick::Tool("compress")),
+    ("Merge", "Combine several PDFs", "files", Quick::Command("page.combine")),
+    ("Split & organize", "Extract, delete, rotate pages", "scissors", Quick::Tool("organize")),
+    ("Edit text", "Change the words of a PDF", "pen-line", Quick::Tool("edit")),
+    ("PDF to images", "Export pages as PNG or JPEG", "image", Quick::Tool("export")),
+    ("Images to PDF", "PNG and JPEG into one PDF", "image-plus", Quick::Command("create.images")),
+    ("Watermark", "Stamp CONFIDENTIAL across pages", "stamp", Quick::Command("edit.watermark")),
+    ("Page numbers", "Number pages like 1 / 10", "hash", Quick::Command("edit.header_footer")),
+    ("Pipelines", "Chain steps over many files", "list-checks", Quick::Tool("actions")),
+];
+
+/// The NadsPDF tools row: compact cards in the nads.site style, red icon on a raised tile.
+fn quick_tools(app: &mut PdfCraftApp, ui: &mut egui::Ui, t: &Tokens) {
+    ui.label(egui::RichText::new(tl!("NadsPDF tools")).font(theme::semibold(15.0)));
+    ui.add_space(10.0);
+    ui.horizontal_wrapped(|ui| {
+        ui.spacing_mut().item_spacing = vec2(12.0, 12.0);
+        for (label, blurb, icon, action) in QUICK_TOOLS {
+            let (rect, resp) = ui.allocate_exact_size(vec2(206.0, 64.0), Sense::click());
+            resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, tl!(label)));
+            let press = theme::Press::track(ui, &resp);
+            card_lift(ui, t, rect, press);
+            let fill = press.fill(t.card, t.hover, t.pressed);
+            let stroke = Stroke::new(1.0, if press.hover > 0.05 { t.accent.gamma_multiply(0.55) } else { t.border });
+            ui.painter().rect(rect, CornerRadius::same(12), fill, stroke, egui::StrokeKind::Inside);
+            let body = rect.translate(press.offset());
+            let tile = Rect::from_min_size(body.min + vec2(12.0, 14.0), vec2(36.0, 36.0));
+            ui.painter().rect_filled(tile, CornerRadius::same(9), t.accent_soft);
+            icons::paint(ui, tile.shrink(8.0), icon, 19.0, t.accent);
+            let text_w = body.width() - 70.0;
+            let mut title = egui::text::LayoutJob::simple_singleline(tl!(label).to_owned(), theme::semibold(13.0), t.text);
+            title.wrap = egui::text::TextWrapping { max_width: text_w, max_rows: 1, break_anywhere: true, ..Default::default() };
+            let title = ui.fonts_mut(|f| f.layout_job(title));
+            ui.painter().galley(body.min + vec2(58.0, 15.0), title, t.text);
+            let mut sub = egui::text::LayoutJob::simple_singleline(tl!(blurb).to_owned(), theme::regular(11.5), t.text_muted);
+            sub.wrap = egui::text::TextWrapping { max_width: text_w, max_rows: 1, break_anywhere: true, ..Default::default() };
+            let sub = ui.fonts_mut(|f| f.layout_job(sub));
+            ui.painter().galley(body.min + vec2(58.0, 35.0), sub, t.text_muted);
+            if theme::hand(resp.on_hover_text(tl!(blurb))).clicked() {
+                match action {
+                    // Commands that need a document (watermark…) ask for one first, then run.
+                    Quick::Command(id) => app.run_command(id),
+                    Quick::Tool(id) => app.select_tool(id),
+                }
+            }
+        }
+    });
+}
 
 /// A soft shadow that rises on hover and settles when the card is pressed.
 fn card_lift(ui: &egui::Ui, t: &Tokens, rect: Rect, press: theme::Press) {
@@ -22,33 +81,20 @@ pub fn show(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
     let t = Tokens::get(ui.ctx());
     egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
         egui::Frame::NONE.inner_margin(egui::Margin { left: 36, right: 36, top: 28, bottom: 28 }).show(ui, |ui| {
-            ui.label(egui::RichText::new(tl!("Welcome to PdfCraft")).font(theme::semibold(24.0)));
+            ui.label(egui::RichText::new(tl!("Welcome to NadsPDF")).font(theme::semibold(24.0)));
             ui.label(
                 egui::RichText::new(tl!("An open-source PDF workbench — local, private, and scriptable."))
                     .color(t.text_muted)
                     .font(theme::regular(14.0)),
             );
-            ui.add_space(14.0);
-            egui::Frame::NONE
-                .fill(t.card)
-                .stroke(Stroke::new(1.0, t.border))
-                .corner_radius(CornerRadius::same(12))
-                .inner_margin(egui::Margin::same(14))
-                .show(ui, |ui| {
-                    ui.set_width(ui.available_width());
-                    ui.horizontal(|ui| {
-                        widgets::artcraft_mark(ui, 28.0);
-                        ui.vertical(|ui| {
-                            ui.label(egui::RichText::new(tl!("Join the ArtCraft community")).font(theme::semibold(15.0)));
-                            ui.label(egui::RichText::new(tl!("Get help, share feedback and follow development on Discord.")).color(t.text_muted));
-                        });
-                    });
-                    ui.add_space(8.0);
-                    if let Some(cmd) = widgets::community_links(ui) {
-                        app.execute(cmd);
-                    }
-                });
-            ui.add_space(22.0);
+            ui.add_space(18.0);
+            quick_tools(app, ui, &t);
+            ui.add_space(26.0);
+            #[cfg(not(target_arch = "wasm32"))]
+            {
+                crate::vaults_ui::section(app, ui);
+                ui.add_space(26.0);
+            }
 
             egui::Frame::NONE
                 .fill(t.card)
@@ -141,7 +187,7 @@ pub fn show(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
             });
             ui.add_space(8.0);
             if app.recent.is_empty() {
-                ui.label(egui::RichText::new(tl!("Files you open in PdfCraft appear here. Drop a PDF anywhere to open it.")).color(t.text_muted));
+                ui.label(egui::RichText::new(tl!("Files you open in NadsPDF appear here. Drop a PDF anywhere to open it.")).color(t.text_muted));
             }
             let mut open = None;
             let mut remove = None;
@@ -207,7 +253,7 @@ pub fn show(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
             ui.add_space(20.0);
             widgets::section_title(ui, tl!("Privacy"));
             ui.label(
-                egui::RichText::new(tl!("PdfCraft works offline. No telemetry, no account, and no cloud processing unless you add a provider."))
+                egui::RichText::new(tl!("NadsPDF works offline. No telemetry, no account, and no cloud processing unless you add a provider."))
                     .color(t.text_muted),
             );
         });

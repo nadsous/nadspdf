@@ -173,12 +173,66 @@ pub struct ViewDefaults {
     /// Highlight existing fields: a preference in Acrobat, so it carries over to the next
     /// document and the next session.
     pub highlight_fields: bool,
+    /// View ▸ Dark pages: an app-wide preference every view follows.
+    pub dark: DarkPages,
 }
 
 impl Default for ViewDefaults {
     fn default() -> Self {
         // Single page, scrolling continuously at fit width: the earlier "continuous" default.
-        Self { layout: PageLayout::Single, continuous: true, fit: Fit::Width, zoom: 1.0, highlight_fields: false }
+        Self { layout: PageLayout::Single, continuous: true, fit: Fit::Width, zoom: 1.0, highlight_fields: false, dark: DarkPages::default() }
+    }
+}
+
+/// View ▸ Dark pages: pages shown with their lightness inverted (dark paper, light text) while
+/// hues stay recognisable. Display only: the document is never changed, and printing and
+/// exports are not affected.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct DarkPages {
+    pub pages: bool,
+    /// Whether page thumbnails (and the Organize grid) follow.
+    pub thumbnails: bool,
+}
+
+impl DarkPages {
+    /// The blank paper drawn under a page (or a thumbnail) until its raster arrives.
+    pub(crate) fn paper(self, thumbnail: bool) -> Color32 {
+        if self.pages && (self.thumbnails || !thumbnail) { dark_pixel(Color32::WHITE) } else { Color32::WHITE }
+    }
+}
+
+impl Default for DarkPages {
+    fn default() -> Self {
+        Self { pages: false, thumbnails: true }
+    }
+}
+
+/// The darkest and lightest values a dark page uses: near-black paper and off-white ink are
+/// easier on the eyes than pure black and white.
+const DARK_PAPER: u32 = 0x1C;
+const DARK_INK: u32 = 0xE4;
+
+/// One premultiplied pixel of a dark page: its HSL lightness inverted (`L' = 1 − L`) with hue and
+/// saturation kept, which is `c + a − (max + min)` per channel, then squeezed into
+/// [`DARK_PAPER`]..[`DARK_INK`]. White paper becomes dark grey, black text light grey, and a red
+/// stamp stays red.
+pub(crate) fn dark_pixel(p: Color32) -> Color32 {
+    let [r, g, b, a] = p.to_array().map(u32::from);
+    // Premultiplied channels never exceed alpha; clamp in case a renderer rounds over.
+    let (r, g, b) = (r.min(a), g.min(a), b.min(a));
+    let sum = r.max(g).max(b) + r.min(g).min(b);
+    let squeeze = |c: u32| {
+        // `c + a − sum` is within 0..=a since min ≤ c ≤ max ≤ a; saturate anyway.
+        let v = (c + a).saturating_sub(sum).min(a);
+        ((DARK_PAPER * a + v * (DARK_INK - DARK_PAPER)) / 255).min(a) as u8
+    };
+    Color32::from_rgba_premultiplied(squeeze(r), squeeze(g), squeeze(b), a as u8)
+}
+
+/// Turn a rendered page into a dark page, in place.
+pub(crate) fn darken_image(img: &mut egui::ColorImage) {
+    for p in &mut img.pixels {
+        *p = dark_pixel(*p);
     }
 }
 
@@ -298,6 +352,8 @@ pub struct DocView {
     pub current: usize,
     pub organize: bool,
     pub highlight_fields: bool,
+    /// View ▸ Dark pages, as this view's textures were made with (see [`DocView::set_dark`]).
+    pub dark: DarkPages,
     pub page_input: String,
     pub notice_dismissed: bool,
     /// The user has been told that the form's scripts were turned off (it is said once).
@@ -587,6 +643,7 @@ impl DocView {
             current: 0,
             organize: false,
             highlight_fields: defaults.highlight_fields,
+            dark: defaults.dark,
             page_input: "1".into(),
             notice_dismissed: false,
             scripts_off_noted: false,
@@ -816,6 +873,38 @@ impl DocView {
             f.matches.clear();
             f.current = None;
         }
+    }
+
+    /// Follow View ▸ Dark pages. Pages (and thumbnails, when they follow) are re-rendered; the
+    /// old rasters stay on screen until their replacements arrive.
+    pub fn set_dark(&mut self, dark: DarkPages) {
+        if dark == self.dark {
+            return;
+        }
+        let pages_change = dark.pages != self.dark.pages;
+        let thumbs_change = dark.pages && dark.thumbnails != self.dark.thumbnails || pages_change && (dark.thumbnails || self.dark.thumbnails);
+        self.dark = dark;
+        if pages_change {
+            for p in self.pages.values_mut() {
+                p.tag = STALE_TAG;
+            }
+            self.tiles.clear();
+            self.stale_tiles.clear();
+            self.waiting_since.clear();
+        }
+        if thumbs_change {
+            self.stale_thumbs.extend(self.thumbs.keys().copied());
+            self.grid_pages.clear();
+        }
+        self.last_queue.clear();
+    }
+
+    /// Whether a raster with render tag `tag` is shown dark.
+    fn shows_dark(&self, tag: u64) -> bool {
+        if tag & PRINT_TAG != 0 {
+            return false;
+        }
+        self.dark.pages && (self.dark.thumbnails || tag & (THUMB_TAG | GRID_TAG) == 0)
     }
 
     /// Only `page` changed (a comment was added, edited or removed): re-render that page and
@@ -1598,7 +1687,11 @@ impl DocView {
             return 0;
         }
         // The length was checked above, so the renderer's buffer becomes the texture data as is.
-        let img = texture_image([r.width as usize, r.height as usize], r.rgba);
+        let mut img = texture_image([r.width as usize, r.height as usize], r.rgba);
+        // View ▸ Dark pages: once per raster as it arrives, never per frame.
+        if self.shows_dark(r.request.tag) {
+            darken_image(&mut img);
+        }
         if let Some(t) = r.request.tile {
             let key = (page, r.request.tag, t.x, t.y);
             let tex = ctx.load_texture(format!("tile-{:?}-{page}-{}-{}", self.id, t.x, t.y), img, TextureOptions::LINEAR);
@@ -2455,7 +2548,7 @@ pub fn document_area(app: &mut PdfCraftApp, index: usize, ui: &mut egui::Ui) {
             let xf = PageXform { rect: r, rot: view.rotation, pw: info.pages[i].width.max(1.0), ph: info.pages[i].height.max(1.0) };
             // Soft shadow + paper.
             painter.add(egui::epaint::Shadow { offset: [0, 3], blur: 14, spread: 0, color: t.page_shadow }.as_shape(r, CornerRadius::ZERO));
-            painter.rect_filled(r, CornerRadius::ZERO, Color32::WHITE);
+            painter.rect_filled(r, CornerRadius::ZERO, view.dark.paper(false));
             if let Some(err) = view.errors.get(&i) {
                 painter.rect_filled(r, CornerRadius::ZERO, Color32::from_rgb(0xFB, 0xF4, 0xF4));
                 icons::paint(
@@ -3425,7 +3518,10 @@ pub fn document_area(app: &mut PdfCraftApp, index: usize, ui: &mut egui::Ui) {
     if let Some((name, action)) = app.views[index].forms.button.take() {
         run_button(app, index, &name, action);
     }
-    quick_bar(app, avail, ui);
+    // A bubble shares the window's tool bar rather than drawing its own.
+    if !app.in_bubble {
+        quick_bar(app, avail, ui);
+    }
     if let Some((source, file, destination)) = remote_open {
         app.open_remote_link(source, file, destination);
     }
@@ -3535,7 +3631,7 @@ fn run_button(app: &mut PdfCraftApp, index: usize, name: &str, action: pdfcraft_
         }
         B::Named(n) => match n.as_str() {
             "Print" => app.open_print(),
-            // What PdfCraft's XFA buttons use, and what a script's `execMenuItem("Save")`
+            // What NadsPDF's XFA buttons use, and what a script's `execMenuItem("Save")`
             // does too: the Save As dialog, so a click never overwrites the file unasked.
             "SaveAs" => app.run_command("file.save_as"),
             "NextPage" => app.views[index].step_page(true),
@@ -3586,7 +3682,7 @@ fn run_button(app: &mut PdfCraftApp, index: usize, name: &str, action: pdfcraft_
         }
         B::Alert(m) => app.notify(m),
         B::Submit(url) => app.notify_fmt(
-            "{name} submits the form to {url}; PdfCraft doesn't send form data. Save the document to keep your entries.",
+            "{name} submits the form to {url}; NadsPDF doesn't send form data. Save the document to keep your entries.",
             &[("name", name), ("url", &url)],
         ),
         B::ImportIcon => app.choose_field_image(name),
@@ -3796,7 +3892,7 @@ fn notices(
     } else if info.xfa == Some(pdfcraft_render::Xfa::Dynamic) {
         Some((
             "triangle-alert",
-            tl!("This is a dynamic XFA form, which PdfCraft can't display yet. What you see is the file's placeholder page.").to_string(),
+            tl!("This is a dynamic XFA form, which NadsPDF can't display yet. What you see is the file's placeholder page.").to_string(),
             false,
         ))
     } else if info.xfa == Some(pdfcraft_render::Xfa::Static) {
@@ -4314,7 +4410,7 @@ fn organize_grid(view: &mut DocView, info: &DocInfo, editable: bool, dirty: bool
                     ui.painter().rect_stroke(c.shrink(6.0), CornerRadius::same(8), Stroke::new(1.5, t.accent), egui::StrokeKind::Inside);
                 }
                 ui.painter().rect_filled(pr.translate(vec2(0.0, 1.5)), CornerRadius::same(1), t.page_shadow);
-                ui.painter().rect_filled(pr, CornerRadius::ZERO, Color32::WHITE);
+                ui.painter().rect_filled(pr, CornerRadius::ZERO, view.dark.paper(true));
                 // A page drawn larger than its thumbnail gets a render at the size drawn, while
                 // it is in view; until that arrives the thumbnail stands in.
                 let want = size.x * ppp;
@@ -4637,6 +4733,23 @@ trailer << /Root 1 0 R >>
             ..Default::default()
         };
         DocView::new(DocId(1), &info, ViewDefaults { layout, continuous, ..Default::default() })
+    }
+
+    #[test]
+    fn dark_pages_cover_screen_rasters_but_never_print_previews() {
+        let info = thumbnail_info(3);
+        let mut v = DocView::new(DocId(1), &info, ViewDefaults::default());
+        assert!(!v.shows_dark(0));
+        v.set_dark(DarkPages { pages: true, thumbnails: true });
+        assert!(v.shows_dark(0) && v.shows_dark(THUMB_TAG) && v.shows_dark(GRID_TAG));
+        assert!(!v.shows_dark(PRINT_TAG), "print previews show the paper as printed");
+        v.set_dark(DarkPages { pages: true, thumbnails: false });
+        assert!(v.shows_dark(0) && !v.shows_dark(THUMB_TAG) && !v.shows_dark(GRID_TAG));
+        assert_eq!(v.dark.paper(false), dark_pixel(Color32::WHITE));
+        assert_eq!(v.dark.paper(true), Color32::WHITE);
+        let mut img = egui::ColorImage::filled([2, 2], Color32::WHITE);
+        darken_image(&mut img);
+        assert!(img.pixels.iter().all(|p| *p == dark_pixel(Color32::WHITE)));
     }
 
     #[test]

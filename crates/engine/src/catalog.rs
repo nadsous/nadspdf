@@ -14,7 +14,7 @@ pub enum Availability {
     Ready,
     /// Planned; ships in the named milestone.
     Planned(&'static str),
-    /// Cloud-only in Acrobat; PdfCraft offers an optional pluggable provider instead.
+    /// Cloud-only in Acrobat; NadsPDF offers an optional pluggable provider instead.
     Provider,
 }
 
@@ -311,6 +311,7 @@ pub static TOOL_GROUPS: &[ToolGroup] = &[
             items: &[
                 item("Reduce file size", "file-down", "optimize.reduce", Ready),
                 item("Advanced optimization", "settings-2", "optimize.advanced", Ready),
+                item("Rasterize pages (strong compression)", "image", "optimize.rasterize", Ready),
                 item("Audit space usage", "gauge", "optimize.audit", Planned("M11")),
             ],
         }],

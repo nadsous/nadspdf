@@ -2,7 +2,7 @@
 # (context <TAB> source <TAB> translation; @id, @plural and other contexts; escapes \n \t \\).
 # Plural forms (see `plural_none` in i18n/mod.rs): one form.
 #
-# Clean-room: clean-room translations of PdfCraft's English UI labels, no proprietary localisation resources.
+# Clean-room: clean-room translations of NadsPDF's English UI labels, no proprietary localisation resources.
 
 	Menu	Menü
 	File	Dosya
@@ -117,7 +117,7 @@
 	Next page	Sonraki sayfa
 	Previous page	Önceki sayfa
 	Current page — type a page number or label (such as iv) and press Enter	Geçerli sayfa — bir sayfa numarası veya etiketi (örneğin iv) yazıp Enter'a basın
-	Welcome to PdfCraft	PdfCraft'a Hoş Geldiniz
+	Welcome to NadsPDF	NadsPDF'a Hoş Geldiniz
 	An open-source PDF workbench — local, private, and scriptable.	Açık kaynaklı bir PDF çalışma alanı — yerel, gizli ve komut dosyalarıyla yönetilebilir.
 	Join the ArtCraft community	ArtCraft topluluğuna katılın
 	Get help, share feedback and follow development on Discord.	Discord'da yardım alın, geri bildirim paylaşın ve geliştirmeyi takip edin.
@@ -125,9 +125,9 @@
 	Use now	Şimdi kullan
 	Open file	Dosya aç
 	Recent	Son kullanılanlar
-	Files you open in PdfCraft appear here. Drop a PDF anywhere to open it.	PdfCraft'ta açtığınız dosyalar burada görünür. Açmak için bir PDF'i herhangi bir yere bırakın.
+	Files you open in NadsPDF appear here. Drop a PDF anywhere to open it.	NadsPDF'ta açtığınız dosyalar burada görünür. Açmak için bir PDF'i herhangi bir yere bırakın.
 	Privacy	Gizlilik
-	PdfCraft works offline. No telemetry, no account, and no cloud processing unless you add a provider.	PdfCraft çevrimdışı çalışır. Bir sağlayıcı eklemediğiniz sürece telemetri yok, hesap yok ve bulut işleme yok.
+	NadsPDF works offline. No telemetry, no account, and no cloud processing unless you add a provider.	NadsPDF çevrimdışı çalışır. Bir sağlayıcı eklemediğiniz sürece telemetri yok, hesap yok ve bulut işleme yok.
 	Scripts run in a sandbox without file or network access. With JavaScript off, Acrobat's standard format, validate and calculate functions still work.	Komut dosyaları dosya veya ağ erişimi olmadan yalıtılmış alanda (sandbox) çalışır. JavaScript kapalıyken bile Acrobat'ın standart biçimlendirme, doğrulama ve hesaplama işlevleri çalışmaya devam eder.
 	Back to all tools	Tüm araçlara geri dön
 	Close panel	Paneli kapat
@@ -266,11 +266,11 @@
 	Number pages…	Sayfaları numaralandır…
 	Keyboard shortcuts	Klavye kısayolları
 	Join the ArtCraft Discord	ArtCraft Discord'una katıl
-	PdfCraft web page	PdfCraft web sayfası
-	PdfCraft on GitHub	GitHub'da PdfCraft
+	NadsPDF web page	NadsPDF web sayfası
+	NadsPDF on GitHub	GitHub'da NadsPDF
 	ArtCraft website	ArtCraft web sitesi
 	Check for updates…	Güncellemeleri denetle…
-	About PdfCraft	PdfCraft hakkında
+	About NadsPDF	NadsPDF hakkında
 	Export a PDF	PDF'i dışa aktar
 	Export to	Şuraya aktar
 	Microsoft Word (.docx)	Microsoft Word (.docx)
@@ -725,12 +725,11 @@
 	Check for updates	Güncellemeleri denetle
 	No check has run yet.	Henüz denetim yapılmadı.
 	Checking for a newer version…	Daha yeni bir sürüm denetleniyor…
-	PdfCraft {v} is available.	PdfCraft {v} kullanılabilir.
+	NadsPDF {v} is available.	NadsPDF {v} kullanılabilir.
 	You have version {c}. Download the new version from its release page.	{c} sürümüne sahipsiniz. Yeni sürümü sürüm sayfasından indirin.
-	PdfCraft {c} is up to date.	PdfCraft {c} güncel.
+	NadsPDF {c} is up to date.	NadsPDF {c} güncel.
 	Couldn't check for updates: {e}	Güncellemeler denetlenemedi: {e}
 	You have version {c}. All releases are listed at {page}.	{c} sürümüne sahipsiniz. Tüm sürümler {page} adresinde listelenmiştir.
-	Asks GitHub for the latest release. Nothing is downloaded or installed automatically.	En son sürüm için GitHub'ı sorgular. Hiçbir şey otomatik olarak indirilmez veya kurulmaz.
 	Download	İndir
 	Later	Daha sonra
 	none	yok
@@ -836,8 +835,8 @@
 	No changes allowed	Değişikliğe izin verilmez
 	Annotations, form fill-in, and digital signatures	Açıklamalar, form doldurma ve dijital imzalar
 	Form fill-in and digital signatures	Form doldurma ve dijital imzalar
-	The key is in the macOS Keychain, which may ask to allow PdfCraft to use it.	Anahtar macOS Anahtar Zinciri'ndedir ve PdfCraft'ın kullanmasına izin vermenizi isteyebilir.
-	The key is in the Windows certificate store, which may ask to allow PdfCraft to use it.	Anahtar Windows sertifika deposundadır ve PdfCraft'ın kullanmasına izin vermenizi isteyebilir.
+	The key is in the macOS Keychain, which may ask to allow NadsPDF to use it.	Anahtar macOS Anahtar Zinciri'ndedir ve NadsPDF'ın kullanmasına izin vermenizi isteyebilir.
+	The key is in the Windows certificate store, which may ask to allow NadsPDF to use it.	Anahtar Windows sertifika deposundadır ve NadsPDF'ın kullanmasına izin vermenizi isteyebilir.
 	Digital ID password	Dijital kimlik parolası
 	Back	Geri
 	Validate all	Tümünü doğrula
@@ -1203,7 +1202,7 @@
 	Downsample to	Şu değere alt örnekle:
 	Also recognize pages that already have text	Zaten metin içeren sayfaları da tanı
 	Pictures on those pages are recognized too; words already in the page's text are not added again	Bu sayfalardaki resimler de tanınır; sayfanın metninde zaten bulunan sözcükler yeniden eklenmez
-	Text recognition isn't installed: its model files are missing. Reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them.	Metin tanıma yüklü değil: model dosyaları eksik. PdfCraft'ı yeniden yükleyin veya PDFCRAFT_MODELS ortam değişkenini bunları içeren klasöre ayarlayın.
+	Text recognition isn't installed: its model files are missing. Reinstall NadsPDF, or set PDFCRAFT_MODELS to the folder that holds them.	Metin tanıma yüklü değil: model dosyaları eksik. NadsPDF'ı yeniden yükleyin veya PDFCRAFT_MODELS ortam değişkenini bunları içeren klasöre ayarlayın.
 	Settings	Ayarlar
 	Optional	İsteğe bağlı
 	Planned · {m}	Planlandı · {m}
@@ -1346,7 +1345,7 @@
 	Anyone opening the document will need this password. It's applied when you save.	Belgeyi açan herkesin bu parolaya ihtiyacı olacaktır. Kaydettiğinizde uygulanır.
 	The document opens without a password; this password is needed to change the restrictions. It's applied when you save.	Belge parola olmadan açılır; kısıtlamaları değiştirmek için bu parola gerekir. Kaydettiğinizde uygulanır.
 	Recover unsaved documents?	Kaydedilmemiş belgeler kurtarılsın mı?
-	PdfCraft didn't shut down normally. These documents had changes that were autosaved:	PdfCraft normal şekilde kapanmadı. Bu belgelerde otomatik olarak kaydedilen değişiklikler vardı:
+	NadsPDF didn't shut down normally. These documents had changes that were autosaved:	NadsPDF normal şekilde kapanmadı. Bu belgelerde otomatik olarak kaydedilen değişiklikler vardı:
 	just now	az önce
 	{n} min ago	{n} dk önce
 	{n} h ago	{n} sa önce
@@ -1502,10 +1501,10 @@
 	On the web, open or drop an image to convert it	Web'de dönüştürmek için bir resim açın veya sürükleyip bırakın
 	Couldn't optimize the file: {e}	Dosya en iyileştirilemedi: {e}
 	Couldn't write {path}: {e}	{path} yazılamadı: {e}
-	The form asks to be submitted to {u}; PdfCraft doesn't send form data. Save the document to keep your entries.	Form {u} adresine gönderilmek isteniyor; PdfCraft form verilerini göndermez. Girdilerinizi korumak için belgeyi kaydedin.
+	The form asks to be submitted to {u}; NadsPDF doesn't send form data. Save the document to keep your entries.	Form {u} adresine gönderilmek isteniyor; NadsPDF form verilerini göndermez. Girdilerinizi korumak için belgeyi kaydedin.
 	This PDF uses the unsupported {s} action.	Bu PDF desteklenmeyen {s} eylemini kullanıyor.
 	{name}: the {other} action isn't supported yet	{name}: {other} eylemi henüz desteklenmiyor
-	{name} submits the form to {url}; PdfCraft doesn't send form data. Save the document to keep your entries.	{name} formu {url} adresine gönderiyor; PdfCraft form verilerini göndermez. Girdilerinizi korumak için belgeyi kaydedin.
+	{name} submits the form to {url}; NadsPDF doesn't send form data. Save the document to keep your entries.	{name} formu {url} adresine gönderiyor; NadsPDF form verilerini göndermez. Girdilerinizi korumak için belgeyi kaydedin.
 	Export stopped: {e}	Dışa aktarma durduruldu: {e}
 	Exported 1 image	1 resim dışa aktarıldı
 	Exported {n} images	{n} resim dışa aktarıldı
@@ -1605,7 +1604,7 @@
 	Couldn't open {name}: {e}	{name} açılamadı: {e}
 	Couldn't read {name}: {e}	{name} okunamadı: {e}
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	Taşınabilir mod kapalı: {folder} konumuna yazılamıyor ({error}). Ayarlar bunun yerine kullanıcı klasörünüzde tutulur.
-	PdfCraft is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	PdfCraft grafik işlemcisi olmadan çizim yapıyor, bu nedenle yavaş olabilir. Grafik sürücüsünü güncellemek yardımcı olabilir.
+	NadsPDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	NadsPDF grafik işlemcisi olmadan çizim yapıyor, bu nedenle yavaş olabilir. Grafik sürücüsünü güncellemek yardımcı olabilir.
 	Couldn't save: {e}	Kaydedilemedi: {e}
 	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Web'de ek indirme M3.10 ile sunulacaktır ({n} bayt hazır)
 	`{command}` {when}	`{command}` {when}
@@ -1673,8 +1672,8 @@
 	Signed and all signatures are valid.	İmzalandı ve tüm imzalar geçerli.
 	At least one signature has problems.	En az bir imzada sorun var.
 	This document is secured. Some changes are restricted by its security settings.	Bu belge güvenlidir. Bazı değişiklikler güvenlik ayarlarıyla kısıtlanmıştır.
-	This is a dynamic XFA form, which PdfCraft can't display yet. What you see is the file's placeholder page.	Bu, PdfCraft'ın henüz görüntüleyemediği dinamik bir XFA formudur. Gördüğünüz şey dosyanın yer tutucu sayfasıdır.
-	This form also contains XFA data, which PdfCraft doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Bu form aynı zamanda PdfCraft'ın henüz okumadığı XFA verilerini de içerir. Alanlarını doldurabilirsiniz ancak Acrobat bunun yerine XFA değerlerini gösterebilir.
+	This is a dynamic XFA form, which NadsPDF can't display yet. What you see is the file's placeholder page.	Bu, NadsPDF'ın henüz görüntüleyemediği dinamik bir XFA formudur. Gördüğünüz şey dosyanın yer tutucu sayfasıdır.
+	This form also contains XFA data, which NadsPDF doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Bu form aynı zamanda NadsPDF'ın henüz okumadığı XFA verilerini de içerir. Alanlarını doldurabilirsiniz ancak Acrobat bunun yerine XFA değerlerini gösterebilir.
 	This document contains {n} interactive form fields.	Bu belge {n} etkileşimli form alanı içeriyor.
 	This file was damaged and has been repaired. Saving keeps the repaired version.	Bu dosya hasarlıydı ve onarıldı. Kaydetmek onarılan sürümü korur.
 	Dismiss	Kapat
@@ -1723,7 +1722,7 @@
 	there are no pages to print	yazdırılacak sayfa yok
 	the document has no tags	belgenin etiketi yok
 	{0}: {1}	{0}: {1}
-	the text recognition models are not installed (reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them)	metin tanıma modelleri yüklü değil (PdfCraft'ı yeniden yükleyin veya PDFCRAFT_MODELS değişkenini bunları içeren klasöre ayarlayın)
+	the text recognition models are not installed (reinstall NadsPDF, or set PDFCRAFT_MODELS to the folder that holds them)	metin tanıma modelleri yüklü değil (NadsPDF'ı yeniden yükleyin veya PDFCRAFT_MODELS değişkenini bunları içeren klasöre ayarlayın)
 	the image is empty	resim boş
 	this file isn't XFDF, FDF, XML or text form data	bu dosya XFDF, FDF, XML veya metin form verisi değil
 	nothing in the file matches this document	dosyadaki hiçbir şey bu belgeyle eşleşmiyor
@@ -1769,6 +1768,8 @@
 	Draw your {what} below.	{what} bilginizi aşağıya çizin.
 	Your name	Adınız
 	Images and text (converted to PDF)	Resimler ve metin (PDF'e dönüştürüldü)
+	Images, text and documents (converted to PDF)	Görüntüler, metin ve belgeler (PDF'ye dönüştürülür)
+	PDF, images, text and documents	PDF, görüntüler, metin ve belgeler
 	Images and text	Resimler ve metin
 	Check Box Style:	Onay Kutusu Stili:
 	Button Style:	Düğme Stili:
@@ -2083,7 +2084,7 @@ comment menu	Edit	Düzenle
 signature pad	Type	Yaz
 certificate	Subject	Konu
 action wizard	Start	Başlat
-	Reopen the files that were open when PdfCraft last closed	PdfCraft en son kapatıldığında açık olan dosyaları yeniden aç
+	Reopen the files that were open when NadsPDF last closed	NadsPDF en son kapatıldığında açık olan dosyaları yeniden aç
 	Add {what}	{what} ekle
 	Use {what}	{what} kullan
 	Place saved {what}	Kayıtlı {what} yerleştir
@@ -2091,8 +2092,8 @@ action wizard	Start	Başlat
 	A link	Bir bağlantı
 	A button	Bir düğme
 	A script	Bir komut dosyası
-	{who} in this document tried to open an address PdfCraft won't open: {e}.	Bu belgedeki {who}, PdfCraft'ın açamayacağı bir adresi açmaya çalıştı: {e}.
-	{who} in this document tried to open an address PdfCraft won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	Bu belgedeki {who}, PdfCraft'ın açamayacağı bir adresi açmaya çalıştı: {e}. Belgelerden yalnızca web (http, https) ve e-posta (mailto) bağlantıları açılır.
+	{who} in this document tried to open an address NadsPDF won't open: {e}.	Bu belgedeki {who}, NadsPDF'ın açamayacağı bir adresi açmaya çalıştı: {e}.
+	{who} in this document tried to open an address NadsPDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	Bu belgedeki {who}, NadsPDF'ın açamayacağı bir adresi açmaya çalıştı: {e}. Belgelerden yalnızca web (http, https) ve e-posta (mailto) bağlantıları açılır.
 	Another file dialog is still open. Finish with it first.	Başka bir dosya iletişim kutusu hala açık. Önce onu tamamlayın.
 	Couldn't show the file picker. Please try again.	Dosya seçici gösterilemedi. Lütfen tekrar deneyin.
 	The document changed while you were choosing a file, so nothing was changed.	Bir dosya seçerken belge değişti, bu yüzden hiçbir şey değiştirilmedi.
@@ -2275,8 +2276,8 @@ animation effects	Off	Kapalı
 	Greyscale	Gri tonlamalı
 	Black and white	Siyah beyaz
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	Bu yazıcının sürücüsü diğer programlardan gelen çift taraflı yazdırma ayarlarını kabul etmez, bu yüzden kendi ayarı geçerlidir. Değiştirmek için: Özellikler…
-	This field's font can't draw “{c}” ({code}), so PdfCraft shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Bu alanın yazı tipi “{c}” ({code}) karakterini çizemiyor, bu yüzden PdfCraft yerine ? gösteriyor. Değer kaydedilir ve diğer PDF görüntüleyiciler alanı ondan yeniden çizer.
-	The fonts PdfCraft writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	PdfCraft'ın yazdığı yazı tipleri “{c}” ({code}) karakterini çizemiyor, bu yüzden her PDF görüntüleyicide ? olarak görünür. Metin kaydedilir.
+	This field's font can't draw “{c}” ({code}), so NadsPDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Bu alanın yazı tipi “{c}” ({code}) karakterini çizemiyor, bu yüzden NadsPDF yerine ? gösteriyor. Değer kaydedilir ve diğer PDF görüntüleyiciler alanı ondan yeniden çizer.
+	The fonts NadsPDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	NadsPDF'ın yazdığı yazı tipleri “{c}” ({code}) karakterini çizemiyor, bu yüzden her PDF görüntüleyicide ? olarak görünür. Metin kaydedilir.
 	Browser's print dialog	Tarayıcının yazdırma penceresi
 	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Kopya sayısı, çift taraflı yazdırma ve renk tarayıcının yazdırma penceresinde seçilir.
 	Preparing {n} sheets for printing…	Yazdırma için {n} sayfa hazırlanıyor…
@@ -2306,7 +2307,7 @@ animation effects	Off	Kapalı
 @plural	Downloaded {n} PDF|Downloaded {n} PDFs	{n} PDF indirildi
 @plural	{n} field name collides with earlier files and will be renamed: {list}|{n} field names collide with earlier files and will be renamed: {list}	{n} alan adı önceki dosyalarla çakışıyor ve yeniden adlandırılacak: {list}
 	Scan	Tara
-	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: PdfCraft finds the signature and removes the paper.	Beyaz bir kâğıda imzanızı atın ve parlak, eşit ışıkta fotoğrafını çekin (flaş kullanın). Fotoğrafı seçin veya buraya bırakın: PdfCraft imzayı bulur ve kâğıdı kaldırır.
+	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: NadsPDF finds the signature and removes the paper.	Beyaz bir kâğıda imzanızı atın ve parlak, eşit ışıkta fotoğrafını çekin (flaş kullanın). Fotoğrafı seçin veya buraya bırakın: NadsPDF imzayı bulur ve kâğıdı kaldırır.
 	Choose photo…	Fotoğraf seç…
 	No photo chosen	Fotoğraf seçilmedi
 	Photo	Fotoğraf
@@ -2348,3 +2349,103 @@ animation effects	Off	Kapalı
 	This document is trying to open a local file:	Bu belge yerel bir dosya açmaya çalışıyor:
 	Move tag earlier	Etiketi daha erken taşı
 	Move tag later	Etiketi daha geç taşı
+
+# NadsPDF (nads.site)
+	NadsPDF tools	NadsPDF araçları
+	PdfCraft (upstream) on GitHub	GitHub'da PdfCraft (özgün proje)
+	Convert to PDF with NadsPDF	NadsPDF ile PDF'ye dönüştür
+	Combine with NadsPDF	NadsPDF ile birleştir
+	Open with NadsPDF	NadsPDF ile aç
+	Show NadsPDF in the File Explorer right-click menu	NadsPDF'yi Dosya Gezgini sağ tıklama menüsünde göster
+	Added for all users when NadsPDF was installed.	NadsPDF yüklenirken tüm kullanıcılar için eklendi.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	Belgelerde, resimlerde ve PDF'lerde PDF'ye dönüştür, Birleştir ve Aç. Windows 11'de “Daha fazla seçenek göster” altında.
+	Couldn't change the File Explorer menu: {e}	Dosya Gezgini menüsü değiştirilemedi: {e}
+	Couldn't find {name}	{name} bulunamadı
+# Vaults (Home ▸ Vaults)
+@plural	{n} file|{n} files	{n} dosya
+	Give the vault a name	Kasaya bir ad verin
+	You can have up to {n} vaults. Delete one first.	En fazla {n} kasanız olabilir. Önce birini silin.
+	That vault no longer exists	Bu kasa artık yok
+	Added {files} to {vault}	{vault} kasasına eklendi: {files}
+	Already in {vault}	Zaten {vault} içinde
+	A vault holds up to {n} files	Bir kasa en fazla {n} dosya tutar
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	Kasalar bu bilgisayardaki PDF'leri ve NadsPDF'in dönüştürebildiği dosyaları tutar
+	No files to open in this vault	Bu kasada açılacak dosya yok
+	Opening the first {n} files	İlk {n} dosya açılıyor
+	Deleted the vault {vault}. Its files were not touched.	{vault} kasası silindi. Dosyalarına dokunulmadı.
+	Moved {file} to {vault}	{file}, {vault} kasasına taşındı
+	Vaults need the desktop app	Kasalar masaüstü uygulamasını gerektirir
+	Locate {file}	{file} dosyasını bul
+	Save this document to a file first, then add it to a vault	Önce bu belgeyi bir dosyaya kaydedin, sonra bir kasaya ekleyin
+	Vaults	Kasalar
+	New vault	Yeni kasa
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	Bilgisayarınızın her yerindeki PDF'leri adı, rengi ve simgesi olan kasalarda toplayın. Dosyalar yerinde kalır.
+	Click to show its files. Drag to reorder, or drop files here.	Dosyalarını görmek için tıklayın. Sıralamak için sürükleyin ya da dosyaları buraya bırakın.
+	Open all	Tümünü aç
+	Edit vault…	Kasayı düzenle…
+	Move left	Sola taşı
+	Move right	Sağa taşı
+	Delete vault…	Kasayı sil…
+	New vault…	Yeni kasa…
+	No files yet. Drop files here to add them.	Henüz dosya yok. Eklemek için dosyaları buraya bırakın.
+	Locate…	Bul…
+	Missing	Eksik
+	Remove {name} from this vault	{name} dosyasını bu kasadan çıkar
+	This file has moved or been deleted. Locate it, or remove it from the vault.	Bu dosya taşınmış ya da silinmiş. Bulun ya da kasadan çıkarın.
+	Move to vault	Kasaya taşı
+	Remove from vault	Kasadan çıkar
+	Show this vault on Home	Bu kasayı Ana Sayfa'da göster
+	Vault: {name}	Kasa: {name}
+	Vault	Kasa
+	Edit vault	Kasayı düzenle
+	Vault name	Kasa adı
+	Create vault	Kasa oluştur
+	Delete the vault {vault}?	{vault} kasası silinsin mi?
+	Its files stay where they are on your computer. Only the vault is deleted.	Dosyalar bilgisayarınızda yerinde kalır. Yalnızca kasa silinir.
+	Delete vault	Kasayı sil
+	Add to vault	Kasaya ekle
+	Already in it	Zaten içinde
+	Add document to vault…	Belgeyi kasaya ekle…
+	Dark pages	Koyu sayfalar
+	Rasterize pages (strong compression)…	Sayfaları rasterleştir (güçlü sıkıştırma)…
+	Rasterize pages (strong compression)	Sayfaları rasterleştir (güçlü sıkıştırma)
+	Rasterizing… page {d} of {t}	Rasterleştiriliyor… sayfa {d} / {t}
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	Her sayfa bir resme dönüşür: en güçlü sıkıştırma, taranmış belgeler için idealdir. Metin artık seçilemez veya aranamaz; bağlantılar, yer imleri ve form alanları korunmaz. Sonuç bir kopya olarak kaydedilir.
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi, JPEG kalitesi {q}
+compression level	Light	Hafif
+compression level	Medium	Orta
+compression level	Strong	Güçlü
+	Compress	Sıkıştır
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	Rasterleştirme bu dosyayı küçültmezdi ({size}). Kopya kaydedilmedi.
+	Add faint watermark	Soluk filigran ekle
+	Recognize text if available	Varsa metni tanı
+	Prepare for Sending	Göndermeye hazırla
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	Sayfaları alt ortada "n / toplam" olarak numaralandır, ardından e-postayla göndermek için dosyayı küçült.
+	Archive Scans	Taramaları arşivle
+	Make scans searchable (when text recognition is available), then make them smaller.	Taramaları aranabilir yap (metin tanıma yüklüyse), ardından küçült.
+	Confidential	Gizli
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	Her sayfada soluk çapraz GİZLİ filigranı ve "n / toplam" sayfa numaraları.
+	{name} (copy)	{name} (kopya)
+watermark text	CONFIDENTIAL	GİZLİ
+	Group name	Grup adı
+	Rename Group	Grubu yeniden adlandır
+	Ungroup	Grubu çöz
+	Close Group	Grubu kapat
+	Add Tab to New Group	Sekmeyi yeni gruba ekle
+	Add Tab to Group	Sekmeyi gruba ekle
+	Remove from Group	Gruptan çıkar
+	Click to fold or unfold the group	Grubu daraltmak veya genişletmek için tıklayın
+	Filter tools	Araçları filtrele
+	No tool matches	Eşleşen araç yok
+	Essentials	Temel
+	Float as a bubble	Baloncuk olarak yüzdür
+	Show this PDF in a small window over the others	Bu PDF'yi diğerlerinin üzerinde küçük bir pencerede göster
+	Put back as a tab	Sekmeye geri koy
+	Fold into a bubble	Baloncuğa küçült
+	Click to open, drag onto the tabs to put it back	Açmak için tıklayın, geri koymak için sekmelere sürükleyin
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	{c} sürümünü kullanıyorsunuz. NadsPDF kapanacak, yeni sürümü bunun yerine yükleyecek ve yeniden açılacak. Ayarlarınız korunur.
+	You have version {c}.	{c} sürümünü kullanıyorsunuz.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	Bu NadsPDF kopyası, yeni sürümleri kendisi yükleyen Microsoft Store'dan gelmektedir.
+	Downloading the update…	Güncelleme indiriliyor…
+	Couldn't install the update: {e}	Güncelleme yüklenemedi: {e}
+	Check for updates when NadsPDF starts (once a day)	NadsPDF başlarken güncellemeleri denetle (günde bir kez)

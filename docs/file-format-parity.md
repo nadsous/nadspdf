@@ -68,8 +68,8 @@ features total).
 | Plain text | yes | yes | good | `create.from-text` |
 | Clipboard (image or text) | yes | yes | good | `create.from-clipboard` |
 | Screenshot | yes | no | none | `create.from-screenshot` planned |
-| Word, Excel, PowerPoint (and Visio, Publisher on Windows) | yes | no | none | `create.from-office` planned (LibreOffice sidecar) |
-| HTML file, web page URL | yes | no | none | `create.from-html`, `create.from-web-page` planned |
+| Word, Excel, PowerPoint (and Visio, Publisher on Windows) | yes | .docx, .xlsx/.xlsm, .ods, .csv/.tsv | partial (structure, not styling) | `create.from-office` (pdfcraft-convert, pure Rust); PowerPoint, .doc/.xls not yet |
+| HTML file, web page URL | yes | HTML file | partial (no CSS, images) | `create.from-html` (pdfcraft-convert); `create.from-web-page` planned |
 | RTF | yes | no | none | |
 | PostScript / EPS (Distiller) | yes | no | none | `create.distiller` planned (P3) |
 | Markdown | no | no | none | `create.from-markdown` planned (P2; not an Acrobat feature) |
