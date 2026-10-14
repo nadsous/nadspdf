@@ -9,11 +9,11 @@
 # Les paramètres -IdentityName, -Publisher et -PublisherDisplayName du script sont prioritaires.
 @{
     # Ligne « Package/Identity/Name », par exemple 12345Nads.NadsPDF
-    IdentityName         = 'REMPLACER-par-Package-Identity-Name'
+    IdentityName         = 'NadsDev.NadsPDF'
 
     # Ligne « Package/Identity/Publisher », commence par CN=, par exemple CN=1A2B3C4D-5E6F-...
-    Publisher            = 'CN=REMPLACER-par-Package-Identity-Publisher'
+    Publisher            = 'CN=4EA5CC12-0A40-4E87-BD63-CD40E93A4F8F'
 
     # Ligne « Package/Properties/PublisherDisplayName », votre nom d'éditeur, par exemple nads
-    PublisherDisplayName = 'REMPLACER-par-Package-Properties-PublisherDisplayName'
+    PublisherDisplayName = 'Nads Dev'
 }
