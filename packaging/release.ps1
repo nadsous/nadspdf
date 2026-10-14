@@ -76,7 +76,10 @@ try {
   if (git tag --list $Tag) { throw "l'étiquette $Tag existe déjà : choisissez un numéro plus grand" }
   if (-not $NoPublish) {
     Invoke-Native 'gh auth status' { gh auth status }
+    # Aucune release encore : gh écrit « release not found » sur stderr, ce qui n'est pas une erreur ici.
+    $ErrorActionPreference = 'Continue'
     $latest = gh release view --repo $Repo --json tagName --jq .tagName 2>$null
+    $ErrorActionPreference = 'Stop'
     if ($LASTEXITCODE -eq 0 -and $latest -and ((ConvertTo-VersionKey $latest.TrimStart('v')) -ge $key)) {
       throw "la dernière release publiée est $latest : $Tag doit être plus grand pour que Windows remplace l'ancienne version"
     }
