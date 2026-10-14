@@ -19,8 +19,9 @@ fn harness(setup: impl FnOnce(&mut PdfCraftApp) + 'static) -> Harness<'static, P
 
 #[test]
 fn the_top_bar_shows_the_nads_mark() {
+    // The nads mark is the menu button.
     let h = harness(|_| {});
-    h.get_by_label("nads");
+    h.get_by_label("Menu");
 }
 
 #[test]

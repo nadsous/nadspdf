@@ -122,6 +122,8 @@ pub fn tab_strip(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                 let mut action = None;
                 let mut close = None;
                 let mut group_action = None;
+                let mut tear = None;
+                let mut drag_start = None;
                 ui.scope(|ui| {
                     ui.style_mut().always_scroll_the_only_direction = true;
                     let mut area = egui::ScrollArea::horizontal().id_salt("document_tabs").max_width(tabs_width).auto_shrink([true, true]);
@@ -158,7 +160,11 @@ pub fn tab_strip(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                                     i,
                                     cap,
                                     tab_h,
+                                    true,
                                 );
+                                if response.drag_started() {
+                                    drag_start = Some(view_id);
+                                }
                                 if changed && app.active == Some(i) && !app.combine_showing() {
                                     response.scroll_to_me(Some(Align::Center));
                                 }
@@ -192,6 +198,15 @@ pub fn tab_strip(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                                         action = Some(crate::tab_context::Action::Float(id));
                                         ui.close();
                                     }
+                                    if app.open_in_new_window.is_some()
+                                        && ui
+                                            .button(tl!("Open in New Window"))
+                                            .on_hover_text(tl!("Or drag the tab out of the strip, to another screen for instance"))
+                                            .clicked()
+                                    {
+                                        tear = Some(id);
+                                        ui.close();
+                                    }
                                     ui.separator();
                                     tab_group_menu(ui, &app.tab_groups, id, group, &mut group_action);
                                 });
@@ -208,6 +223,14 @@ pub fn tab_strip(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                                 Some(crate::tab_context::Action::Float(id)) => app.float_tab(id, ui.ctx().content_rect()),
                                 Some(action) => app.tab_action(action),
                                 None => {}
+                            }
+                            if let Some(id) = drag_start.take() {
+                                app.start_tab_drag(id);
+                            }
+                            if let Some(id) = tear.take() {
+                                // Offset from this window, so the new one doesn't hide exactly behind it.
+                                let at = crate::tear_off::screen_px(ui.ctx(), egui::pos2(48.0, 48.0));
+                                app.tear_off(id, at);
                             }
                             if let Some(a) = group_action.take() {
                                 app.tab_group_action(a);
@@ -228,6 +251,7 @@ pub fn tab_strip(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                                     usize::MAX,
                                     cap,
                                     tab_h,
+                                    false,
                                 );
                                 if changed && app.combine_showing() {
                                     response.scroll_to_me(Some(Align::Center));
@@ -527,6 +551,7 @@ fn tab(
     index: usize,
     cap: Option<f32>,
     height: f32,
+    draggable: bool,
 ) -> egui::Response {
     let font = theme::regular(13.0);
     let mut label = tab_name(name);
@@ -545,7 +570,8 @@ fn tab(
     let height = ui.available_height().max(height);
     let (rect, _) = ui.allocate_exact_size(vec2(width, height), Sense::hover());
     let a11y = if dirty { format!("{name} (edited)") } else { name.to_string() };
-    let resp = craft_ui::tabs::Tab::new(id, &a11y, active).focus_stroke(Stroke::new(1.0, t.accent)).show_at(ui, rect, |ui, resp| {
+    let sense = if draggable { Sense::click_and_drag() } else { Sense::click() };
+    let resp = craft_ui::tabs::Tab::new(id, &a11y, active).sense(sense).focus_stroke(Stroke::new(1.0, t.accent)).show_at(ui, rect, |ui, resp| {
         let press = theme::Press::track(ui, resp);
         let bg = if active {
             press.fill(t.chrome, t.chrome.lerp_to_gamma(t.hover, 0.65), t.hover)

@@ -11,7 +11,7 @@ use crate::{LeftPanel, PdfCraftApp, RightPanel, icons, widgets};
 /// The tools by what they are for. A catalogue group missing here (one added later) lands under
 /// Advanced, so the panel always lists the whole catalogue.
 const ESSENTIALS: &[&str] = &["edit", "organize", "combine", "compress", "export", "create"];
-const REVIEW: &[&str] = &["comment", "fill_sign", "stamp", "form", "compare"];
+const REVIEW: &[&str] = &["comment", "fill_sign", "measure", "stamp", "form", "compare"];
 const PROTECT: &[&str] = &["protect", "redact", "certificate"];
 
 fn sectioned(id: &str) -> bool {

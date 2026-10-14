@@ -2449,3 +2449,8 @@ watermark text	CONFIDENTIAL	GİZLİ
 	Downloading the update…	Güncelleme indiriliyor…
 	Couldn't install the update: {e}	Güncelleme yüklenemedi: {e}
 	Check for updates when NadsPDF starts (once a day)	NadsPDF başlarken güncellemeleri denetle (günde bir kez)
+	Open in New Window	Yeni pencerede aç
+	Or drag the tab out of the strip, to another screen for instance	Ya da sekmeyi çubuğun dışına, örneğin başka bir ekrana sürükleyin
+	Release to open in a new window	Yeni pencerede açmak için bırakın
+	Save this PDF before opening it in a new window.	Bu PDF'yi yeni pencerede açmadan önce kaydedin.
+	Save your changes before opening this PDF in a new window.	Bu PDF'yi yeni pencerede açmadan önce değişikliklerinizi kaydedin.

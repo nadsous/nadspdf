@@ -3590,6 +3590,7 @@ dependencies = [
  "pdfcraft-engine",
  "pdfcraft-ui-egui",
  "pollster 1.0.1",
+ "ron",
  "rustls-native-certs",
  "serde_json",
  "sha2",

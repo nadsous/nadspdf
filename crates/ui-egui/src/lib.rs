@@ -130,6 +130,7 @@ pub mod scroll_speed;
 mod system_fonts;
 mod tab_context;
 pub mod tab_groups;
+pub mod tear_off;
 pub mod theme;
 pub mod ui_scale;
 pub mod updates;
@@ -486,6 +487,15 @@ pub struct PdfCraftApp {
     pub bubbles: bubbles::Bubbles,
     /// The tab strip's rectangle last frame: a bubble dropped there docks.
     pub(crate) strip_rect: egui::Rect,
+    /// A document tab being dragged (see `tear_off`).
+    pub(crate) tab_drag: Option<tear_off::TabDrag>,
+    /// Opens a saved PDF in a new window (the desktop app sets it; see `tear_off`).
+    pub open_in_new_window: Option<tear_off::NewWindow>,
+    /// This window was opened for a tab torn off another one: it doesn't save settings or the session.
+    pub secondary_window: bool,
+    /// Where to move this window on its first frame (screen pixels): a torn-off tab's window
+    /// goes where the tab was dropped, not where the saved window state would put it.
+    pub place_window_at: Option<[f32; 2]>,
     /// A bubble's document view is being drawn (it has no tool bar of its own).
     pub(crate) in_bubble: bool,
     pub(crate) closed_tabs: Vec<String>,
@@ -931,6 +941,10 @@ impl PdfCraftApp {
             update_source: None,
             update_installer: None,
             updates_from_store: false,
+            tab_drag: None,
+            open_in_new_window: None,
+            secondary_window: false,
+            place_window_at: None,
             updates: updates::Updates::default(),
             printer_source: None,
             print_tasks: print_ui::PrintTasks::default(),
@@ -1898,6 +1912,27 @@ impl PdfCraftApp {
         }
     }
 
+    /// Move a torn-off tab's window where the tab was dropped ([`Self::place_window_at`]). Not on
+    /// the first frames: until the window has been shown, it doesn't know its screen's scale yet
+    /// (it reads 100 % on a 150 % screen), and the position would land scaled.
+    fn place_window(&mut self, ctx: &egui::Context) {
+        const SETTLE_PASSES: u64 = 3;
+        let Some([x, y]) = self.place_window_at else { return };
+        if ctx.cumulative_pass_nr() < SETTLE_PASSES {
+            ctx.request_repaint();
+            return;
+        }
+        self.place_window_at = None;
+        let ppp = ctx.pixels_per_point();
+        if !(ppp.is_finite() && ppp > 0.0) {
+            return;
+        }
+        ctx.send_viewport_cmd(egui::ViewportCommand::Maximized(false));
+        ctx.send_viewport_cmd(egui::ViewportCommand::InnerSize(egui::vec2(1280.0, 860.0)));
+        // Physical pixels in, points out: winit scales back with this window's own factor.
+        ctx.send_viewport_cmd(egui::ViewportCommand::OuterPosition(egui::pos2(x / ppp, y / ppp)));
+    }
+
     pub fn notify(&mut self, msg: impl Into<String>) {
         self.toast = Some((msg.into(), 0.0));
     }
@@ -2818,11 +2853,15 @@ impl eframe::App for PdfCraftApp {
     }
 
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
-        storage.set_string("pdfcraft", self.persist());
+        // A window opened for one torn-off tab leaves the settings and the session to the main one.
+        if !self.secondary_window {
+            storage.set_string("pdfcraft", self.persist());
+        }
     }
 
     fn logic(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         self.ctx = Some(ctx.clone());
+        self.place_window(ctx);
         self.dialog_epoch();
         // Notices raised outside `ui` (opened files, OS events, the control channel) translate too.
         let lang = i18n::Lang::from_pref(&self.language);
@@ -3060,6 +3099,7 @@ impl eframe::App for PdfCraftApp {
             }
         });
         bubbles::show(self, &ctx, self.strip_rect);
+        tear_off::update(self, &ctx);
         self.process_pending_edits();
         palette::show(self, &ctx);
         dialogs::show(self, &ctx);

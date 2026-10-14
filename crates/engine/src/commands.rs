@@ -228,7 +228,7 @@ pub const COMMANDS: &[CommandSpec] = &[
     // is unchanged. A preference, so it needs no document.
     c("view.dark_pages", "Dark pages", VIEW, Some(Shortcut::cmd_shift("D")), Nothing, "moon"),
     // Gathers the active tab into a new, coloured tab group (the tab menu does more).
-    c("view.group_tab", "Add Tab to New Group", VIEW, Some(Shortcut::cmd_shift("G")), Document, "folder-plus"),
+    c("view.group_tab", "Add Tab to New Group", VIEW, Some(Shortcut::cmd_shift("K")), Document, "folder-plus"),
     c("comment.list", "Comments panel", VIEW, None, Document, "message-square-text"),
     c("comment.note", "Add a sticky note", None, None, Annotate, "sticky-note"),
     c("comment.freetext", "Add a text box", None, None, Annotate, "type"),

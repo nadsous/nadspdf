@@ -746,6 +746,34 @@ mod tests {
     use super::*;
     use egui::os::OperatingSystem;
 
+    /// A command's shortcut would swallow a key the document view handles itself (Ctrl+Shift+G
+    /// once went to tab groups and Find previous stopped working).
+    #[test]
+    fn command_shortcuts_leave_the_document_views_keys_alone() {
+        let view = [
+            ACTUAL_SIZE,
+            PAGE_LEVEL,
+            FIT_WIDTH,
+            ZOOM_IN,
+            ZOOM_OUT,
+            ROTATE_CW,
+            ROTATE_CCW,
+            PREV_VIEW,
+            NEXT_VIEW,
+            FIND_NEXT,
+            FIND_PREV,
+            COPY,
+            SELECT_ALL,
+            PAGE_PREV,
+            PAGE_NEXT,
+        ];
+        for c in pdfcraft_engine::commands::COMMANDS {
+            if let Some(s) = c.shortcut {
+                assert!(!view.contains(&s), "{} takes {}, a document view key", c.id, s.label(false));
+            }
+        }
+    }
+
     #[test]
     fn localized_shortcut_labels_follow_language_and_platform() {
         let previous = crate::i18n::current();

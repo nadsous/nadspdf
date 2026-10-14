@@ -21,6 +21,9 @@ pdfcraft-engine = { workspace = true }
 eframe = { workspace = true, features = ["default_fonts", "wgpu", "glow", "accesskit", "wayland", "x11", "persistence", "links"] }
 egui = { workspace = true }
 serde_json = { workspace = true }
+# Reads eframe's settings file (RON) to give a torn-off tab's window a copy without the saved
+# window state (src/main.rs). Already in the tree through eframe's persistence.
+ron = "0.12"
 # Records from every crate go to standard error and the log file (src/logging.rs).
 log = { workspace = true }
 

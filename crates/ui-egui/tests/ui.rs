@@ -1279,3 +1279,86 @@ fn a_tab_floats_as_a_bubble_folds_into_a_head_and_docks_again() {
     assert_eq!(h.state().active, Some(1));
     h.get_by_label("b.pdf");
 }
+
+/// A stand-in for the desktop app's new window: records what it was asked to open.
+/// The windows asked for: each file and where.
+type Opened = std::sync::Arc<std::sync::Mutex<Vec<(String, Option<[f32; 2]>)>>>;
+
+fn record_new_windows(app: &mut PdfCraftApp) -> Opened {
+    let opened = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+    let log = opened.clone();
+    app.open_in_new_window = Some(std::sync::Arc::new(move |path: &std::path::Path, at: Option<[f32; 2]>| {
+        log.lock().map_err(|e| e.to_string())?.push((path.display().to_string(), at));
+        Ok(())
+    }));
+    opened
+}
+
+fn drag_tab(h: &mut Harness<'static, PdfCraftApp>, name: &str, to: egui::Pos2) {
+    let from = h.get_by_label(name).rect().center();
+    h.hover_at(from);
+    h.run_steps(1);
+    h.drag_at(from);
+    h.run_steps(1);
+    for k in 1..=8 {
+        h.hover_at(from + (to - from) * (k as f32 / 8.0));
+        h.run_steps(1);
+    }
+    h.drop_at(to);
+    h.run_steps(4);
+}
+
+#[test]
+fn a_tab_dragged_out_of_the_strip_opens_in_a_new_window() {
+    let opened = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+    let shared = opened.clone();
+    let mut h = harness(move |app| {
+        let log = record_new_windows(app);
+        *shared.lock().unwrap() = vec![log];
+        for name in ["a.pdf", "b.pdf"] {
+            app.open_bytes(name, Some(format!(r"C:\docs\{name}")), FIXTURE.to_vec()).unwrap();
+        }
+    });
+    let log = opened.lock().unwrap()[0].clone();
+    // Along the strip: nothing tears off.
+    let along = h.get_by_label("a.pdf").rect().center() + egui::vec2(60.0, 0.0);
+    drag_tab(&mut h, "b.pdf", along);
+    assert!(log.lock().unwrap().is_empty());
+    assert_eq!(h.state().views.len(), 2);
+    // Into the page: b.pdf opens in its own window and its tab here closes.
+    drag_tab(&mut h, "b.pdf", egui::pos2(700.0, 500.0));
+    let got = log.lock().unwrap().clone();
+    assert_eq!(got.len(), 1, "{got:?}");
+    assert_eq!(got[0].0, r"C:\docs\b.pdf");
+    assert_eq!(h.state().views.len(), 1);
+    assert!(h.query_by_label("b.pdf").is_none());
+
+    // The tab menu does the same.
+    h.get_by_label("a.pdf").click_secondary();
+    h.run_steps(3);
+    h.get_by_label("Open in New Window").click();
+    h.run_steps(4);
+    assert_eq!(log.lock().unwrap().len(), 2);
+    assert!(h.state().views.is_empty());
+}
+
+#[test]
+fn unsaved_or_never_saved_documents_stay_and_ask_to_be_saved() {
+    let opened = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+    let shared = opened.clone();
+    let mut h = harness(move |app| {
+        *shared.lock().unwrap() = vec![record_new_windows(app)];
+        app.open_bytes("new.pdf", None, FIXTURE.to_vec()).unwrap();
+        app.open_bytes("edited.pdf", Some(r"C:\docs\edited.pdf".into()), FIXTURE.to_vec()).unwrap();
+    });
+    let log = opened.lock().unwrap()[0].clone();
+    drag_tab(&mut h, "new.pdf", egui::pos2(700.0, 500.0));
+    h.get_by_label_contains("Save this PDF before opening it in a new window");
+    h.state_mut().active = Some(1);
+    h.state_mut().execute("page.rotate");
+    h.run_steps(3);
+    drag_tab(&mut h, "edited.pdf (edited)", egui::pos2(700.0, 500.0));
+    h.get_by_label_contains("Save your changes before opening this PDF in a new window");
+    assert!(log.lock().unwrap().is_empty());
+    assert_eq!(h.state().views.len(), 2);
+}

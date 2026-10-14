@@ -2452,3 +2452,8 @@ watermark text	CONFIDENTIAL	BIZALMAS
 	Downloading the update…	A frissítés letöltése…
 	Couldn't install the update: {e}	Nem sikerült telepíteni a frissítést: {e}
 	Check for updates when NadsPDF starts (once a day)	Frissítések keresése a NadsPDF indításakor (naponta egyszer)
+	Open in New Window	Megnyitás új ablakban
+	Or drag the tab out of the strip, to another screen for instance	Vagy húzza ki a lapot a sávból, például egy másik képernyőre
+	Release to open in a new window	Engedje el az új ablakban való megnyitáshoz
+	Save this PDF before opening it in a new window.	Mentse a PDF-et, mielőtt új ablakban nyitja meg.
+	Save your changes before opening this PDF in a new window.	Mentse a módosításokat, mielőtt új ablakban nyitja meg ezt a PDF-et.

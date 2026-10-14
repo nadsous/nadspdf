@@ -2453,3 +2453,8 @@ watermark text	CONFIDENTIAL	社外秘
 	Downloading the update…	アップデートをダウンロードしています…
 	Couldn't install the update: {e}	アップデートをインストールできませんでした: {e}
 	Check for updates when NadsPDF starts (once a day)	NadsPDF の起動時にアップデートを確認する（1 日 1 回）
+	Open in New Window	新しいウィンドウで開く
+	Or drag the tab out of the strip, to another screen for instance	またはタブをバーの外へドラッグします（別の画面へなど）
+	Release to open in a new window	離すと新しいウィンドウで開きます
+	Save this PDF before opening it in a new window.	新しいウィンドウで開く前にこの PDF を保存してください。
+	Save your changes before opening this PDF in a new window.	新しいウィンドウでこの PDF を開く前に変更を保存してください。

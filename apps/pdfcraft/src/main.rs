@@ -182,6 +182,8 @@ struct Args {
     create_images: bool,
     new_window: bool,
     combine: bool,
+    /// `--window-at X,Y`: where to put the window (screen pixels), for a tab torn off another window.
+    window_at: Option<[f32; 2]>,
 }
 
 /// Read the command line (without the program name). The first of `--version`,
@@ -198,6 +200,7 @@ fn parse_args(args: impl IntoIterator<Item = String>) -> Parsed {
             "--control" => out.control_file = args.next(),
             "--create-images" => out.create_images = true,
             "--new-window" => out.new_window = true,
+            "--window-at" => out.window_at = args.next().as_deref().and_then(window_at),
             "--combine" => out.combine = true,
             flag if flag.starts_with("--") => {
                 let value = args.next().unwrap_or_default();
@@ -207,6 +210,24 @@ fn parse_args(args: impl IntoIterator<Item = String>) -> Parsed {
         }
     }
     Parsed::Run(out)
+}
+
+/// `X,Y` screen pixels, each finite and within a plausible desktop.
+fn window_at(value: &str) -> Option<[f32; 2]> {
+    let (x, y) = value.split_once(',')?;
+    let parse = |v: &str| v.trim().parse::<f32>().ok().filter(|v| v.is_finite() && v.abs() <= 100_000.0);
+    Some([parse(x)?, parse(y)?])
+}
+
+/// Open `path` in a new NadsPDF window near `at` (a tab torn off this one).
+fn open_in_new_window(path: &std::path::Path, at: Option<[f32; 2]>) -> Result<(), String> {
+    let exe = std::env::current_exe().map_err(|e| format!("couldn't find NadsPDF's own path ({e})"))?;
+    let mut command = std::process::Command::new(exe);
+    command.arg("--new-window");
+    if let Some([x, y]) = at {
+        command.arg("--window-at").arg(format!("{x},{y}"));
+    }
+    command.arg(path).spawn().map(drop).map_err(|e| format!("couldn't open a new window ({e})"))
 }
 
 fn main() -> eframe::Result {
@@ -229,7 +250,7 @@ fn main() -> eframe::Result {
             let _ = std::io::Write::write_fmt(&mut std::io::stderr(), format_args!("pdfcraft: {report}\n"));
         }
     }));
-    let Args { files, options, control_file, create_images, new_window, combine } = match parse_args(std::env::args().skip(1)) {
+    let Args { files, options, control_file, create_images, new_window, combine, window_at } = match parse_args(std::env::args().skip(1)) {
         Parsed::Version => {
             println!("pdfcraft {}", pdfcraft_engine::build_info::version());
             return Ok(());
@@ -271,7 +292,7 @@ fn main() -> eframe::Result {
         single_instance::Claim::Alone => (None, files),
     };
     let choice = renderer_choice(std::env::var("PDFCRAFT_RENDERER").ok().as_deref());
-    let launch = Launch { files, options, control_file, create_images, combine, integrated, window_controls };
+    let launch = Launch { files, options, control_file, create_images, combine, integrated, window_controls, window_at };
     // Finder, Open With and the Dock deliver files as Apple events, not arguments; catch the one
     // that launched us as well as later ones. Lives until the event loop returns.
     #[cfg(target_os = "macos")]
@@ -281,7 +302,7 @@ fn main() -> eframe::Result {
     let first = if choice == RendererChoice::Gl { eframe::Renderer::Glow } else { eframe::Renderer::Wgpu };
     let result = eframe::run_native(
         "NadsPDF",
-        native_options(launch.integrated, launch.window_controls.is_some(), first),
+        native_options(launch.integrated, launch.window_controls.is_some(), first, launch.window_at),
         app_creator(
             launch.clone(),
             Rc::clone(&started),
@@ -299,7 +320,7 @@ fn main() -> eframe::Result {
             log::error!("the GPU renderer (wgpu) didn't start: {e}. Starting with OpenGL instead; set PDFCRAFT_RENDERER=gl to skip wgpu.");
             eframe::run_native(
                 "NadsPDF",
-                native_options(launch.integrated, launch.window_controls.is_some(), eframe::Renderer::Glow),
+                native_options(launch.integrated, launch.window_controls.is_some(), eframe::Renderer::Glow, launch.window_at),
                 app_creator(
                     launch,
                     started,
@@ -364,7 +385,7 @@ fn retry_with_gl(choice: RendererChoice, app_started: bool) -> bool {
 }
 
 /// The window and renderer settings for one run.
-fn native_options(integrated: bool, app_frame: bool, renderer: eframe::Renderer) -> eframe::NativeOptions {
+fn native_options(integrated: bool, app_frame: bool, renderer: eframe::Renderer, at: Option<[f32; 2]>) -> eframe::NativeOptions {
     let mut viewport = egui::ViewportBuilder::default()
         .with_title("NadsPDF")
         .with_inner_size([1440.0, 920.0])
@@ -384,13 +405,35 @@ fn native_options(integrated: bool, app_frame: bool, renderer: eframe::Renderer)
         // The tab strip is the title bar (pdfcraft_ui_egui::window_controls).
         viewport = viewport.with_decorations(false);
     }
-    let persistence_path = settings_dir().map(|d| d.join("app.ron"));
+    let main_settings = settings_dir().map(|d| d.join("app.ron"));
+    // A torn-off tab's window reads a copy of the settings without the saved window, which would
+    // otherwise open it maximized where the main window is (it is then moved where the tab was
+    // dropped); the main window's file is never written by it.
+    let persistence_path = if at.is_some() { main_settings.as_deref().and_then(settings_without_window).or(main_settings) } else { main_settings };
     // Set explicitly, so the renderer never depends on which one eframe defaults to.
     let mut native = eframe::NativeOptions { viewport, persistence_path, renderer, ..Default::default() };
+    // A window placed by `--window-at` (moved there on its first frame) doesn't save its place
+    // over the main window's.
+    native.persist_window = at.is_none();
     if renderer == eframe::Renderer::Wgpu {
         configure_gpu(&mut native);
     }
     native
+}
+
+/// A copy of the settings file `main` without its saved window state, for a torn-off tab's window.
+fn settings_without_window(main: &std::path::Path) -> Option<std::path::PathBuf> {
+    // The file is small (settings), but it is read from disk: cap it.
+    const MAX: u64 = 16 << 20;
+    if std::fs::metadata(main).ok()?.len() > MAX {
+        return None;
+    }
+    let text = std::fs::read_to_string(main).ok()?;
+    let mut entries: std::collections::HashMap<String, String> = ron::from_str(&text).ok()?;
+    entries.remove("window");
+    let copy = std::env::temp_dir().join("nadspdf-torn-off-window.ron");
+    std::fs::write(&copy, ron::to_string(&entries).ok()?).ok()?;
+    Some(copy)
 }
 
 /// What the command line asked for, kept so a second run (with OpenGL) can start the same way.
@@ -406,6 +449,7 @@ struct Launch {
     integrated: bool,
     /// The window buttons the app draws, when the desktop leaves the frame to it.
     window_controls: Option<pdfcraft_ui_egui::window_controls::Layout>,
+    window_at: Option<[f32; 2]>,
 }
 
 fn app_creator<'a>(
@@ -414,7 +458,7 @@ fn app_creator<'a>(
     instance: Option<&'a single_instance::Server>,
     #[cfg(target_os = "macos")] apple_events: &'a apple_events::AppleEvents,
 ) -> eframe::AppCreator<'a> {
-    let Launch { files, options, control_file, create_images, combine, integrated, window_controls } = launch;
+    let Launch { files, options, control_file, create_images, combine, integrated, window_controls, window_at } = launch;
     Box::new(move |cc| {
         started.set(true);
         let mut app = PdfCraftApp::new();
@@ -439,6 +483,7 @@ fn app_creator<'a>(
         app.update_source = Some(std::sync::Arc::new(updates::latest_release));
         // The MSI's copy installs new versions itself; the Store's is updated by the Store.
         app.updates_from_store = updates::running_from_store();
+        app.open_in_new_window = Some(std::sync::Arc::new(open_in_new_window));
         if updates::can_install() {
             app.update_installer = Some(std::sync::Arc::new(updates::install));
         }
@@ -486,6 +531,14 @@ fn app_creator<'a>(
         } else if combine {
             app.reopen_last_files(&[]);
             app.combine_paths(&files);
+        } else if window_at.is_some() && !files.is_empty() {
+            // A tab torn off another window: that file only, and the main window keeps the
+            // settings and the session.
+            app.secondary_window = true;
+            app.place_window_at = window_at;
+            for f in files {
+                app.open_path(&f);
+            }
         } else {
             // With the preference on, last session's files come back first; files named on
             // the command line open after them, in front (#442).
@@ -864,6 +917,13 @@ mod tests {
             })
         );
         assert_eq!(parse_args(args(&["a.pdf"])), Parsed::Run(Args { files: args(&["a.pdf"]), ..Args::default() }));
+        assert_eq!(
+            parse_args(args(&["--new-window", "--window-at", "-1910.5,240", "a.pdf"])),
+            Parsed::Run(Args { files: args(&["a.pdf"]), new_window: true, window_at: Some([-1910.5, 240.0]), ..Args::default() })
+        );
+        for bad in ["", "12", "x,3", "1,NaN", "inf,0", "1e9,0"] {
+            assert_eq!(super::window_at(bad), None, "{bad}");
+        }
         assert_eq!(parse_args(args(&["--register-shell"])), Parsed::ExplorerMenu(true));
         assert_eq!(parse_args(args(&["a.pdf", "--unregister-shell", "b.pdf"])), Parsed::ExplorerMenu(false));
         assert_eq!(parse_args(args(&["--version", "--register-shell"])), Parsed::Version);
@@ -929,15 +989,15 @@ mod tests {
         assert!(!retry_with_gl(RendererChoice::Wgpu, false));
         assert!(!retry_with_gl(RendererChoice::Gl, false));
         // Each run states its renderer rather than relying on eframe's default.
-        assert_eq!(native_options(false, false, eframe::Renderer::Wgpu).renderer, eframe::Renderer::Wgpu);
-        assert_eq!(native_options(false, false, eframe::Renderer::Glow).renderer, eframe::Renderer::Glow);
+        assert_eq!(native_options(false, false, eframe::Renderer::Wgpu, None).renderer, eframe::Renderer::Wgpu);
+        assert_eq!(native_options(false, false, eframe::Renderer::Glow, None).renderer, eframe::Renderer::Glow);
     }
 
     #[test]
     fn the_desktop_frame_is_turned_off_only_when_the_app_draws_one() {
         use super::native_options;
-        assert_eq!(native_options(false, false, eframe::Renderer::Glow).viewport.decorations, None);
-        assert_eq!(native_options(false, true, eframe::Renderer::Glow).viewport.decorations, Some(false));
+        assert_eq!(native_options(false, false, eframe::Renderer::Glow, None).viewport.decorations, None);
+        assert_eq!(native_options(false, true, eframe::Renderer::Glow, None).viewport.decorations, Some(false));
     }
 
     #[test]
@@ -1088,7 +1148,7 @@ mod tests {
         // than the device allows.
         use eframe::wgpu;
         let _gpu = gpu();
-        let native = super::native_options(false, false, eframe::Renderer::Wgpu);
+        let native = super::native_options(false, false, eframe::Renderer::Wgpu, None);
         let eframe::egui_wgpu::WgpuSetup::CreateNew(setup) = &native.wgpu_options.wgpu_setup else {
             panic!("default setup creates its own instance")
         };
@@ -1155,7 +1215,7 @@ mod tests {
     fn pipeline_creation_error_is_returned_and_device_remains_usable() {
         use eframe::{egui_wgpu, wgpu};
         let _gpu = gpu();
-        let mut native = super::native_options(false, false, eframe::Renderer::Wgpu);
+        let mut native = super::native_options(false, false, eframe::Renderer::Wgpu, None);
         let egui_wgpu::WgpuSetup::CreateNew(setup) = &native.wgpu_options.wgpu_setup else { panic!("default setup creates its own instance") };
         let instance = pollster::block_on(native.wgpu_options.wgpu_setup.new_instance());
         let options = wgpu::RequestAdapterOptions { power_preference: setup.power_preference, ..Default::default() };

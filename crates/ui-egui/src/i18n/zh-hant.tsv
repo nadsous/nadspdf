@@ -2327,3 +2327,8 @@ watermark text	CONFIDENTIAL	機密
 	Downloading the update…	正在下載更新…
 	Couldn't install the update: {e}	無法安裝更新：{e}
 	Check for updates when NadsPDF starts (once a day)	啟動 NadsPDF 時檢查更新（每天一次）
+	Open in New Window	在新視窗中開啟
+	Or drag the tab out of the strip, to another screen for instance	或將分頁拖出分頁列，例如拖到另一個螢幕
+	Release to open in a new window	放開即可在新視窗中開啟
+	Save this PDF before opening it in a new window.	請先儲存此 PDF，再在新視窗中開啟。
+	Save your changes before opening this PDF in a new window.	請先儲存變更，再在新視窗中開啟此 PDF。

@@ -2366,3 +2366,8 @@ watermark text	CONFIDENTIAL	КОНФИДЕНЦИАЛЬНО
 	Downloading the update…	Загрузка обновления…
 	Couldn't install the update: {e}	Не удалось установить обновление: {e}
 	Check for updates when NadsPDF starts (once a day)	Проверять обновления при запуске NadsPDF (раз в день)
+	Open in New Window	Открыть в новом окне
+	Or drag the tab out of the strip, to another screen for instance	Или перетащите вкладку за пределы панели, например на другой экран
+	Release to open in a new window	Отпустите, чтобы открыть в новом окне
+	Save this PDF before opening it in a new window.	Сохраните этот PDF, прежде чем открывать его в новом окне.
+	Save your changes before opening this PDF in a new window.	Сохраните изменения, прежде чем открывать этот PDF в новом окне.

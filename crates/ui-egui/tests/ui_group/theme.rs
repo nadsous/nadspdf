@@ -51,19 +51,20 @@ fn open_view_menu(h: &mut Harness<'static, PdfCraftApp>) {
 #[test]
 fn toolbar_and_view_menu_share_three_state_preferences() {
     let mut h = harness();
-    // Explicit light wins even on a dark desktop, including egui's popup style.
-    assert_theme(&h, ThemePreference::Light, ThemeKind::Light);
-    click_toolbar(&mut h, "Light gray");
+    // NadsPDF starts dark.
     assert_theme(&h, ThemePreference::Dark, ThemeKind::Dark);
     click_toolbar(&mut h, "Dark gray");
     assert_theme(&h, ThemePreference::System, ThemeKind::Dark);
+    click_toolbar(&mut h, "Use system setting");
+    // Explicit light wins even on a dark desktop, including egui's popup style.
+    assert_theme(&h, ThemePreference::Light, ThemeKind::Light);
 
     open_view_menu(&mut h);
-    h.get_by_label("Light gray").click();
+    h.get_by_label("Dark gray").click();
     h.run_steps(3);
-    assert_theme(&h, ThemePreference::Light, ThemeKind::Light);
-    click_toolbar(&mut h, "Light gray");
     assert_theme(&h, ThemePreference::Dark, ThemeKind::Dark);
+    click_toolbar(&mut h, "Dark gray");
+    assert_theme(&h, ThemePreference::System, ThemeKind::Dark);
 
     open_view_menu(&mut h);
     h.get_by_label("Use system setting").click();
@@ -116,11 +117,12 @@ fn commands_and_options_apply_before_the_first_frame() {
     assert_eq!(app.theme, ThemeKind::Dark);
     app.run_command("view.theme.system");
     assert_eq!(app.theme_preference, ThemePreference::System);
-    assert_eq!(app.theme, ThemeKind::Light);
+    // Before the first frame the desktop's theme is unknown: NadsPDF is dark then.
+    assert_eq!(app.theme, ThemeKind::Dark);
     // The existing palette/control toggle also goes through the preference setter.
     app.run_command("view.theme");
-    assert_eq!(app.theme_preference, ThemePreference::Dark);
-    assert_eq!(app.theme, ThemeKind::Dark);
+    assert_eq!(app.theme_preference, ThemePreference::Light);
+    assert_eq!(app.theme, ThemeKind::Light);
     app.run_command("view.theme.light");
     app.set_option("theme", "dark").unwrap();
     assert!(app.set_option("theme", "purple").unwrap_err().contains("light, dark, or system"));
@@ -139,7 +141,7 @@ fn restored_system_tracks_native_input_without_rewriting_saved_preference() {
     for (input, expected) in [
         (Some(egui::Theme::Dark), ThemeKind::Dark),
         (Some(egui::Theme::Light), ThemeKind::Light),
-        (None, ThemeKind::Light),
+        (None, ThemeKind::Dark),
         (Some(egui::Theme::Dark), ThemeKind::Dark),
     ] {
         h.input_mut().system_theme = input;
@@ -158,11 +160,11 @@ fn restored_system_tracks_native_input_without_rewriting_saved_preference() {
 }
 
 #[test]
-fn unknown_system_uses_light_after_a_manual_dark_choice() {
+fn unknown_system_uses_dark_after_a_manual_light_choice() {
     let mut app = PdfCraftApp::new();
-    app.set_theme_preference(ThemePreference::Dark);
+    app.set_theme_preference(ThemePreference::Light);
     app.set_theme_preference(ThemePreference::System);
-    assert_eq!(app.theme, ThemeKind::Light);
+    assert_eq!(app.theme, ThemeKind::Dark);
     assert_eq!(serde_json::from_str::<serde_json::Value>(&app.persist()).unwrap()["theme"], "System");
 }
 

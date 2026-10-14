@@ -2463,3 +2463,8 @@ watermark text	CONFIDENTIAL	ΕΜΠΙΣΤΕΥΤΙΚΟ
 	Downloading the update…	Λήψη της ενημέρωσης…
 	Couldn't install the update: {e}	Δεν ήταν δυνατή η εγκατάσταση της ενημέρωσης: {e}
 	Check for updates when NadsPDF starts (once a day)	Έλεγχος για ενημερώσεις κατά την εκκίνηση του NadsPDF (μία φορά την ημέρα)
+	Open in New Window	Άνοιγμα σε νέο παράθυρο
+	Or drag the tab out of the strip, to another screen for instance	Ή σύρετε την καρτέλα έξω από τη γραμμή, π.χ. σε άλλη οθόνη
+	Release to open in a new window	Αφήστε για άνοιγμα σε νέο παράθυρο
+	Save this PDF before opening it in a new window.	Αποθηκεύστε αυτό το PDF πριν το ανοίξετε σε νέο παράθυρο.
+	Save your changes before opening this PDF in a new window.	Αποθηκεύστε τις αλλαγές πριν ανοίξετε αυτό το PDF σε νέο παράθυρο.

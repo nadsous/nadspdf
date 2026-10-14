@@ -1178,10 +1178,11 @@ fn undo_and_redo_restore_the_combine_list() {
     assert_eq!(combine_names(&h), ["a.pdf", "b.pdf", "c.pdf"]);
     // A page range typed in is one step.
     h.state_mut().combine_draft[0].range.clear();
-    let field = h.get_all_by_role(Role::TextInput).next().unwrap();
+    // The page-range field, not the tool list's filter field.
+    let field = h.query_all_by(|n| n.placeholder() == Some("All pages")).next().unwrap();
     field.focus();
     h.run_steps(1);
-    h.get_all_by_role(Role::TextInput).next().unwrap().type_text("1");
+    h.query_all_by(|n| n.placeholder() == Some("All pages")).next().unwrap().type_text("1");
     h.run_steps(2);
     assert_eq!(h.state().combine_draft[0].range, "1");
     h.key_press_modifiers(Modifiers::COMMAND, Key::Z);

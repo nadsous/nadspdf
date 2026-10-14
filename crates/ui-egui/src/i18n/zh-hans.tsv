@@ -2417,3 +2417,8 @@ watermark text	CONFIDENTIAL	机密
 	Downloading the update…	正在下载更新…
 	Couldn't install the update: {e}	无法安装更新：{e}
 	Check for updates when NadsPDF starts (once a day)	启动 NadsPDF 时检查更新（每天一次）
+	Open in New Window	在新窗口中打开
+	Or drag the tab out of the strip, to another screen for instance	或将标签页拖出标签栏，例如拖到另一块屏幕
+	Release to open in a new window	松开即可在新窗口中打开
+	Save this PDF before opening it in a new window.	请先保存此 PDF，再在新窗口中打开。
+	Save your changes before opening this PDF in a new window.	请先保存更改，再在新窗口中打开此 PDF。
