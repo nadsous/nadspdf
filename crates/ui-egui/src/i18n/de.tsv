@@ -2469,3 +2469,22 @@ watermark text	CONFIDENTIAL	VERTRAULICH
 	Whole document	Gesamtes Dokument
 	Total area	Gesamtfläche
 	Total length	Gesamtlänge
+# Extensions (Preferences ▸ Extensions, extension message bars)
+	Know when you open or close a document (its name and number of pages)	Erfahren, wann Sie ein Dokument öffnen oder schließen (Name und Seitenzahl)
+	Read the text of the documents you open	Den Text der geöffneten Dokumente lesen
+	Know where the documents you open are saved	Erfahren, wo die geöffneten Dokumente gespeichert sind
+	Show a message bar with buttons above a document	Über einem Dokument eine Meldungsleiste mit Schaltflächen anzeigen
+	Open web pages on the sites it lists	Webseiten auf den angegebenen Websites öffnen
+	Extensions	Erweiterungen
+	This extension can't be used: {e}	Diese Erweiterung kann nicht verwendet werden: {e}
+	Extensions folder: {path}	Ordner für Erweiterungen: {path}
+	Turn off	Ausschalten
+	Turn on…	Einschalten…
+	On	Ein
+	Stopped: {e}	Beendet: {e}
+	On at the next start	Ein ab dem nächsten Start
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} ist ein Programm, das auf diesem Computer mit Ihren Rechten läuft. Es kann:
+	• Nothing beyond running.	• Nichts außer laufen.
+	Only turn on extensions you trust.	Schalten Sie nur Erweiterungen ein, denen Sie vertrauen.
+	Turn on	Einschalten
+	Couldn't save the extension settings: {e}	Die Einstellungen der Erweiterungen konnten nicht gespeichert werden: {e}

@@ -2478,3 +2478,22 @@ watermark text	CONFIDENTIAL	ΕΜΠΙΣΤΕΥΤΙΚΟ
 	Whole document	Όλο το έγγραφο
 	Total area	Συνολικό εμβαδόν
 	Total length	Συνολικό μήκος
+# Extensions (Preferences ▸ Extensions, extension message bars)
+	Know when you open or close a document (its name and number of pages)	Να γνωρίζει πότε ανοίγετε ή κλείνετε ένα έγγραφο (το όνομα και τον αριθμό σελίδων του)
+	Read the text of the documents you open	Να διαβάζει το κείμενο των εγγράφων που ανοίγετε
+	Know where the documents you open are saved	Να γνωρίζει πού είναι αποθηκευμένα τα έγγραφα που ανοίγετε
+	Show a message bar with buttons above a document	Να εμφανίζει πάνω από ένα έγγραφο μια γραμμή μηνύματος με κουμπιά
+	Open web pages on the sites it lists	Να ανοίγει ιστοσελίδες στους ιστότοπους που δηλώνει
+	Extensions	Επεκτάσεις
+	This extension can't be used: {e}	Αυτή η επέκταση δεν μπορεί να χρησιμοποιηθεί: {e}
+	Extensions folder: {path}	Φάκελος επεκτάσεων: {path}
+	Turn off	Απενεργοποίηση
+	Turn on…	Ενεργοποίηση…
+	On	Ενεργή
+	Stopped: {e}	Σταμάτησε: {e}
+	On at the next start	Ενεργή στην επόμενη εκκίνηση
+	{name} is a program that runs on this computer, with your rights. It will be able to:	Το {name} είναι πρόγραμμα που εκτελείται σε αυτόν τον υπολογιστή με τα δικαιώματά σας. Θα μπορεί:
+	• Nothing beyond running.	• Τίποτα πέρα από την εκτέλεση.
+	Only turn on extensions you trust.	Ενεργοποιείτε μόνο επεκτάσεις που εμπιστεύεστε.
+	Turn on	Ενεργοποίηση
+	Couldn't save the extension settings: {e}	Δεν ήταν δυνατή η αποθήκευση των ρυθμίσεων επεκτάσεων: {e}

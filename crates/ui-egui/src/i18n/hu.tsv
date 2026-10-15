@@ -2467,3 +2467,22 @@ watermark text	CONFIDENTIAL	BIZALMAS
 	Whole document	Teljes dokumentum
 	Total area	Teljes terület
 	Total length	Teljes hossz
+# Extensions (Preferences ▸ Extensions, extension message bars)
+	Know when you open or close a document (its name and number of pages)	Tudni, mikor nyit meg vagy zár be egy dokumentumot (a nevét és oldalszámát)
+	Read the text of the documents you open	Olvasni a megnyitott dokumentumok szövegét
+	Know where the documents you open are saved	Tudni, hová vannak mentve a megnyitott dokumentumok
+	Show a message bar with buttons above a document	Gombokkal ellátott üzenetsávot megjeleníteni egy dokumentum fölött
+	Open web pages on the sites it lists	Weboldalakat megnyitni az általa megadott webhelyeken
+	Extensions	Bővítmények
+	This extension can't be used: {e}	Ez a bővítmény nem használható: {e}
+	Extensions folder: {path}	Bővítmények mappája: {path}
+	Turn off	Kikapcsolás
+	Turn on…	Bekapcsolás…
+	On	Bekapcsolva
+	Stopped: {e}	Leállt: {e}
+	On at the next start	A következő indításkor bekapcsol
+	{name} is a program that runs on this computer, with your rights. It will be able to:	A(z) {name} egy program, amely ezen a számítógépen fut az Ön jogosultságaival. Képes lesz:
+	• Nothing beyond running.	• Semmire a futáson kívül.
+	Only turn on extensions you trust.	Csak megbízható bővítményeket kapcsoljon be.
+	Turn on	Bekapcsolás
+	Couldn't save the extension settings: {e}	Nem sikerült menteni a bővítmények beállításait: {e}

@@ -2466,3 +2466,22 @@ watermark text	CONFIDENTIAL	ҚҰПИЯ
 	Whole document	Бүкіл құжат
 	Total area	Жалпы аудан
 	Total length	Жалпы ұзындық
+# Extensions (Preferences ▸ Extensions, extension message bars)
+	Know when you open or close a document (its name and number of pages)	Құжатты қашан ашатыныңызды немесе жабатыныңызды білу (атауы мен беттер саны)
+	Read the text of the documents you open	Ашылған құжаттардың мәтінін оқу
+	Know where the documents you open are saved	Ашылған құжаттардың қайда сақталғанын білу
+	Show a message bar with buttons above a document	Құжаттың үстінде түймелері бар хабар жолағын көрсету
+	Open web pages on the sites it lists	Өзі көрсеткен сайттардағы веб-беттерді ашу
+	Extensions	Кеңейтімдер
+	This extension can't be used: {e}	Бұл кеңейтімді пайдалану мүмкін емес: {e}
+	Extensions folder: {path}	Кеңейтімдер қалтасы: {path}
+	Turn off	Өшіру
+	Turn on…	Қосу…
+	On	Қосулы
+	Stopped: {e}	Тоқтатылды: {e}
+	On at the next start	Келесі іске қосқанда қосылады
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} — осы компьютерде сіздің құқықтарыңызбен жұмыс істейтін бағдарлама. Ол мыналарды істей алады:
+	• Nothing beyond running.	• Жұмыс істеуден басқа ештеңе.
+	Only turn on extensions you trust.	Тек сенімді кеңейтімдерді қосыңыз.
+	Turn on	Қосу
+	Couldn't save the extension settings: {e}	Кеңейтімдер параметрлерін сақтау мүмкін болмады: {e}

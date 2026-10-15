@@ -2482,3 +2482,22 @@ watermark text	CONFIDENTIAL	CONFIDENCIAL
 	Whole document	Documento inteiro
 	Total area	Área total
 	Total length	Comprimento total
+# Extensions (Preferences ▸ Extensions, extension message bars)
+	Know when you open or close a document (its name and number of pages)	Saber quando você abre ou fecha um documento (nome e número de páginas)
+	Read the text of the documents you open	Ler o texto dos documentos que você abre
+	Know where the documents you open are saved	Saber onde os documentos que você abre estão salvos
+	Show a message bar with buttons above a document	Mostrar uma barra de mensagem com botões acima de um documento
+	Open web pages on the sites it lists	Abrir páginas da web nos sites que ela declara
+	Extensions	Extensões
+	This extension can't be used: {e}	Não é possível usar esta extensão: {e}
+	Extensions folder: {path}	Pasta de extensões: {path}
+	Turn off	Desativar
+	Turn on…	Ativar…
+	On	Ativada
+	Stopped: {e}	Parada: {e}
+	On at the next start	Ativada na próxima inicialização
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} é um programa executado neste computador com as suas permissões. Ele poderá:
+	• Nothing beyond running.	• Nada além de ser executado.
+	Only turn on extensions you trust.	Ative apenas extensões em que você confia.
+	Turn on	Ativar
+	Couldn't save the extension settings: {e}	Não foi possível salvar as configurações das extensões: {e}

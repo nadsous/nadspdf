@@ -2489,3 +2489,22 @@ watermark text	CONFIDENTIAL	سري
 	Whole document	المستند كله
 	Total area	المساحة الإجمالية
 	Total length	الطول الإجمالي
+# Extensions (Preferences ▸ Extensions, extension message bars)
+	Know when you open or close a document (its name and number of pages)	معرفة متى تفتح مستندًا أو تغلقه (اسمه وعدد صفحاته)
+	Read the text of the documents you open	قراءة نص المستندات التي تفتحها
+	Know where the documents you open are saved	معرفة مكان حفظ المستندات التي تفتحها
+	Show a message bar with buttons above a document	عرض شريط رسائل بأزرار فوق المستند
+	Open web pages on the sites it lists	فتح صفحات ويب على المواقع التي يذكرها
+	Extensions	الإضافات
+	This extension can't be used: {e}	لا يمكن استخدام هذه الإضافة: {e}
+	Extensions folder: {path}	مجلد الإضافات: {path}
+	Turn off	إيقاف
+	Turn on…	تشغيل…
+	On	قيد التشغيل
+	Stopped: {e}	متوقفة: {e}
+	On at the next start	تعمل عند التشغيل التالي
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} برنامج يعمل على هذا الكمبيوتر بصلاحياتك. سيتمكن من:
+	• Nothing beyond running.	• لا شيء سوى العمل.
+	Only turn on extensions you trust.	لا تشغّل إلا الإضافات التي تثق بها.
+	Turn on	تشغيل
+	Couldn't save the extension settings: {e}	تعذّر حفظ إعدادات الإضافات: {e}

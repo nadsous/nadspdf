@@ -2342,3 +2342,22 @@ watermark text	CONFIDENTIAL	機密
 	Whole document	整份文件
 	Total area	總面積
 	Total length	總長度
+# Extensions (Preferences ▸ Extensions, extension message bars)
+	Know when you open or close a document (its name and number of pages)	得知您何時開啟或關閉文件（文件名稱和頁數）
+	Read the text of the documents you open	讀取您開啟的文件的文字
+	Know where the documents you open are saved	得知您開啟的文件儲存在何處
+	Show a message bar with buttons above a document	在文件上方顯示帶按鈕的訊息列
+	Open web pages on the sites it lists	在其列出的網站上開啟網頁
+	Extensions	擴充功能
+	This extension can't be used: {e}	無法使用此擴充功能：{e}
+	Extensions folder: {path}	擴充功能資料夾：{path}
+	Turn off	關閉
+	Turn on…	啟用…
+	On	已啟用
+	Stopped: {e}	已停止：{e}
+	On at the next start	下次啟動時啟用
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} 是在此電腦上以您的權限執行的程式。它將能夠：
+	• Nothing beyond running.	• 僅執行，無其他權限。
+	Only turn on extensions you trust.	請只啟用您信任的擴充功能。
+	Turn on	啟用
+	Couldn't save the extension settings: {e}	無法儲存擴充功能設定：{e}

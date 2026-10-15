@@ -510,6 +510,11 @@ fn app_creator<'a>(
         if let Some(dir) = pdfcraft_ui_egui::RecoveryStore::default_dir() {
             app.enable_recovery(pdfcraft_ui_egui::RecoveryStore::new(dir));
         }
+        // Extensions run only once the user turned them on in Preferences (AGENTS.md §3).
+        if let Some(folder) = pdfcraft_ui_egui::extensions_ui::default_folder() {
+            let approvals = pdfcraft_ui_egui::extensions_ui::approvals_file(&folder);
+            app.enable_extensions(&cc.egui_ctx, folder, approvals);
+        }
         if let Some(state) = &cc.wgpu_render_state {
             let adapter = state.adapter.get_info();
             let max_texture_dimension_2d = state.device.limits().max_texture_dimension_2d;

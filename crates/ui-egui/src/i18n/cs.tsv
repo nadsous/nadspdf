@@ -2542,3 +2542,22 @@ watermark text	CONFIDENTIAL	DŮVĚRNÉ
 	Whole document	Celý dokument
 	Total area	Celková plocha
 	Total length	Celková délka
+# Extensions (Preferences ▸ Extensions, extension message bars)
+	Know when you open or close a document (its name and number of pages)	Vědět, kdy otevřete nebo zavřete dokument (jeho název a počet stran)
+	Read the text of the documents you open	Číst text otevřených dokumentů
+	Know where the documents you open are saved	Vědět, kde jsou otevřené dokumenty uloženy
+	Show a message bar with buttons above a document	Zobrazit nad dokumentem panel zpráv s tlačítky
+	Open web pages on the sites it lists	Otevírat webové stránky na webech, které uvádí
+	Extensions	Rozšíření
+	This extension can't be used: {e}	Toto rozšíření nelze použít: {e}
+	Extensions folder: {path}	Složka rozšíření: {path}
+	Turn off	Vypnout
+	Turn on…	Zapnout…
+	On	Zapnuto
+	Stopped: {e}	Zastaveno: {e}
+	On at the next start	Zapnuto od příštího spuštění
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} je program, který běží na tomto počítači s vašimi oprávněními. Bude moci:
+	• Nothing beyond running.	• Nic kromě spuštění.
+	Only turn on extensions you trust.	Zapínejte jen rozšíření, kterým důvěřujete.
+	Turn on	Zapnout
+	Couldn't save the extension settings: {e}	Nastavení rozšíření se nepodařilo uložit: {e}

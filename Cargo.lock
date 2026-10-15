@@ -3669,6 +3669,7 @@ dependencies = [
  "pdfcraft-automation",
  "pdfcraft-cos",
  "pdfcraft-engine",
+ "pdfcraft-extensions",
  "pdfcraft-render",
  "rustix 1.1.5",
  "serde_json",
@@ -3799,6 +3800,16 @@ name = "pdfcraft-export"
 version = "0.7.4"
 dependencies = [
  "flate2",
+]
+
+[[package]]
+name = "pdfcraft-extensions"
+version = "0.7.4"
+dependencies = [
+ "log",
+ "serde",
+ "serde_json",
+ "sha2",
 ]
 
 [[package]]
@@ -4013,6 +4024,7 @@ dependencies = [
  "objc2-foundation 0.3.2",
  "pdfcraft-cos",
  "pdfcraft-engine",
+ "pdfcraft-extensions",
  "pdfcraft-fonts",
  "pdfcraft-model",
  "pdfcraft-platform",

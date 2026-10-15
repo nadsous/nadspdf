@@ -10154,3 +10154,15 @@ commands = []
 tools = []
 evidence = []
 notes = ""
+
+[[feature]]
+id = "misc.extensions"
+title = "Extensions (Acrobat plug-ins): out-of-process programs approved by the user"
+area = "N"
+tier = "P2"
+milestone = "M14"
+status = "partial"
+commands = []
+tools = []
+evidence = ["crates/extensions/tests/host.rs::a_program_round_trip", "crates/ui-egui/tests/extensions.rs::an_approved_extension_reads_text_shows_a_bar_and_opens_only_its_sites", "crates/ui-egui/tests/extensions.rs::an_extension_that_is_not_approved_does_not_start", "apps/pdfcraft-cli/tests/extensions.rs::list_shows_usable_and_broken_folders_and_their_approval", "apps/pdfcraft-cli/tests/extensions.rs::check_fails_with_the_reason"]
+notes = "Protocol 1 (docs/extensions.md): a folder with manifest.json and a program, JSON-RPC lines over stdin/stdout, approval in Preferences bound to a SHA-256 fingerprint of manifest + program. Document events, doc.text, doc.file, message bars with buttons, shell.open_url on listed origins; `pdfcraft-cli extensions list|check` lists and checks them headlessly. Not yet: an MCP tool for extensions, turning one on without the GUI (deliberate: approval is the user's), menu commands contributed by an extension, the web build, and Acrobat's in-process plug-in API (deliberately not offered)."

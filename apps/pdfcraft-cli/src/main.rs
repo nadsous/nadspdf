@@ -63,6 +63,8 @@ pdfcraft-cli batch <files or dirs...> --steps convert,ocr,optimize --out-dir DIR
                       [--recursive] [--root DIR] [--stop-on-error]
                       [--ppi 150] [--quality 60] [--dpi 300] [--language en] [--ocr-all-pages]
 pdfcraft-cli tools                                       automation tools and their JSON Schemas
+pdfcraft-cli extensions list [--dir DIR]                 installed extensions as JSON, approved or not
+pdfcraft-cli extensions check <folder>                   check one extension folder (fails when unusable)
 pdfcraft-cli run    <tool> [key=value …] [--root DIR] [--out image.png]
 pdfcraft-cli run    --script steps.json [--root DIR]      [{\"tool\": \"doc_open\", \"args\": {…}}, …]
 ",
@@ -94,6 +96,7 @@ fn main() -> ExitCode {
         Some("check-one") => check_one(&args[1..]),
         Some("audit") => audit(&args[1..]),
         Some("tools") => tools(),
+        Some("extensions") => extensions(&args[1..]),
         Some("run") => run(&args[1..]),
         Some("batch") => batch::run(&args[1..]),
         Some("ui") => ui(&args[1..]),
@@ -250,6 +253,7 @@ const RUN_OPTIONS: &[OptionSpec] = &[
     OptionSpec { name: "--script", takes_value: true },
     OptionSpec { name: "--out", takes_value: true },
 ];
+const EXTENSIONS_OPTIONS: &[OptionSpec] = &[OptionSpec { name: "--dir", takes_value: true }];
 const UI_OPTIONS: &[OptionSpec] = &[OptionSpec { name: "--control", takes_value: true }, OptionSpec { name: "--out", takes_value: true }];
 
 #[cfg(feature = "mcp")]
@@ -732,6 +736,55 @@ fn automation(args: &[String]) -> Result<pdfcraft_automation::Automation, String
     match flag(args, "--root") {
         Some(root) => a.with_root(root).map_err(|e| format!("--root {root}: {e}")),
         None => Ok(a),
+    }
+}
+
+/// `extensions list` and `extensions check`: what the desktop app would find, without starting
+/// anything (docs/extensions.md).
+fn extensions(args: &[String]) -> Result<(), CliError> {
+    use pdfcraft_extensions::{Approvals, Entry, discovery, folders};
+    validate_options("extensions", args, EXTENSIONS_OPTIONS)?;
+    let rest = positional(args);
+    let describe = |entry: &Entry, approvals: Option<&Approvals>| match entry {
+        Entry::Ok(ext) => {
+            let m = &ext.manifest;
+            let mut v = serde_json::json!({
+                "folder": ext.dir, "ok": true, "id": m.id, "name": m.name, "version": m.version,
+                "description": m.description, "executable": ext.executable,
+                "permissions": m.permissions.iter().map(|p| p.key()).collect::<Vec<_>>(),
+                "open_url": m.open_url, "fingerprint": ext.fingerprint,
+            });
+            if let (Some(a), Some(obj)) = (approvals, v.as_object_mut()) {
+                obj.insert("approved".into(), serde_json::Value::Bool(a.is_approved(ext)));
+            }
+            v
+        }
+        Entry::Broken { dir, error } => serde_json::json!({ "folder": dir, "ok": false, "error": error }),
+    };
+    let pretty = |v: &serde_json::Value| serde_json::to_string_pretty(v).unwrap_or_default();
+    match rest.as_slice() {
+        ["list"] => {
+            let folder = match flag(args, "--dir") {
+                Some(dir) => PathBuf::from(dir),
+                None => folders::user_folder().ok_or("extensions: no per-user data folder; pass --dir")?,
+            };
+            let approvals_path = folders::approvals_file(&folder);
+            let approvals = Approvals::load(&approvals_path);
+            let entries: Vec<serde_json::Value> = discovery::discover(&folder).iter().map(|e| describe(e, Some(&approvals))).collect();
+            let out = serde_json::json!({ "folder": folder, "approvals": approvals_path, "extensions": entries });
+            stdout_line(format_args!("{}", pretty(&out)))
+        }
+        ["check", folder] => {
+            if flag(args, "--dir").is_some() {
+                return Err("extensions check: --dir is for list; name the extension folder itself".into());
+            }
+            let entry = match discovery::load(Path::new(folder)) {
+                Ok(ext) => Entry::Ok(Box::new(ext)),
+                Err(error) => return Err(format!("extensions check: {folder}: {error}").into()),
+            };
+            stdout_line(format_args!("{}", pretty(&describe(&entry, None))))
+        }
+        _ => Err("usage: pdfcraft-cli extensions list [--dir DIR] | pdfcraft-cli extensions check <folder>".into()),
     }
 }
 

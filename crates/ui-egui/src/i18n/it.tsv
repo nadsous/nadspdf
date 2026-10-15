@@ -2477,3 +2477,22 @@ watermark text	CONFIDENTIAL	RISERVATO
 	Whole document	Intero documento
 	Total area	Area totale
 	Total length	Lunghezza totale
+# Extensions (Preferences ▸ Extensions, extension message bars)
+	Know when you open or close a document (its name and number of pages)	Sapere quando apri o chiudi un documento (nome e numero di pagine)
+	Read the text of the documents you open	Leggere il testo dei documenti che apri
+	Know where the documents you open are saved	Sapere dove sono salvati i documenti che apri
+	Show a message bar with buttons above a document	Mostrare una barra dei messaggi con pulsanti sopra un documento
+	Open web pages on the sites it lists	Aprire pagine web sui siti che dichiara
+	Extensions	Estensioni
+	This extension can't be used: {e}	Impossibile usare questa estensione: {e}
+	Extensions folder: {path}	Cartella delle estensioni: {path}
+	Turn off	Disattiva
+	Turn on…	Attiva…
+	On	Attiva
+	Stopped: {e}	Arrestata: {e}
+	On at the next start	Attiva al prossimo avvio
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} è un programma che viene eseguito su questo computer con i tuoi diritti. Potrà:
+	• Nothing beyond running.	• Nient'altro che essere eseguito.
+	Only turn on extensions you trust.	Attiva solo estensioni di cui ti fidi.
+	Turn on	Attiva
+	Couldn't save the extension settings: {e}	Impossibile salvare le impostazioni delle estensioni: {e}

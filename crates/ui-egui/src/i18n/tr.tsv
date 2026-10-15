@@ -2464,3 +2464,22 @@ watermark text	CONFIDENTIAL	GİZLİ
 	Whole document	Belgenin tamamı
 	Total area	Toplam alan
 	Total length	Toplam uzunluk
+# Extensions (Preferences ▸ Extensions, extension message bars)
+	Know when you open or close a document (its name and number of pages)	Bir belgeyi ne zaman açıp kapattığınızı bilmek (adı ve sayfa sayısı)
+	Read the text of the documents you open	Açtığınız belgelerin metnini okumak
+	Know where the documents you open are saved	Açtığınız belgelerin nereye kaydedildiğini bilmek
+	Show a message bar with buttons above a document	Bir belgenin üstünde düğmeli bir ileti çubuğu göstermek
+	Open web pages on the sites it lists	Belirttiği sitelerde web sayfaları açmak
+	Extensions	Uzantılar
+	This extension can't be used: {e}	Bu uzantı kullanılamıyor: {e}
+	Extensions folder: {path}	Uzantılar klasörü: {path}
+	Turn off	Kapat
+	Turn on…	Aç…
+	On	Açık
+	Stopped: {e}	Durduruldu: {e}
+	On at the next start	Bir sonraki başlatmada açık
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name}, bu bilgisayarda sizin haklarınızla çalışan bir programdır. Şunları yapabilecek:
+	• Nothing beyond running.	• Çalışmak dışında hiçbir şey.
+	Only turn on extensions you trust.	Yalnızca güvendiğiniz uzantıları açın.
+	Turn on	Aç
+	Couldn't save the extension settings: {e}	Uzantı ayarları kaydedilemedi: {e}

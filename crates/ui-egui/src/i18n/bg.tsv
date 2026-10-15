@@ -2431,3 +2431,22 @@ watermark text	CONFIDENTIAL	ПОВЕРИТЕЛНО
 	Whole document	Целият документ
 	Total area	Обща площ
 	Total length	Обща дължина
+# Extensions (Preferences ▸ Extensions, extension message bars)
+	Know when you open or close a document (its name and number of pages)	Да знае кога отваряте или затваряте документ (името му и броя страници)
+	Read the text of the documents you open	Да чете текста на отворените документи
+	Know where the documents you open are saved	Да знае къде са записани отворените документи
+	Show a message bar with buttons above a document	Да показва над документа лента със съобщение и бутони
+	Open web pages on the sites it lists	Да отваря уеб страници в посочените от него сайтове
+	Extensions	Разширения
+	This extension can't be used: {e}	Това разширение не може да се използва: {e}
+	Extensions folder: {path}	Папка с разширения: {path}
+	Turn off	Изключване
+	Turn on…	Включване…
+	On	Включено
+	Stopped: {e}	Спряно: {e}
+	On at the next start	Включено при следващото стартиране
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} е програма, която работи на този компютър с вашите права. Тя ще може:
+	• Nothing beyond running.	• Нищо освен да работи.
+	Only turn on extensions you trust.	Включвайте само разширения, на които имате доверие.
+	Turn on	Включване
+	Couldn't save the extension settings: {e}	Настройките на разширенията не можаха да бъдат записани: {e}

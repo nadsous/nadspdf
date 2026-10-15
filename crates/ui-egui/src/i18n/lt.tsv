@@ -2728,3 +2728,21 @@ watermark text	CONFIDENTIAL	KONFIDENCIALU
 	Whole document	Visas dokumentas
 	Total area	Bendras plotas
 	Total length	Bendras ilgis
+# Extensions (Preferences ▸ Extensions, extension message bars)
+	Know when you open or close a document (its name and number of pages)	Žinoti, kada atidarote ar uždarote dokumentą (jo pavadinimą ir puslapių skaičių)
+	Read the text of the documents you open	Skaityti atidarytų dokumentų tekstą
+	Know where the documents you open are saved	Žinoti, kur įrašyti atidaryti dokumentai
+	Show a message bar with buttons above a document	Virš dokumento rodyti pranešimų juostą su mygtukais
+	Open web pages on the sites it lists	Atidaryti tinklalapius jo nurodytose svetainėse
+	Extensions	Plėtiniai
+	This extension can't be used: {e}	Šio plėtinio naudoti negalima: {e}
+	Extensions folder: {path}	Plėtinių aplankas: {path}
+	Turn off	Išjungti
+	Turn on…	Įjungti…
+	Stopped: {e}	Sustabdytas: {e}
+	On at the next start	Įjungtas nuo kito paleidimo
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} yra programa, veikianti šiame kompiuteryje su jūsų teisėmis. Ji galės:
+	• Nothing beyond running.	• Nieko daugiau, tik veikti.
+	Only turn on extensions you trust.	Įjunkite tik tuos plėtinius, kuriais pasitikite.
+	Turn on	Įjungti
+	Couldn't save the extension settings: {e}	Nepavyko įrašyti plėtinių nustatymų: {e}

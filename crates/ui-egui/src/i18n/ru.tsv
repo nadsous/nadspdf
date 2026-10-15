@@ -2381,3 +2381,22 @@ watermark text	CONFIDENTIAL	КОНФИДЕНЦИАЛЬНО
 	Whole document	Весь документ
 	Total area	Общая площадь
 	Total length	Общая длина
+# Extensions (Preferences ▸ Extensions, extension message bars)
+	Know when you open or close a document (its name and number of pages)	Знать, когда вы открываете или закрываете документ (его имя и число страниц)
+	Read the text of the documents you open	Читать текст открытых документов
+	Know where the documents you open are saved	Знать, где сохранены открытые документы
+	Show a message bar with buttons above a document	Показывать над документом панель сообщения с кнопками
+	Open web pages on the sites it lists	Открывать веб-страницы на указанных им сайтах
+	Extensions	Расширения
+	This extension can't be used: {e}	Это расширение нельзя использовать: {e}
+	Extensions folder: {path}	Папка расширений: {path}
+	Turn off	Выключить
+	Turn on…	Включить…
+	On	Включено
+	Stopped: {e}	Остановлено: {e}
+	On at the next start	Включится при следующем запуске
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} — программа, которая работает на этом компьютере с вашими правами. Она сможет:
+	• Nothing beyond running.	• Ничего, кроме работы.
+	Only turn on extensions you trust.	Включайте только расширения, которым доверяете.
+	Turn on	Включить
+	Couldn't save the extension settings: {e}	Не удалось сохранить настройки расширений: {e}

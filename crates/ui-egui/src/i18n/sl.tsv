@@ -2473,3 +2473,22 @@ watermark text	CONFIDENTIAL	ZAUPNO
 	Whole document	Celoten dokument
 	Total area	Skupna površina
 	Total length	Skupna dolžina
+# Extensions (Preferences ▸ Extensions, extension message bars)
+	Know when you open or close a document (its name and number of pages)	Vedeti, kdaj odprete ali zaprete dokument (njegovo ime in število strani)
+	Read the text of the documents you open	Brati besedilo dokumentov, ki jih odprete
+	Know where the documents you open are saved	Vedeti, kje so shranjeni dokumenti, ki jih odprete
+	Show a message bar with buttons above a document	Nad dokumentom prikazati vrstico s sporočilom in gumbi
+	Open web pages on the sites it lists	Odpirati spletne strani na mestih, ki jih navaja
+	Extensions	Razširitve
+	This extension can't be used: {e}	Te razširitve ni mogoče uporabiti: {e}
+	Extensions folder: {path}	Mapa razširitev: {path}
+	Turn off	Izklopi
+	Turn on…	Vklopi …
+	On	Vklopljeno
+	Stopped: {e}	Ustavljeno: {e}
+	On at the next start	Vklopljeno ob naslednjem zagonu
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} je program, ki se izvaja v tem računalniku z vašimi pravicami. Lahko bo:
+	• Nothing beyond running.	• Nič drugega kot se izvajati.
+	Only turn on extensions you trust.	Vklopite samo razširitve, ki jim zaupate.
+	Turn on	Vklopi
+	Couldn't save the extension settings: {e}	Nastavitev razširitev ni bilo mogoče shraniti: {e}

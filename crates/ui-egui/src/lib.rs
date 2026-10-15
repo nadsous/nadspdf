@@ -50,6 +50,7 @@ mod crop;
 mod dark_pages;
 mod drag_pointer;
 mod export_ui;
+pub mod extensions_ui;
 mod js_ui;
 mod marks_ui;
 mod measure_ui;
@@ -730,6 +731,9 @@ pub struct PdfCraftApp {
     pub optimize_run: Option<optimize_ui::OptimizeRun>,
     /// A background job's progress card (see [`widgets::progress_notice`]).
     pub progress_notice: Option<widgets::ProgressNotice>,
+    /// Installed extensions, the running ones and their message bars (off unless the desktop
+    /// app calls [`Self::enable_extensions`]).
+    pub extensions: extensions_ui::Extensions,
     /// Pages copied or cut in Organize Pages, ready to paste (into any document).
     pub page_clipboard: Option<PageClip>,
     /// Files dropped on the page grid, waiting for the pointer to say which gap they go to.
@@ -1040,6 +1044,7 @@ impl PdfCraftApp {
             raster_level: Default::default(),
             optimize_run: None,
             progress_notice: None,
+            extensions: Default::default(),
             page_clipboard: None,
             grid_drop: None,
             last_snapshot: None,
@@ -2902,6 +2907,7 @@ impl eframe::App for PdfCraftApp {
                 worker.set_context(ctx);
             }
             self.poll_pending_opens();
+            extensions_ui::pump(self);
         }
         // Chinese wants its own faces before the Japanese ones (one baseline per line).
         let cjk = theme::CjkPreference::for_language(lang.code());

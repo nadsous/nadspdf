@@ -2448,3 +2448,22 @@ watermark text	CONFIDENTIAL	POUFNE
 	Whole document	Cały dokument
 	Total area	Łączna powierzchnia
 	Total length	Łączna długość
+# Extensions (Preferences ▸ Extensions, extension message bars)
+	Know when you open or close a document (its name and number of pages)	Wiedzieć, kiedy otwierasz lub zamykasz dokument (jego nazwę i liczbę stron)
+	Read the text of the documents you open	Czytać tekst otwieranych dokumentów
+	Know where the documents you open are saved	Wiedzieć, gdzie zapisane są otwierane dokumenty
+	Show a message bar with buttons above a document	Wyświetlać nad dokumentem pasek komunikatu z przyciskami
+	Open web pages on the sites it lists	Otwierać strony internetowe w witrynach, które podaje
+	Extensions	Rozszerzenia
+	This extension can't be used: {e}	Nie można użyć tego rozszerzenia: {e}
+	Extensions folder: {path}	Folder rozszerzeń: {path}
+	Turn off	Wyłącz
+	Turn on…	Włącz…
+	On	Włączone
+	Stopped: {e}	Zatrzymane: {e}
+	On at the next start	Włączone od następnego uruchomienia
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} to program działający na tym komputerze z Twoimi uprawnieniami. Będzie mógł:
+	• Nothing beyond running.	• Nic poza działaniem.
+	Only turn on extensions you trust.	Włączaj tylko rozszerzenia, którym ufasz.
+	Turn on	Włącz
+	Couldn't save the extension settings: {e}	Nie udało się zapisać ustawień rozszerzeń: {e}

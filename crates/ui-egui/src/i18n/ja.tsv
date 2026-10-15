@@ -2468,3 +2468,22 @@ watermark text	CONFIDENTIAL	社外秘
 	Whole document	文書全体
 	Total area	合計面積
 	Total length	合計長さ
+# Extensions (Preferences ▸ Extensions, extension message bars)
+	Know when you open or close a document (its name and number of pages)	ドキュメントを開いたり閉じたりしたことを知る（名前とページ数）
+	Read the text of the documents you open	開いたドキュメントのテキストを読む
+	Know where the documents you open are saved	開いたドキュメントの保存場所を知る
+	Show a message bar with buttons above a document	ドキュメントの上にボタン付きのメッセージバーを表示する
+	Open web pages on the sites it lists	指定したサイトの Web ページを開く
+	Extensions	拡張機能
+	This extension can't be used: {e}	この拡張機能は使用できません: {e}
+	Extensions folder: {path}	拡張機能フォルダー: {path}
+	Turn off	オフにする
+	Turn on…	オンにする…
+	On	オン
+	Stopped: {e}	停止しました: {e}
+	On at the next start	次回の起動時にオン
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} はこのコンピューター上であなたの権限で動作するプログラムです。次のことができます:
+	• Nothing beyond running.	• 動作する以外は何もできません。
+	Only turn on extensions you trust.	信頼できる拡張機能だけをオンにしてください。
+	Turn on	オンにする
+	Couldn't save the extension settings: {e}	拡張機能の設定を保存できませんでした: {e}
