@@ -641,6 +641,9 @@ pub fn mode_bar(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                                 (Mode::Convert, "Convert"),
                                 (Mode::Sign, "E-Sign"),
                             ] {
+                                if app.offered_mode(mode) != mode {
+                                    continue;
+                                }
                                 if widgets::mode_tab(ui, tl!(label), app.mode == mode).clicked() {
                                     app.switch_mode(mode, true);
                                 }
@@ -765,6 +768,10 @@ fn main_menu(app: &mut PdfCraftApp, ui: &mut egui::Ui, size: f32) {
                     (RightPanel::Search, tl!("Search")),
                     (RightPanel::Compare, tl!("Compare")),
                 ] {
+                    // The simplified interface has no accessibility or compare tools to fill these.
+                    if app.lite && matches!(p, RightPanel::Accessibility | RightPanel::Tags | RightPanel::Compare) {
+                        continue;
+                    }
                     if ui.add(widgets::radio(app.right == Some(p), tl!(label))).clicked() {
                         app.choose_right_panel(Some(p));
                     }

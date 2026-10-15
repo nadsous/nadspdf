@@ -2,23 +2,32 @@
 # dist\release\nadspdf-<version>-chrome-extension.zip
 #
 #   powershell -File packaging\chrome\build.ps1 [-SkipBuild]
+#   powershell -File packaging\chrome\build.ps1 -Store chrome -ExtensionId <id from the store>
 #
 # Needs trunk (cargo install trunk --locked) and the wasm32-unknown-unknown target.
 #
 # Like Acrobat's extension, PDFs opened in Chrome show in NadsPDF instead of Chrome's viewer: a
-# declarativeNetRequest rule (rules.json, no script) redirects a tab navigating to a .pdf URL to
-# the extension's copy of NadsPDF for the web (apps/pdfcraft-web, WebAssembly), which downloads
-# the file itself (`?file=`; the extension's host access lifts CORS). Everything runs in the
+# declarativeNetRequest rule set (rules.json, no script) redirect a tab navigating to a PDF (a .pdf
+# URL, or a page served as application/pdf) to the extension's copy of NadsPDF for the web
+# (apps/pdfcraft-web, WebAssembly), which downloads the file itself (`#file=`; the extension's
+# host access lifts CORS, and it reads file:// through XHR). Everything runs in the
 # browser: nothing is uploaded. There is no hand-written JavaScript: trunk generates the loader,
 # which this script only moves out of index.html because extension pages forbid inline scripts.
 #
 # The manifest's public key (extension-key.txt) fixes the extension id, which the redirect rule
-# has to name. A Chrome Web Store upload gets the store's own id: rebuild with -ExtensionId then.
+# has to name. Each store gives the extension its own id instead (and the Chrome Web Store refuses
+# a manifest with a key): -Store chrome|edge leaves the key out and needs that id in -ExtensionId
+# (packaging\chrome\PUBLISHING.md).
 param(
   [switch] $SkipBuild,
-  [string] $ExtensionId = 'dkoohdpnfiphcimpklkphfbjibbaenje'
+  [string] $ExtensionId = 'dkoohdpnfiphcimpklkphfbjibbaenje',
+  [ValidateSet('', 'chrome', 'edge')] [string] $Store = ''
 )
 $ErrorActionPreference = 'Stop'
+# Without the store's id, the package is only good for the first upload, which assigns that id.
+if ($Store -and -not $PSBoundParameters.ContainsKey('ExtensionId')) {
+  Write-Warning "first upload only: PDFs won't open until you rebuild with -Store $Store -ExtensionId <the id the store shows> (PUBLISHING.md)"
+}
 $Root = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $Version = (Select-String -Path (Join-Path $Root 'Cargo.toml') -Pattern '^version = "([^"]+)"' | Select-Object -First 1).Matches[0].Groups[1].Value
 $Out = Join-Path $Root 'dist\chrome-extension'
@@ -64,9 +73,10 @@ $manifest = [ordered]@{
   manifest_version = 3
   name = 'NadsPDF'
   short_name = 'NadsPDF'
-  description = "Ouvre les PDF dans Chrome avec l'éditeur NadsPDF : lire, annoter, remplir, signer et modifier, sans rien envoyer sur Internet."
+  description = "Ouvre les PDF dans Chrome avec l'éditeur NadsPDF : lire, annoter, remplir et signer, sans rien envoyer sur Internet."
   version = ($Version -replace '-.*$', '')
-  key = $key
+  # Rule 3 matches on response headers, which older browsers would ignore and so redirect every page.
+  minimum_chrome_version = '128'
   icons = [ordered]@{ '16' = 'icons/16.png'; '32' = 'icons/32.png'; '48' = 'icons/48.png'; '128' = 'icons/128.png' }
   action = [ordered]@{ default_title = 'NadsPDF'; default_popup = 'popup.html'; default_icon = [ordered]@{ '16' = 'icons/16.png'; '32' = 'icons/32.png' } }
   permissions = @('declarativeNetRequestWithHostAccess')
@@ -75,24 +85,46 @@ $manifest = [ordered]@{
   web_accessible_resources = @([ordered]@{ resources = @('index.html', '*.js', '*.wasm', 'icons/*'); matches = @('<all_urls>') })
   content_security_policy = [ordered]@{ extension_pages = "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'" }
 }
+if (-not $Store) { $manifest['key'] = $key }
 $utf8 = New-Object Text.UTF8Encoding $false
 [IO.File]::WriteAllText((Join-Path $Out 'manifest.json'), ($manifest | ConvertTo-Json -Depth 8), $utf8)
 
-# A tab opening a .pdf (web or file://) goes to NadsPDF with the address in ?file=. Only top-level
-# navigations: PDFs embedded in pages, and NadsPDF's own download of the file, are left alone.
+# A tab opening a PDF goes to NadsPDF with the address in #file=. A fragment, not ?file=: the
+# redirect can't URL-encode the address, and a query would split a signed URL's own &parameters
+# off. Only top-level navigations: PDFs embedded in pages, and NadsPDF's own download of the file,
+# are left alone. ?lite=1&lang=fr: the simplified interface (read, comment, fill in, sign), in French.
+$redirect = [ordered]@{ type = 'redirect'; redirect = [ordered]@{ regexSubstitution = "chrome-extension://$ExtensionId/index.html?lite=1&lang=fr#file=\0" } }
+$pdfPath = '[^?#]*\.[pP][dD][fF]([?#].*)?$'
 $rules = @(
+  # Web addresses ending in .pdf, before anything is downloaded. GET only: re-requesting a form's
+  # POST as a GET would lose its answer, so those stay in the browser's viewer.
   [ordered]@{
-    id = 1
-    priority = 1
-    action = [ordered]@{ type = 'redirect'; redirect = [ordered]@{ regexSubstitution = "chrome-extension://$ExtensionId/index.html?file=\0" } }
-    condition = [ordered]@{ regexFilter = '^(https?|file)://[^?#]*\.[pP][dD][fF]([?#].*)?$'; resourceTypes = @('main_frame') }
+    id = 1; priority = 1; action = $redirect
+    condition = [ordered]@{ regexFilter = "^https?://$pdfPath"; resourceTypes = @('main_frame'); requestMethods = @('get') }
+  }
+  # Files on the computer (once the user allows file access).
+  [ordered]@{
+    id = 2; priority = 1; action = $redirect
+    condition = [ordered]@{ regexFilter = "^file://$pdfPath"; resourceTypes = @('main_frame') }
+  }
+  # Any other page the server says is a PDF (arxiv.org/pdf/…, viewer endpoints), judged on its
+  # response headers (Chrome 128+). A PDF the server sends as a download (attachment) still downloads.
+  [ordered]@{
+    id = 3; priority = 1; action = $redirect
+    condition = [ordered]@{
+      regexFilter = '^https?://.*$'
+      resourceTypes = @('main_frame')
+      requestMethods = @('get')
+      responseHeaders = @([ordered]@{ header = 'content-type'; values = @('application/pdf*', 'application/x-pdf*') })
+      excludedResponseHeaders = @([ordered]@{ header = 'content-disposition'; values = @('attachment*') })
+    }
   }
 )
 [IO.File]::WriteAllText((Join-Path $Out 'rules.json'), (ConvertTo-Json -InputObject $rules -Depth 8), $utf8)
 
 $Dist = Join-Path $Root 'dist\release'
 New-Item -ItemType Directory -Force -Path $Dist | Out-Null
-$Zip = Join-Path $Dist "nadspdf-$Version-chrome-extension.zip"
+$Zip = if ($Store) { Join-Path $Dist "nadspdf-$Version-$Store-store.zip" } else { Join-Path $Dist "nadspdf-$Version-chrome-extension.zip" }
 Remove-Item -Force $Zip -ErrorAction SilentlyContinue
 Compress-Archive -Path (Join-Path $Out '*') -DestinationPath $Zip
 Write-Host "wrote $Out (load unpacked) and $Zip"

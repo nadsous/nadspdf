@@ -88,6 +88,7 @@ mod home;
 mod icon_data;
 pub mod icons;
 pub mod last_session;
+mod lite;
 pub mod motion;
 mod page_selection_ui;
 mod pageboxes;
@@ -641,6 +642,9 @@ pub struct PdfCraftApp {
     pub host_save: Option<HostSaveFn>,
     /// Reports unsaved work to the embedding page (web, see [`HostDirtyFn`]).
     pub host_dirty: Option<HostDirtyFn>,
+    /// The simplified interface (`lite`): only reading, comments, Fill & Sign, saving and
+    /// printing. Set by the host (the Chrome extension), never saved with the preferences.
+    pub lite: bool,
     /// A pending "save changes?" question (closing a dirty tab or quitting).
     pub close_request: Option<CloseRequest>,
     /// Save to this path instead of asking (tests and automation).
@@ -992,6 +996,7 @@ impl PdfCraftApp {
             os_events: None,
             host_save: None,
             host_dirty: None,
+            lite: false,
             close_request: None,
             save_override: None,
             props_draft: None,
@@ -2037,6 +2042,9 @@ impl PdfCraftApp {
 
     /// Run a catalogue command. Commands that aren't implemented yet say which milestone ships them.
     pub fn run_command(&mut self, command: &str) {
+        if !self.command_allowed(command) {
+            return;
+        }
         if let Some(spec) = pdfcraft_engine::commands::command(command) {
             use pdfcraft_engine::commands::Needs;
             // A tool that needs a document, chosen with none open, asks for the file and then
@@ -2108,6 +2116,9 @@ impl PdfCraftApp {
     /// Enter a tool from the catalogue, Home, palette or control channel. Organize is a
     /// workspace, so opening its panel also opens the page grid (without toggling it off).
     pub(crate) fn select_tool(&mut self, id: &'static str) {
+        if !self.tool_allowed(id) {
+            return;
+        }
         self.left = LeftPanel::Tool(id);
         self.reveal_tools();
         if let Some(view) = self.active.and_then(|i| self.views.get_mut(i)) {
@@ -2115,8 +2126,24 @@ impl PdfCraftApp {
         }
     }
 
+    /// Whether the interface offers this catalogue tool group (all of them, unless [`Self::lite`]).
+    pub(crate) fn tool_allowed(&self, group: &str) -> bool {
+        !self.lite || lite::allows_group(group)
+    }
+
+    /// Whether the interface offers this command or catalogue item (all, unless [`Self::lite`]).
+    pub(crate) fn command_allowed(&self, id: &str) -> bool {
+        !self.lite || lite::allows_command(id)
+    }
+
+    /// `mode`, or Read when the simplified interface leaves it out (Edit and Convert).
+    pub(crate) fn offered_mode(&self, mode: Mode) -> Mode {
+        if self.lite && matches!(mode, Mode::Edit | Mode::Convert) { Mode::Read } else { mode }
+    }
+
     /// Select the workspace and its matching tool panel, just like the mode bar.
     pub(crate) fn select_mode(&mut self, mode: Mode) {
+        let mode = self.offered_mode(mode);
         self.mode = mode;
         self.reveal_tools();
         if let Some(view) = self.active.and_then(|i| self.views.get_mut(i)) {
@@ -2134,6 +2161,7 @@ impl PdfCraftApp {
     /// mode closes the right panel, as Acrobat's Read mode hides its panes, and leaving it reopens
     /// that panel. The rail stays in Read mode, and its buttons open panels there too (#932).
     pub(crate) fn switch_mode(&mut self, mode: Mode, select_tools: bool) {
+        let mode = self.offered_mode(mode);
         let was_read = self.mode == Mode::Read;
         if select_tools {
             self.select_mode(mode);

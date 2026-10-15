@@ -72,7 +72,13 @@ les polices, tailles et couleurs du PDF. Les pages de texte simple restent en pa
 ## 🧩 Extension Chrome
 
 Comme Acrobat : les PDF ouverts dans Chrome s'affichent dans NadsPDF (la version WebAssembly,
-embarquée dans l'extension ; rien n'est envoyé sur Internet).
+embarquée dans l'extension ; rien n'est envoyé sur Internet). Sont reconnus les adresses en `.pdf`,
+les pages que le site sert comme PDF même sans `.pdf` dans l'adresse (arXiv, liens de partage…)
+et les liens signés à paramètres. Un PDF que le site envoie en téléchargement reste un
+téléchargement, sauf si son adresse finit par `.pdf`. L'onglet porte le nom du fichier. Chrome 128 ou plus récent.
+L'extension montre une interface simplifiée, en français : lire, commenter, remplir, signer,
+enregistrer et imprimer. Pour la publier sur le Chrome Web Store et Edge Add-ons, voir
+[`packaging/chrome/PUBLISHING.md`](packaging/chrome/PUBLISHING.md).
 
 ```powershell
 powershell -File packaging\chrome\build.ps1     # → dist\chrome-extension\ et un .zip

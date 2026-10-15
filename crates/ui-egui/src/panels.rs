@@ -69,8 +69,10 @@ fn all_tools(app: &mut PdfCraftApp, ui: &mut egui::Ui, t: &Tokens) {
         ui.spacing_mut().item_spacing.y = 1.0;
         if !query.is_empty() {
             // Typed text matches the translated name and the English one.
-            let hits: Vec<&ToolGroup> =
-                TOOL_GROUPS.iter().filter(|g| tl!(g.label).to_lowercase().contains(&query) || g.label.to_lowercase().contains(&query)).collect();
+            let hits: Vec<&ToolGroup> = TOOL_GROUPS
+                .iter()
+                .filter(|g| app.tool_allowed(g.id) && (tl!(g.label).to_lowercase().contains(&query) || g.label.to_lowercase().contains(&query)))
+                .collect();
             ui.add_space(6.0);
             if hits.is_empty() {
                 ui.label(egui::RichText::new(tl!("No tool matches")).color(t.text_faint).font(theme::regular(12.5)));
@@ -83,14 +85,19 @@ fn all_tools(app: &mut PdfCraftApp, ui: &mut egui::Ui, t: &Tokens) {
             return;
         }
         for (title, ids) in [(tl!("Essentials"), ESSENTIALS), (tl!("Review"), REVIEW), (tl!("Protect"), PROTECT)] {
+            // The simplified interface keeps only its own tools, and no empty section titles.
+            let groups: Vec<&ToolGroup> = TOOL_GROUPS.iter().filter(|g| ids.contains(&g.id) && app.tool_allowed(g.id)).collect();
+            if groups.is_empty() {
+                continue;
+            }
             widgets::section_title(ui, title);
-            for g in TOOL_GROUPS.iter().filter(|g| ids.contains(&g.id)) {
+            for g in groups {
                 if tool_row(ui, t, g).clicked() {
                     pick = Some(g.id);
                 }
             }
         }
-        let rest: Vec<&ToolGroup> = TOOL_GROUPS.iter().filter(|g| !sectioned(g.id)).collect();
+        let rest: Vec<&ToolGroup> = TOOL_GROUPS.iter().filter(|g| !sectioned(g.id) && app.tool_allowed(g.id)).collect();
         if !rest.is_empty() {
             if advanced_header(ui, t, rest.len(), app.all_tools_expanded).clicked() {
                 app.all_tools_expanded = !app.all_tools_expanded;
@@ -104,7 +111,7 @@ fn all_tools(app: &mut PdfCraftApp, ui: &mut egui::Ui, t: &Tokens) {
             }
         }
         #[cfg(not(target_arch = "wasm32"))]
-        {
+        if !app.lite {
             ui.add_space(6.0);
             crate::vaults_ui::tools_panel_section(app, ui);
         }
@@ -287,6 +294,9 @@ fn tool_detail(app: &mut PdfCraftApp, ui: &mut egui::Ui, t: &Tokens, g: &'static
         for s in g.sections {
             widgets::section_title(ui, tl!(s.title));
             for item in s.items {
+                if !app.command_allowed(item.command) {
+                    continue;
+                }
                 if g.id == "fill_sign" && (item.command.starts_with("sign.fill.signature") || item.command.starts_with("sign.fill.initials")) {
                     continue;
                 }

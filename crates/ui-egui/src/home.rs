@@ -8,6 +8,8 @@ use crate::theme::{self, Tokens};
 use crate::{PdfCraftApp, icons, panels::human_size, widgets};
 
 const RECOMMENDED: [&str; 5] = ["organize", "comment", "form", "edit", "protect"];
+/// The simplified interface's tools ([`PdfCraftApp::lite`]).
+const RECOMMENDED_LITE: [&str; 2] = ["fill_sign", "comment"];
 
 /// What a NadsPDF quick tool does when clicked: run a registry command, or open a tool panel.
 #[derive(Clone, Copy)]
@@ -88,10 +90,13 @@ pub fn show(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                     .font(theme::regular(14.0)),
             );
             ui.add_space(18.0);
-            quick_tools(app, ui, &t);
-            ui.add_space(26.0);
+            // The NadsPDF tools row is all conversion and editing, which the simplified interface leaves out.
+            if !app.lite {
+                quick_tools(app, ui, &t);
+                ui.add_space(26.0);
+            }
             #[cfg(not(target_arch = "wasm32"))]
-            {
+            if !app.lite {
                 crate::vaults_ui::section(app, ui);
                 ui.add_space(26.0);
             }
@@ -107,7 +112,8 @@ pub fn show(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                     ui.add_space(10.0);
                     ui.horizontal_wrapped(|ui| {
                         ui.spacing_mut().item_spacing = vec2(14.0, 14.0);
-                        for id in RECOMMENDED {
+                        let recommended = if app.lite { &RECOMMENDED_LITE[..] } else { &RECOMMENDED[..] };
+                        for &id in recommended {
                             let Some(g) = catalog::group(id) else { continue };
                             let (rect, resp) = ui.allocate_exact_size(vec2(190.0, 104.0), Sense::click());
                             resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, tl!(g.label)));
