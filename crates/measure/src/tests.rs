@@ -120,6 +120,17 @@ fn rejects_invalid_geometry_and_unsupported_scales() {
     assert!(set_scale(&mut d, 0, [0.0; 4], "bad", &Scale::default()).is_err());
 }
 #[test]
+fn the_line_under_the_pointer_is_the_nearest_straight_one() {
+    let d = fixture("10 20 m 110 20 l S 60 0 m 60 80 l S 200 200 m 200 260 260 260 260 200 c S", "", &[]);
+    let paths = snap::geometry(&d, 0).unwrap();
+    assert_eq!(paths.nearest_line([40.0, 22.0], 4.0), Some([[10.0, 20.0], [110.0, 20.0]]));
+    assert_eq!(paths.nearest_line([61.0, 50.0], 4.0), Some([[60.0, 0.0], [60.0, 80.0]]));
+    assert_eq!(paths.nearest_line([40.0, 30.0], 4.0), None, "too far from any line");
+    assert!(paths.segments.len() > 2, "the curve was flattened into segments");
+    assert_eq!(paths.nearest_line([230.0, 245.0], 20.0), None, "a curve's pieces are not lines");
+    assert_eq!(paths.nearest_line([f64::NAN, 0.0], 4.0), None);
+}
+#[test]
 fn filled_open_triangle_snaps_to_closing_edge() {
     for (op, closed) in [("f", true), ("F", true), ("f*", true), ("B", true), ("B*", true), ("h f", true), ("S", false)] {
         let d = fixture(&format!("40 50 m 160 50 l 100 170 l {op}"), "", &[]);

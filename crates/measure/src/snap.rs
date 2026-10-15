@@ -14,6 +14,9 @@ pub struct Geometry {
     pub segments: Vec<[Point; 2]>,
     pub endpoints: Vec<Point>,
     pub midpoints: Vec<Point>,
+    /// Indices into `segments` of the straight lines drawn as such (curves are flattened into
+    /// short segments too, which are not elements to measure on their own).
+    pub lines: Vec<usize>,
     /// A limit stopped extraction early (segments, targets, bytes, streams, nesting).
     pub truncated: bool,
     /// Content streams that couldn't be decoded and were skipped.
@@ -93,6 +96,20 @@ impl Geometry {
     pub fn intersection_limited(&self, at: Point, tolerance: f64) -> bool {
         self.segments.iter().filter(|[a, b]| distance(at, nearest(at, *a, *b)) <= tolerance).take(257).count() > 256
     }
+    /// The straight line nearest `at`, within `tolerance` user units: the drawn element a
+    /// pointer over a plan designates.
+    pub fn nearest_line(&self, at: Point, tolerance: f64) -> Option<[Point; 2]> {
+        if check_points(&[at]).is_err() || !tolerance.is_finite() || tolerance < 0.0 {
+            return None;
+        }
+        self.lines
+            .iter()
+            .filter_map(|&i| self.segments.get(i))
+            .map(|&[a, b]| (distance(at, nearest(at, a, b)), [a, b]))
+            .filter(|(d, _)| *d <= tolerance)
+            .min_by(|x, y| x.0.total_cmp(&y.0))
+            .map(|(_, line)| line)
+    }
     pub fn snap(&self, at: Point, tolerance: f64, options: SnapOptions) -> Result<Option<Snap>> {
         check_points(&[at])?;
         if !tolerance.is_finite() || !(0.0..=10_000.0).contains(&tolerance) {
@@ -161,6 +178,7 @@ impl Geometry {
     }
     fn edge(&mut self, a: Point, b: Point) {
         if self.segment(a, b) {
+            self.lines.push(self.segments.len().saturating_sub(1));
             self.target([a, b], [(a[0] + b[0]) / 2.0, (a[1] + b[1]) / 2.0]);
         }
     }
@@ -366,6 +384,8 @@ impl Walker<'_> {
                     {
                         path.edge(a, b);
                     }
+                    let offset = self.geometry.segments.len();
+                    self.geometry.lines.extend(path.lines.drain(..).map(|i| i.saturating_add(offset)));
                     self.geometry.segments.append(&mut path.segments);
                     self.geometry.endpoints.append(&mut path.endpoints);
                     self.geometry.midpoints.append(&mut path.midpoints);

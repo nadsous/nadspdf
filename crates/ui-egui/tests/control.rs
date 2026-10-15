@@ -10,13 +10,18 @@ use pdfcraft_ui_egui::control::{ControlClient, Reply};
 use serde_json::{Value, json};
 
 fn fixture(n: usize) -> Vec<u8> {
+    fixture_drawing(n, "")
+}
+
+/// [`fixture`], each page also painting `drawing` (content-stream operators).
+fn fixture_drawing(n: usize, drawing: &str) -> Vec<u8> {
     let mut objs: Vec<String> = vec!["<< /Type /Catalog /Pages 2 0 R >>".into()];
     let kids: Vec<String> = (0..n).map(|i| format!("{} 0 R", 4 + 2 * i)).collect();
     objs.push(format!("<< /Type /Pages /Kids [{}] /Count {n} /MediaBox [0 0 200 300] >>", kids.join(" ")));
     objs.push("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>".into());
     for i in 0..n {
         objs.push(format!("<< /Type /Page /Parent 2 0 R /Contents {} 0 R /Resources << /Font << /F1 3 0 R >> >> >>", 5 + 2 * i));
-        let body = format!("BT /F1 24 Tf 20 150 Td (Page {}) Tj ET", i + 1);
+        let body = format!("BT /F1 24 Tf 20 150 Td (Page {}) Tj ET {drawing}", i + 1);
         objs.push(format!("<< /Length {} >>\nstream\n{body}\nendstream", body.len()));
     }
     let mut out = b"%PDF-1.7\n".to_vec();
@@ -1235,6 +1240,60 @@ fn measurement_tools_draw_live_calibrate_save_and_export() {
     click(&mut h, &c, 130.0, 50.0);
     assert!((h.state().views[0].measure.drawing_points - 100.0).abs() < 0.01);
     let _ = std::fs::remove_dir_all(dir);
+}
+
+#[test]
+fn a_plan_scale_applies_to_every_page_and_the_element_tool_measures_the_line_under_the_pointer() {
+    let (mut h, c) = harness_pages(1);
+    // A 160 pt horizontal line 20 pt below the top of each page.
+    h.state_mut().open_bytes("plan.pdf", None, fixture_drawing(2, "20 280 m 180 280 l S")).unwrap();
+    h.run_steps(3);
+    let view = h.state().active.unwrap();
+    let doc = h.state().views[view].id;
+    h.state_mut().set_option("zoom", "100").unwrap();
+    ok(&mut h, &c, "ui.command", json!({"id":"measure.scale"}));
+    h.run_steps(3);
+    // 1 cm on paper stands for 1 m: 1:100.
+    let m = &mut h.state_mut().views[view].measure;
+    m.paper_unit = "cm".into();
+    m.drawing_points = 72.0 / 2.54;
+    m.real_distance = 1.0;
+    m.unit = "m".into();
+    m.all_pages = true;
+    h.get_by_label("Apply scale").click();
+    h.run_steps(3);
+    for page in 0..2 {
+        let scale = h.state().session.get(doc).unwrap().measurement_scale(page, [100.0, 150.0]).unwrap();
+        assert_eq!(scale.ratio, "1 cm = 1 m (1:100)", "page {page}");
+        assert_eq!(scale.unit, "m");
+    }
+    ok(&mut h, &c, "ui.command", json!({"id":"edit.undo"}));
+    h.run_steps(2);
+    assert_ne!(h.state().session.get(doc).unwrap().measurement_scale(1, [100.0, 150.0]).unwrap().unit, "m", "one undo removes every page's scale");
+    ok(&mut h, &c, "ui.command", json!({"id":"edit.redo"}));
+    h.run_steps(2);
+
+    h.state_mut().set_option("quick", "measure-element").unwrap();
+    let r = h.state().views[view].page_screen_rect(0).unwrap();
+    let on_line = egui::pos2(r.left() + 100.0 * r.width() / 200.0, r.top() + 21.0 * r.height() / 300.0);
+    h.event(egui::Event::PointerMoved(on_line));
+    h.run_steps(2);
+    let reading = h.state().views[view].measure.reading.clone().expect("the hovered line is read");
+    assert!((reading.value - 160.0 * 2.54 / 72.0).abs() < 1e-6, "{reading:?}");
+    ok(&mut h, &c, "ui.click", json!({"x": on_line.x, "y": on_line.y}));
+    h.run_steps(3);
+    let saved = h.state().session.get(doc).unwrap().measurements().unwrap().measurements;
+    assert_eq!(saved.len(), 1);
+    assert!((saved[0].reading.value - 160.0 * 2.54 / 72.0).abs() < 0.01, "{:?}", saved[0].reading);
+    // Away from the line nothing is read or saved.
+    let away = egui::pos2(r.left() + 100.0 * r.width() / 200.0, r.top() + 80.0 * r.height() / 300.0);
+    h.state_mut().views[view].measure.reading = None;
+    h.event(egui::Event::PointerMoved(away));
+    h.run_steps(2);
+    assert!(h.state().views[view].measure.reading.is_none());
+    ok(&mut h, &c, "ui.click", json!({"x": away.x, "y": away.y}));
+    h.run_steps(3);
+    assert_eq!(h.state().session.get(doc).unwrap().measurements().unwrap().measurements.len(), 1);
 }
 
 #[test]

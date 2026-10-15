@@ -54,6 +54,17 @@ Et tout PdfCraft en plus : commentaires et annotations, formulaires (remplir et 
 signatures, protection par mot de passe, caviardage, OCR, comparaison de documents, filigranes,
 en-têtes/pieds de page, numérotation Bates, export Word/HTML/RTF, accessibilité, impression…
 
+**Mesurer** (panneau « Mesurer ») — distance, périmètre, surface, et l'outil *Élément* : on
+survole un trait du plan pour lire sa longueur, un clic garde la mesure. L'*échelle du plan* se
+règle en clair (« 1 cm = 1 m », échelles courantes 1:50, 1:100…, ou étalonnage sur une longueur
+connue), pour la page ou pour toutes les pages. La liste des mesures, de la page ou de tout le
+document, donne les longueurs et surfaces totales, et s'exporte en CSV.
+
+**Aperçu dans Outlook et l'Explorateur** — au démarrage, si aucun module d'aperçu n'est associé
+aux PDF, NadsPDF y associe celui fourni avec Windows (« Microsoft PDF Previewer », livré avec
+Edge), pour l'utilisateur seul, sans droits administrateur : les pièces jointes PDF s'affichent
+alors dans Outlook sans les ouvrir. Un module déjà installé par un autre lecteur est laissé tel quel.
+
 **Exporter en Word** garde la mise en page : une page avec des fonds, des formes ou des images
 devient l'image de la page sans son texte, avec par-dessus le texte modifiable, ligne par ligne, dans
 les polices, tailles et couleurs du PDF. Les pages de texte simple restent en paragraphes fluides.

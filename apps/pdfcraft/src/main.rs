@@ -480,6 +480,12 @@ fn app_creator<'a>(
         {
             app.motion.source = Some(motion::source());
         }
+        // Outlook and Explorer preview PDFs with Windows' previewer when none is registered (per
+        // user, no administrator). A Store copy's registry writes stay inside its package.
+        #[cfg(target_os = "windows")]
+        if !updates::running_from_store() {
+            let _ = pdfcraft_platform::pdf_preview::ensure();
+        }
         app.update_source = Some(std::sync::Arc::new(updates::latest_release));
         // The MSI's copy installs new versions itself; the Store's is updated by the Store.
         app.updates_from_store = updates::running_from_store();

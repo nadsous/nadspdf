@@ -5,4 +5,5 @@
 
 pub mod desktop_theme;
 pub mod explorer_menu;
+pub mod pdf_preview;
 pub mod staging;
