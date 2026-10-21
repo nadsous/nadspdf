@@ -25,7 +25,10 @@ param(
   [switch] $SkipBuild,
   [string] $ExtensionId = 'dkoohdpnfiphcimpklkphfbjibbaenje',
   [ValidateSet('', 'chrome', 'edge')] [string] $Store = '',
-  [switch] $FirstUpload
+  [switch] $FirstUpload,
+  # A store package of the same app version again (the store refuses a version it already has):
+  # the manifest says <version>.<Revision>, such as 0.7.6.1.
+  [ValidateRange(0, 65535)] [int] $Revision = 0
 )
 $ErrorActionPreference = 'Stop'
 if ($Store -and -not $PSBoundParameters.ContainsKey('ExtensionId')) {
@@ -94,7 +97,7 @@ $manifest = [ordered]@{
   name = 'NadsPDF'
   short_name = 'NadsPDF'
   description = "Ouvre les PDF dans Chrome avec NadsPDF : lire, annoter, remplir, signer, modifier et OCR, sans rien envoyer sur Internet."
-  version = ($Version -replace '-.*$', '')
+  version = ($Version -replace '-.*$', '') + $(if ($Revision) { ".$Revision" } else { '' })
   # Rule 3 matches on response headers, which older browsers would ignore and so redirect every page.
   minimum_chrome_version = '128'
   icons = [ordered]@{ '16' = 'icons/16.png'; '32' = 'icons/32.png'; '48' = 'icons/48.png'; '128' = 'icons/128.png' }
@@ -145,7 +148,7 @@ $rules = @(
 
 $Dist = Join-Path $Root 'dist\release'
 New-Item -ItemType Directory -Force -Path $Dist | Out-Null
-$Zip = if ($Store) { Join-Path $Dist "nadspdf-$Version-$Store-store.zip" } else { Join-Path $Dist "nadspdf-$Version-chrome-extension.zip" }
+$Zip = if ($Store) { Join-Path $Dist "nadspdf-$Version$(if ($Revision) { ".$Revision" })-$Store-store.zip" } else { Join-Path $Dist "nadspdf-$Version-chrome-extension.zip" }
 Remove-Item -Force $Zip -ErrorAction SilentlyContinue
 Compress-Archive -Path (Join-Path $Out '*') -DestinationPath $Zip
 Write-Host "wrote $Out (load unpacked) and $Zip"

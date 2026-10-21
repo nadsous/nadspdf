@@ -98,6 +98,8 @@ soumettre, vérifiez que l'identifiant affiché par le store figure bien dans `r
 ## Les versions suivantes
 
 1. Augmentez `version` dans `Cargo.toml` à la racine : le store refuse une version déjà publiée.
+   Pour renvoyer l'extension sans changer la version de l'application, ajoutez `-Revision 1`
+   (puis 2, 3…) : le manifeste dit alors `0.7.6.1` et le zip s'appelle `nadspdf-0.7.6.1-chrome-store.zip`.
 2. Reconstruisez avec le **même** `-ExtensionId` que la première fois : l'identifiant ne change
    plus.
 
