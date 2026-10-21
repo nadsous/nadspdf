@@ -36,6 +36,8 @@ pub fn tab_strip(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
     let (tab_h, button) = if mac { (MAC_TITLE_BAR - 2.0, 24.0) } else { (TAB_HEIGHT, STRIP_BUTTON) };
     egui::Panel::top("tab_strip")
         .exact_size(if mac { MAC_TITLE_BAR } else { TAB_STRIP })
+        // No line under the strip: the active tab runs on into the mode bar, which shares its colour.
+        .show_separator_line(false)
         .frame(egui::Frame::NONE.fill(t.titlebar).inner_margin(egui::Margin { left, right: 10, top: 0, bottom: 0 }))
         .show(ui, |ui| {
             let full = ui.max_rect();
@@ -621,61 +623,83 @@ fn tab(
     })
 }
 
+/// The modes of the mode bar: (mode, icon, label).
+const MODES: [(Mode, &str, &str); 5] = [
+    (Mode::AllTools, "layout-grid", "All tools"),
+    (Mode::Read, "book-open", "Read"),
+    (Mode::Edit, "file-pen-line", "Edit"),
+    (Mode::Convert, "arrow-left-right", "Convert"),
+    (Mode::Sign, "signature", "E-Sign"),
+];
+
+/// Height of the mode bar: a [`widgets::SEARCH_HEIGHT`] row and 10 px above and below it.
+const MODE_BAR: f32 = widgets::SEARCH_HEIGHT + 2.0 * 10.0;
+
+/// `rect` filled with `top` fading to `bottom`.
+fn vertical_gradient(painter: &egui::Painter, rect: Rect, top: Color32, bottom: Color32) {
+    let mut mesh = egui::Mesh::default();
+    for (pos, color) in [(rect.left_top(), top), (rect.right_top(), top), (rect.right_bottom(), bottom), (rect.left_bottom(), bottom)] {
+        mesh.colored_vertex(pos, color);
+    }
+    mesh.add_triangle(0, 1, 2);
+    mesh.add_triangle(0, 2, 3);
+    painter.add(egui::Shape::mesh(mesh));
+}
+
+/// Least space between the modes and the search box.
+const MODE_BAR_GAP: f32 = 16.0;
+
 pub fn mode_bar(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
     let t = Tokens::get(ui.ctx());
-    egui::Panel::top("mode_bar").exact_size(48.0).frame(egui::Frame::NONE.fill(t.titlebar).inner_margin(egui::Margin::symmetric(10, 0))).show(
-        ui,
-        |ui| {
-            ui.horizontal_centered(|ui| {
-                ui.spacing_mut().item_spacing.x = 2.0;
-                // The modes sit in one rounded group, like the menus on nads.site's top bar.
-                egui::Frame::NONE.fill(t.panel).stroke(Stroke::new(1.0, t.border)).corner_radius(10).inner_margin(egui::Margin::same(3)).show(
-                    ui,
-                    |ui| {
-                        ui.horizontal(|ui| {
-                            ui.spacing_mut().item_spacing.x = 2.0;
-                            for (mode, label) in [
-                                (Mode::AllTools, "All tools"),
-                                (Mode::Read, "Read"),
-                                (Mode::Edit, "Edit"),
-                                (Mode::Convert, "Convert"),
-                                (Mode::Sign, "E-Sign"),
-                            ] {
-                                if app.offered_mode(mode) != mode {
-                                    continue;
-                                }
-                                if widgets::mode_tab(ui, tl!(label), app.mode == mode).clicked() {
-                                    app.switch_mode(mode, true);
-                                }
-                            }
-                        });
-                    },
-                );
-                ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-                    ui.spacing_mut().item_spacing.x = 4.0;
-                    let has_doc = app.active.is_some();
-                    ui.add_enabled_ui(has_doc, |ui| {
-                        let tip = crate::commands::command_tip(ui.ctx(), tl!("Print ({key})"), "print.dialog");
-                        if icons::button(ui, "printer", 32.0, false, &tip).clicked() {
-                            app.run_command("print.dialog");
-                        }
-                        let tip = crate::commands::command_tip(ui.ctx(), tl!("Save ({key})"), "file.save");
-                        if icons::button(ui, "save", 32.0, false, &tip).clicked() {
-                            app.run_command("file.save");
-                        }
-                        let tip = crate::commands::command_tip(ui.ctx(), tl!("Document properties ({key})"), "file.properties");
-                        if icons::button(ui, "info", 32.0, false, &tip).clicked() {
-                            app.dialog = Some(Dialog::Properties(PropsTab::Description));
-                        }
-                    });
-                    ui.add_space(8.0);
-                    if widgets::search_box(ui, tl!("Find tools and commands"), 260.0).clicked() {
-                        app.palette_open = true;
+    // nads.site's top bar: pill groups, with 10 px of air above and below them. The bar starts in
+    // the active tab's colour, so the tab runs on into it, and fades to the title bar's colour
+    // across its whole width.
+    egui::Panel::top("mode_bar").exact_size(MODE_BAR).frame(egui::Frame::NONE.inner_margin(egui::Margin::symmetric(10, 0))).show(ui, |ui| {
+        let bar = ui.max_rect();
+        vertical_gradient(ui.painter(), bar.expand2(vec2(10.0, 0.0)), t.chrome, t.chrome.lerp_to_gamma(t.titlebar, 0.7));
+        let modes: Vec<(Mode, &str, &str)> = MODES.into_iter().filter(|&(mode, _, _)| app.offered_mode(mode) == mode).collect();
+        let pills: Vec<(&str, bool)> = modes.iter().map(|&(mode, _, label)| (tl!(label), app.mode == mode)).collect();
+        let modes_width = widgets::mode_pills_width(ui, &pills);
+        // The modes sit at the left end; the search box and the document buttons at the right end,
+        // the search box no wider than the room the modes leave it.
+        let modes_right = bar.left() + modes_width;
+        ui.scope_builder(egui::UiBuilder::new().max_rect(bar).layout(Layout::right_to_left(Align::Center)), |ui| {
+            ui.spacing_mut().item_spacing.x = 8.0;
+            let has_doc = app.active.is_some();
+            widgets::pill_group(ui, |ui| {
+                // The group lays out right to left like the bar: Print is added first, so
+                // it reads Properties, Save, Print.
+                ui.add_enabled_ui(has_doc, |ui| {
+                    let tip = crate::commands::command_tip(ui.ctx(), tl!("Print ({key})"), "print.dialog");
+                    if icons::button(ui, "printer", widgets::PILL_HEIGHT, false, &tip).clicked() {
+                        app.run_command("print.dialog");
+                    }
+                    let tip = crate::commands::command_tip(ui.ctx(), tl!("Save ({key})"), "file.save");
+                    if icons::button(ui, "save", widgets::PILL_HEIGHT, false, &tip).clicked() {
+                        app.run_command("file.save");
+                    }
+                    let tip = crate::commands::command_tip(ui.ctx(), tl!("Document properties ({key})"), "file.properties");
+                    if icons::button(ui, "info", widgets::PILL_HEIGHT, false, &tip).clicked() {
+                        app.dialog = Some(Dialog::Properties(PropsTab::Description));
                     }
                 });
             });
-        },
-    );
+            let room = ui.available_rect_before_wrap().right() - modes_right - MODE_BAR_GAP;
+            if widgets::search_box(ui, tl!("Find tools and commands"), room.clamp(200.0, 340.0)).clicked() {
+                app.palette_open = true;
+            }
+        });
+        let slot = Rect::from_min_size(bar.left_top(), vec2(modes_width, bar.height()));
+        ui.scope_builder(egui::UiBuilder::new().max_rect(slot).layout(Layout::left_to_right(Align::Center)), |ui| {
+            widgets::pill_group(ui, |ui| {
+                for &(mode, icon, label) in &modes {
+                    if widgets::mode_pill(ui, icon, tl!(label), app.mode == mode).clicked() {
+                        app.switch_mode(mode, true);
+                    }
+                }
+            });
+        });
+    });
 }
 
 /// The logo at the strip's left end: it is the main menu's button (File, Edit, Pages, View…).

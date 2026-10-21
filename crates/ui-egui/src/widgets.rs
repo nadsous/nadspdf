@@ -128,6 +128,88 @@ pub fn mode_tab(ui: &mut egui::Ui, label: &str, active: bool) -> Response {
     theme::hand(resp)
 }
 
+/// One of the mode bar's pills (nads.site's top bar): an icon and a label; the active mode is
+/// washed with the accent and draws its icon and label in the accent's text colour.
+pub fn mode_pill(ui: &mut egui::Ui, icon: &str, label: &str, active: bool) -> Response {
+    let t = Tokens::get(ui.ctx());
+    // Laid out without a colour, so it takes the ink chosen once the hover is known.
+    let galley = ui.painter().layout_no_wrap(label.to_owned(), mode_pill_font(active), Color32::PLACEHOLDER);
+    let (rect, resp) = ui.allocate_exact_size(vec2(galley.size().x + MODE_PILL_CHROME, PILL_HEIGHT), Sense::click());
+    resp.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::Button, ui.is_enabled(), active, label));
+    let press = theme::Press::track(ui, &resp);
+    if active {
+        ui.painter().rect_filled(rect, CornerRadius::same(8), press.fill(t.accent_soft, t.accent_soft, t.selected));
+    } else {
+        press.wash(ui, rect, 8, false);
+    }
+    let body = rect.translate(press.offset());
+    let ink = if active {
+        t.accent_text
+    } else if resp.hovered() {
+        t.text
+    } else {
+        t.text_muted
+    };
+    let icon_rect = Rect::from_center_size(egui::pos2(body.left() + 12.0 + 8.0, body.center().y), vec2(16.0, 16.0));
+    icons::paint(ui, icon_rect, icon, 15.0, ink);
+    ui.painter().galley(egui::pos2(icon_rect.right() + 6.0, body.center().y - galley.size().y * 0.5), galley, ink);
+    theme::hand(resp)
+}
+
+/// A [`mode_pill`]'s width beyond its label: 12 px padding, the 16 px icon, a 6 px gap, 12 px.
+const MODE_PILL_CHROME: f32 = 12.0 + 16.0 + 6.0 + 12.0;
+
+fn mode_pill_font(active: bool) -> egui::FontId {
+    if active { theme::semibold(13.0) } else { theme::medium(13.0) }
+}
+
+/// The width of a [`pill_group`] of [`mode_pill`]s, `(label, active)` each, measured before it is
+/// drawn so the mode bar can centre it in the same frame.
+pub fn mode_pills_width(ui: &egui::Ui, pills: &[(&str, bool)]) -> f32 {
+    let labels: f32 = pills
+        .iter()
+        .map(|&(label, active)| {
+            ui.painter().layout_no_wrap(label.to_owned(), mode_pill_font(active), Color32::PLACEHOLDER).size().x + MODE_PILL_CHROME
+        })
+        .sum();
+    let gaps = PILL_GAP * pills.len().saturating_sub(1) as f32;
+    labels + gaps + 2.0 * (f32::from(PILL_PADDING) + 1.0)
+}
+
+/// Space between the pills of a [`pill_group`], and between them and its border.
+const PILL_GAP: f32 = 2.0;
+const PILL_PADDING: i8 = 2;
+
+/// Height of a pill in a [`pill_group`]; the group, with its 2 px padding and 1 px border, is then
+/// [`SEARCH_HEIGHT`] high, so it lines up with the search box beside it.
+pub const PILL_HEIGHT: f32 = SEARCH_HEIGHT - 2.0 * (PILL_PADDING as f32 + 1.0);
+
+/// A rounded group of pills on the strip, like nads.site's `topbar-group`, centred on the row
+/// (a frame in a centred layout otherwise takes the row's whole height and sits low).
+pub fn pill_group<R>(ui: &mut egui::Ui, add: impl FnOnce(&mut egui::Ui) -> R) -> R {
+    let t = Tokens::get(ui.ctx());
+    let layout = if ui.layout().prefer_right_to_left() {
+        egui::Layout::right_to_left(egui::Align::Center)
+    } else {
+        egui::Layout::left_to_right(egui::Align::Center)
+    };
+    ui.allocate_ui_with_layout(vec2(ui.available_width(), SEARCH_HEIGHT), layout, |ui| {
+        // A recessed track, so the group reads on the light top of the mode bar too.
+        egui::Frame::NONE
+            .fill(t.titlebar)
+            .stroke(Stroke::new(1.0, t.border))
+            .corner_radius(10)
+            .inner_margin(egui::Margin::same(PILL_PADDING))
+            .show(ui, |ui| {
+                ui.set_height(PILL_HEIGHT);
+                ui.spacing_mut().item_spacing.x = PILL_GAP;
+                ui.with_layout(layout, add).inner
+            })
+            .inner
+    })
+    .inner
+}
+
 /// Rounded pill button; `primary` fills with the accent.
 pub fn pill_button(ui: &mut egui::Ui, label: &str, primary: bool) -> Response {
     let t = Tokens::get(ui.ctx());
@@ -167,18 +249,27 @@ pub fn ghost_button_sized(ui: &mut egui::Ui, icon: &str, label: &str, height: f3
 }
 
 /// A search-field lookalike that opens the command palette.
+/// Height of [`search_box`].
+pub const SEARCH_HEIGHT: f32 = 32.0;
+
 pub fn search_box(ui: &mut egui::Ui, placeholder: &str, width: f32) -> Response {
     let t = Tokens::get(ui.ctx());
-    let (rect, resp) = ui.allocate_exact_size(vec2(width, 32.0), Sense::click());
+    let (rect, resp) = ui.allocate_exact_size(vec2(width, SEARCH_HEIGHT), Sense::click());
     resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, ui.is_enabled(), placeholder));
     let press = theme::Press::track(ui, &resp);
-    let fill = press.fill(t.field, t.hover, t.pressed);
+    let fill = press.fill(t.panel, t.hover, t.pressed);
     let edge = t.border.lerp_to_gamma(t.text_muted, press.hover * 0.35);
-    ui.painter().rect(rect, CornerRadius::same(16), fill, Stroke::new(1.0, edge), egui::StrokeKind::Inside);
+    // The radius of the mode bar's pill groups (nads.site's `topbar-group`).
+    ui.painter().rect(rect, CornerRadius::same(10), fill, Stroke::new(1.0, edge), egui::StrokeKind::Inside);
     icons::paint(ui, Rect::from_min_size(rect.min + vec2(10.0, 8.0), vec2(16.0, 16.0)), "search", 15.0, t.text_muted);
     let shortcut = crate::commands::command_shortcut_label(ui.ctx(), "view.palette");
-    let shortcut = ui.painter().layout_no_wrap(shortcut, theme::regular(11.5), t.text_faint);
-    let shortcut_pos = rect.right_center() - vec2(12.0 + shortcut.size().x, shortcut.size().y * 0.5);
+    let shortcut = ui.painter().layout_no_wrap(shortcut, theme::medium(11.0), t.text_faint);
+    let shortcut_pos = rect.right_center() - vec2(14.0 + shortcut.size().x, shortcut.size().y * 0.5);
+    // The shortcut as a key cap.
+    if shortcut.size().x > 0.0 {
+        let cap = Rect::from_min_size(shortcut_pos, shortcut.size()).expand2(vec2(5.0, 2.0));
+        ui.painter().rect(cap, CornerRadius::same(5), t.hover, Stroke::new(1.0, t.border), egui::StrokeKind::Inside);
+    }
     // Reserve the measured shortcut width in every language; long translations are elided
     // within the remaining space rather than painted underneath the shortcut.
     let text_right = (shortcut_pos.x - 10.0).max(rect.left());
