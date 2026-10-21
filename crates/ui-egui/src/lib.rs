@@ -407,6 +407,10 @@ pub type HostSaveFn = Box<dyn Fn(&str, &[u8], bool) -> Result<(), String>>;
 /// Told every frame whether any tab has unsaved work, so a host page can warn before leaving.
 pub type HostDirtyFn = Box<dyn FnMut(bool)>;
 
+/// Asked for the text recognition models when Recognize Text opens without them: the web build
+/// fetches them then, so a page that never runs OCR never downloads them.
+pub type OcrModelsFn = Box<dyn FnMut()>;
+
 pub struct PasswordPrompt {
     pub name: String,
     pub path: Option<String>,
@@ -642,8 +646,10 @@ pub struct PdfCraftApp {
     pub host_save: Option<HostSaveFn>,
     /// Reports unsaved work to the embedding page (web, see [`HostDirtyFn`]).
     pub host_dirty: Option<HostDirtyFn>,
-    /// The simplified interface (`lite`): only reading, comments, Fill & Sign, saving and
-    /// printing. Set by the host (the Chrome extension), never saved with the preferences.
+    /// Fetches the text recognition models on first use (web, see [`OcrModelsFn`]).
+    pub ocr_models: Option<OcrModelsFn>,
+    /// The simplified interface (`lite`): only reading, comments, Fill & Sign, editing, pages,
+    /// text recognition, saving and printing. Set by the host (the Chrome extension), never saved with the preferences.
     pub lite: bool,
     /// A pending "save changes?" question (closing a dirty tab or quitting).
     pub close_request: Option<CloseRequest>,
@@ -996,6 +1002,7 @@ impl PdfCraftApp {
             os_events: None,
             host_save: None,
             host_dirty: None,
+            ocr_models: None,
             lite: false,
             close_request: None,
             save_override: None,
@@ -2136,9 +2143,9 @@ impl PdfCraftApp {
         !self.lite || lite::allows_command(id)
     }
 
-    /// `mode`, or Read when the simplified interface leaves it out (Edit and Convert).
+    /// `mode`, or Read when the simplified interface leaves it out (Convert).
     pub(crate) fn offered_mode(&self, mode: Mode) -> Mode {
-        if self.lite && matches!(mode, Mode::Edit | Mode::Convert) { Mode::Read } else { mode }
+        if self.lite && mode == Mode::Convert { Mode::Read } else { mode }
     }
 
     /// Select the workspace and its matching tool panel, just like the mode bar.

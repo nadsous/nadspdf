@@ -111,9 +111,20 @@ pub struct Ocr {
 impl Ocr {
     pub fn load(models: &Models) -> Result<Ocr, OcrError> {
         let load = |p: &Path| rten::Model::load_file(p).map_err(|e| OcrError::Load(p.display().to_string(), e.to_string()));
+        Self::with_models(load(&models.detection)?, load(&models.recognition)?)
+    }
+
+    /// The recogniser from the two model files' contents, for hosts without a file system (the
+    /// web build fetches them from its own package).
+    pub fn from_bytes(detection: Vec<u8>, recognition: Vec<u8>) -> Result<Ocr, OcrError> {
+        let load = |name: &str, data| rten::Model::load(data).map_err(|e| OcrError::Load(name.into(), e.to_string()));
+        Self::with_models(load(DETECTION_MODEL, detection)?, load(RECOGNITION_MODEL, recognition)?)
+    }
+
+    fn with_models(detection: rten::Model, recognition: rten::Model) -> Result<Ocr, OcrError> {
         let params = ocrs::OcrEngineParams {
-            detection_model: Some(load(&models.detection)?),
-            recognition_model: Some(load(&models.recognition)?),
+            detection_model: Some(detection),
+            recognition_model: Some(recognition),
             alphabet: Some(ALPHABET.into()),
             ..Default::default()
         };

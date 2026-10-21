@@ -7,7 +7,9 @@ L'extension s'installe depuis deux stores :
   utilisateurs cherchent d'abord dans le sien).
 
 Ce que les utilisateurs obtiennent est l'interface **simplifiée, en français** : lire, commenter,
-remplir, signer, enregistrer et imprimer (`?lite=1&lang=fr`, voir `build.ps1`).
+remplir, signer, modifier le texte, les images et les pages, reconnaître le texte (OCR), enregistrer
+et imprimer (`?lite=1&lang=fr`, voir `build.ps1`). Le paquet contient les modèles de l'OCR
+(`cargo xtask models` avant de construire) ; la page ne les charge qu'à la première reconnaissance.
 
 ## Le piège de l'identifiant
 
@@ -36,17 +38,17 @@ soumettre, vérifiez que l'identifiant affiché par le store figure bien dans `r
   `https://github.com/nadsous/nadspdf/blob/main/PRIVACY.md` si le dépôt est public, sinon une
   page de votre site.
 - **Description courte** (132 caractères au plus) : « Ouvre les PDF dans le navigateur avec
-  NadsPDF : lire, annoter, remplir et signer, sans rien envoyer sur Internet. »
+  NadsPDF : lire, annoter, remplir, signer, modifier et OCR, sans rien envoyer sur Internet. »
 
 ## Chrome Web Store
 
 1. **Compte développeur** : <https://chrome.google.com/webstore/devconsole>, connexion avec un
    compte Google, frais d'inscription uniques de 5 $.
-2. **Premier envoi** : construisez un paquet provisoire, sans identifiant (le script affiche un
-   avertissement, c'est voulu) :
+2. **Premier envoi** : construisez un paquet provisoire, sans identifiant (`-FirstUpload` ; le
+   script affiche un avertissement, c'est voulu, et refuse un `-Store` sans l'un ou l'autre) :
 
    ```powershell
-   powershell -File packaging\chrome\build.ps1 -Store chrome
+   powershell -File packaging\chrome\build.ps1 -Store chrome -FirstUpload
    ```
 
    Cliquez sur **Nouvel élément** et envoyez `dist\release\nadspdf-<version>-chrome-store.zip`.
@@ -80,7 +82,7 @@ soumettre, vérifiez que l'identifiant affiché par le store figure bien dans `r
 1. **Compte** : <https://partner.microsoft.com/dashboard/microsoftedge/overview>, inscription
    gratuite au programme Microsoft Edge avec un compte Microsoft.
 2. **Premier envoi** : **Créer une extension**, puis envoyez un paquet provisoire construit avec
-   `build.ps1 -SkipBuild -Store edge` (`dist\release\nadspdf-<version>-edge-store.zip`). Relevez l'identifiant attribué par Edge (*CRX ID*) dans l'aperçu de l'extension.
+   `build.ps1 -SkipBuild -Store edge -FirstUpload` (`dist\release\nadspdf-<version>-edge-store.zip`). Relevez l'identifiant attribué par Edge (*CRX ID*) dans l'aperçu de l'extension.
 3. **Paquet définitif** :
 
    ```powershell

@@ -1,12 +1,13 @@
 //! The simplified interface ([`PdfCraftApp::lite`](crate::PdfCraftApp)): read, comment, fill in,
-//! sign, save and print, and nothing else. The Chrome extension shows it (`?lite=1` on the web).
+//! sign, edit text, images and pages, recognize text (OCR), save and print, and nothing else. The
+//! Chrome extension shows it (`?lite=1` on the web).
 //!
 //! One allowlist decides. `command_enabled` refuses any other command, so no menu, palette,
 //! shortcut or control-channel call reaches a hidden tool, and the lists the user sees (menus,
 //! palette, All tools, Home, mode bar) leave them out.
 
 /// Tool groups of the engine catalogue shown in the simplified interface.
-const GROUPS: &[&str] = &["comment", "fill_sign"];
+const GROUPS: &[&str] = &["comment", "fill_sign", "edit", "organize", "scan"];
 
 /// Commands allowed one by one.
 const COMMANDS: &[&str] = &[
@@ -24,15 +25,15 @@ const COMMANDS: &[&str] = &[
     "form.fields",
     "form.clear",
     "sign.panel",
-    "page.rotate",
-    "page.rotate_ccw",
+    "ocr.recognize",
     "ui.dock.reset",
     "help.shortcuts",
     "help.about",
 ];
 
-/// Whole families allowed (zoom and layout, comment tools, Fill & Sign), less [`EXCEPT`].
-const PREFIXES: &[&str] = &["view.", "comment.", "sign.fill."];
+/// Whole families allowed (zoom and layout, comment tools, Fill & Sign, editing, pages), less
+/// [`EXCEPT`].
+const PREFIXES: &[&str] = &["view.", "comment.", "sign.fill.", "edit.", "page."];
 
 /// Members of [`PREFIXES`] that belong to the full editor.
 const EXCEPT: &[&str] = &["view.group_tab", "comment.import", "comment.export", "comment.summarize"];
@@ -72,11 +73,19 @@ mod tests {
     }
 
     #[test]
+    fn editing_pages_and_ocr_stay() {
+        for id in ["edit.edit_text", "edit.text", "edit.image", "edit.watermark", "page.delete", "page.organize", "page.rotate", "ocr.recognize"] {
+            assert!(allows_command(id), "{id}");
+        }
+        for g in ["edit", "organize", "scan"] {
+            assert!(allows_group(g), "{g}");
+        }
+    }
+
+    #[test]
     fn advanced_tools_and_preferences_go() {
         // Preferences is out so the interface language the extension sets stays.
-        for id in
-            ["app.preferences", "ocr.recognize", "redact.mark", "edit.edit_text", "tools.js_console", "comment.export", "page.delete", "export.docx"]
-        {
+        for id in ["app.preferences", "ocr.recognize_batch", "redact.mark", "tools.js_console", "comment.export", "export.docx"] {
             assert!(!allows_command(id), "{id}");
         }
         for g in TOOL_GROUPS.iter().filter(|g| !GROUPS.contains(&g.id)) {
@@ -85,7 +94,7 @@ mod tests {
     }
 
     /// The app, not only the list: a hidden command can't run (from a shortcut, the palette or the
-    /// control channel), a hidden tool panel can't open, and Edit mode falls back to Read.
+    /// control channel), a hidden tool panel can't open, and Convert mode falls back to Read.
     #[test]
     fn the_app_refuses_what_lite_hides() {
         let mut app = crate::PdfCraftApp::new();
@@ -99,7 +108,9 @@ mod tests {
         assert_ne!(app.left, crate::LeftPanel::Tool("redact"));
         app.select_tool("fill_sign");
         assert_eq!(app.left, crate::LeftPanel::Tool("fill_sign"));
-        app.switch_mode(crate::Mode::Edit, true);
+        app.switch_mode(crate::Mode::Convert, true);
         assert_eq!(app.mode, crate::Mode::Read);
+        app.switch_mode(crate::Mode::Edit, true);
+        assert_eq!(app.mode, crate::Mode::Edit);
     }
 }

@@ -70,6 +70,8 @@ pub struct OcrRun {
 pub(crate) fn body(ui: &mut egui::Ui, app: &mut PdfCraftApp, t: &Tokens) -> (bool, bool) {
     let pages = app.active_ids().and_then(|(_, id)| app.session.get(id)).map_or(1, |d| d.info.pages.len().max(1));
     let available = pdfcraft_engine::ocr::available();
+    // The web build is still fetching the models (`ocr_models`).
+    let loading = !available && app.ocr_models.is_some();
     let d = &mut app.ocr_draft;
     d.to = d.to.clamp(1, pages);
     d.from = d.from.clamp(1, d.to);
@@ -123,7 +125,10 @@ pub(crate) fn body(ui: &mut egui::Ui, app: &mut PdfCraftApp, t: &Tokens) -> (boo
         ui.add(crate::widgets::checkbox(&mut d.text_pages, tl!("Also recognize pages that already have text")))
             .on_hover_text(tl!("Pictures on those pages are recognized too; words already in the page's text are not added again"));
     });
-    if !available {
+    if loading {
+        ui.label(egui::RichText::new(tl!("Loading text recognition…")).small().color(t.text_muted));
+        ui.add_space(6.0);
+    } else if !available {
         ui.label(
             egui::RichText::new(tl!("Text recognition isn't installed: its model files are missing. Reinstall NadsPDF, or set PDFCRAFT_MODELS to the folder that holds them."))
                 .small()

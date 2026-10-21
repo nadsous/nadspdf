@@ -3,6 +3,7 @@
 #
 #   powershell -File packaging\chrome\build.ps1 [-SkipBuild]
 #   powershell -File packaging\chrome\build.ps1 -Store chrome -ExtensionId <id from the store>
+#   powershell -File packaging\chrome\build.ps1 -Store chrome -FirstUpload   (only to get that id)
 #
 # Needs trunk (cargo install trunk --locked) and the wasm32-unknown-unknown target.
 #
@@ -17,17 +18,23 @@
 # The manifest's public key (extension-key.txt) fixes the extension id, which the redirect rule
 # has to name. Each store gives the extension its own id instead (and the Chrome Web Store refuses
 # a manifest with a key): -Store chrome|edge leaves the key out and needs that id in -ExtensionId
-# (packaging\chrome\PUBLISHING.md).
+# (packaging\chrome\PUBLISHING.md). A store package naming the wrong id installs fine and opens no
+# PDF (the redirect lands on a missing extension: ERR_BLOCKED_BY_CLIENT), so -Store refuses to
+# build without -ExtensionId unless -FirstUpload says the package only serves to obtain that id.
 param(
   [switch] $SkipBuild,
   [string] $ExtensionId = 'dkoohdpnfiphcimpklkphfbjibbaenje',
-  [ValidateSet('', 'chrome', 'edge')] [string] $Store = ''
+  [ValidateSet('', 'chrome', 'edge')] [string] $Store = '',
+  [switch] $FirstUpload
 )
 $ErrorActionPreference = 'Stop'
-# Without the store's id, the package is only good for the first upload, which assigns that id.
 if ($Store -and -not $PSBoundParameters.ContainsKey('ExtensionId')) {
+  if (-not $FirstUpload) {
+    throw "-Store $Store needs -ExtensionId <the id the store shows> (or -FirstUpload, only to obtain that id; PUBLISHING.md)"
+  }
   Write-Warning "first upload only: PDFs won't open until you rebuild with -Store $Store -ExtensionId <the id the store shows> (PUBLISHING.md)"
 }
+if ($ExtensionId -cnotmatch '^[a-p]{32}$') { throw "-ExtensionId must be 32 letters a-p, got '$ExtensionId'" }
 $Root = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $Version = (Select-String -Path (Join-Path $Root 'Cargo.toml') -Pattern '^version = "([^"]+)"' | Select-Object -First 1).Matches[0].Groups[1].Value
 $Out = Join-Path $Root 'dist\chrome-extension'
@@ -68,12 +75,25 @@ foreach ($s in 16, 32, 48, 128) {
 }
 Copy-Item (Join-Path $PSScriptRoot 'popup.html') $Out
 
+# Scan & OCR: the recognition models (about 12 MB, ATTRIBUTION.toml), which the page fetches from
+# models/ only when the user first opens Recognize Text (apps/pdfcraft-web `ocr_models_fetcher`).
+$ModelDir = if ($env:PDFCRAFT_MODELS) { $env:PDFCRAFT_MODELS } else { Join-Path $Root 'assets\models' }
+$Models = Join-Path $Out 'models'
+New-Item -ItemType Directory -Force -Path $Models | Out-Null
+foreach ($m in 'text-detection.rten', 'text-recognition.rten') {
+  $src = Join-Path $ModelDir $m
+  if (-not (Test-Path $src)) { throw "$src missing: run cargo xtask models (or set PDFCRAFT_MODELS)" }
+  Copy-Item $src $Models
+}
+# CC-BY-SA-4.0 asks for the credit and the licence to travel with the models, as in the MSI.
+Get-ChildItem $ModelDir -Filter '*.txt' | Copy-Item -Destination $Models
+
 $key = (Get-Content (Join-Path $PSScriptRoot 'extension-key.txt') -Raw).Trim()
 $manifest = [ordered]@{
   manifest_version = 3
   name = 'NadsPDF'
   short_name = 'NadsPDF'
-  description = "Ouvre les PDF dans Chrome avec l'éditeur NadsPDF : lire, annoter, remplir et signer, sans rien envoyer sur Internet."
+  description = "Ouvre les PDF dans Chrome avec NadsPDF : lire, annoter, remplir, signer, modifier et OCR, sans rien envoyer sur Internet."
   version = ($Version -replace '-.*$', '')
   # Rule 3 matches on response headers, which older browsers would ignore and so redirect every page.
   minimum_chrome_version = '128'
@@ -92,7 +112,8 @@ $utf8 = New-Object Text.UTF8Encoding $false
 # A tab opening a PDF goes to NadsPDF with the address in #file=. A fragment, not ?file=: the
 # redirect can't URL-encode the address, and a query would split a signed URL's own &parameters
 # off. Only top-level navigations: PDFs embedded in pages, and NadsPDF's own download of the file,
-# are left alone. ?lite=1&lang=fr: the simplified interface (read, comment, fill in, sign), in French.
+# are left alone. ?lite=1&lang=fr: the simplified interface (read, comment, fill in, sign, edit, OCR),
+# in French.
 $redirect = [ordered]@{ type = 'redirect'; redirect = [ordered]@{ regexSubstitution = "chrome-extension://$ExtensionId/index.html?lite=1&lang=fr#file=\0" } }
 $pdfPath = '[^?#]*\.[pP][dD][fF]([?#].*)?$'
 $rules = @(

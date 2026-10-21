@@ -9,7 +9,7 @@ use std::sync::{Arc, Mutex};
 
 use pdfcraft_render::{PageInfo, PageRenderer, RenderConfig, RenderRequest, RequestKind};
 
-pub use pdfcraft_ocr::{LANGUAGES, Models, Ocr, OcrError, PlacedWord};
+pub use pdfcraft_ocr::{DETECTION_MODEL, LANGUAGES, Models, Ocr, OcrError, PlacedWord, RECOGNITION_MODEL};
 
 use crate::{DocId, Edit, EditError, Session};
 
@@ -68,9 +68,11 @@ impl OcrPage {
     }
 }
 
+/// The shared recogniser, once loaded or [`install`]ed.
+static OCR: Mutex<Option<Arc<Ocr>>> = Mutex::new(None);
+
 /// The recogniser, loaded once (it takes a moment) and shared.
 pub fn engine() -> Result<Arc<Ocr>, String> {
-    static OCR: Mutex<Option<Arc<Ocr>>> = Mutex::new(None);
     let mut slot = OCR.lock().unwrap_or_else(|e| e.into_inner());
     if let Some(o) = slot.as_ref() {
         return Ok(o.clone());
@@ -80,9 +82,15 @@ pub fn engine() -> Result<Arc<Ocr>, String> {
     Ok(o)
 }
 
+/// Use `ocr` as the recogniser: a host without the model files on disk (the web build) loads
+/// them its own way ([`Ocr::from_bytes`]).
+pub fn install(ocr: Ocr) {
+    *OCR.lock().unwrap_or_else(|e| e.into_inner()) = Some(Arc::new(ocr));
+}
+
 /// Whether the recognition models are installed.
 pub fn available() -> bool {
-    Models::find().is_some()
+    OCR.lock().unwrap_or_else(|e| e.into_inner()).is_some() || Models::find().is_some()
 }
 
 /// Everything recognition needs from a document, detached from the session.

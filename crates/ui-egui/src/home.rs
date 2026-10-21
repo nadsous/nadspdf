@@ -9,7 +9,7 @@ use crate::{PdfCraftApp, icons, panels::human_size, widgets};
 
 const RECOMMENDED: [&str; 5] = ["organize", "comment", "form", "edit", "protect"];
 /// The simplified interface's tools ([`PdfCraftApp::lite`]).
-const RECOMMENDED_LITE: [&str; 2] = ["fill_sign", "comment"];
+const RECOMMENDED_LITE: [&str; 4] = ["edit", "fill_sign", "comment", "scan"];
 
 /// What a NadsPDF quick tool does when clicked: run a registry command, or open a tool panel.
 #[derive(Clone, Copy)]

@@ -33,7 +33,7 @@ fn main() {
                         let _ = app.set_option("language", &lang);
                     }
                     // `?lite=1`: the simplified interface the Chrome extension shows (read,
-                    // comment, fill in, sign), opening documents in Read mode.
+                    // comment, fill in, sign, edit, OCR), opening documents in Read mode.
                     if query_param("lite").is_some_and(|v| v != "0") {
                         app.lite = true;
                         let _ = app.set_option("mode", "read");
@@ -69,6 +69,10 @@ fn main() {
                             ctx.request_repaint();
                         });
                     }
+                    // Scan & OCR: the web has no models folder, so the recognition models (about
+                    // 12 MB) come from the site's own `models/` (the Chrome extension ships them),
+                    // fetched the first time Recognize Text opens, never for a page that doesn't OCR.
+                    app.ocr_models = Some(ocr_models_fetcher(app.failed_inbox.clone(), cc.egui_ctx.clone()));
                     // eframe never raises a close request on a browser reload or tab close, so `guard_quit` never
                     // prompts; ask the browser to confirm instead while a document has unsaved work (#812).
                     warn_before_unload(app.unsaved_flag.clone());
@@ -116,6 +120,38 @@ fn warn_before_unload(unsaved: std::sync::Arc<std::sync::atomic::AtomicBool>) {
     if window.add_event_listener_with_callback("beforeunload", handler.as_ref().unchecked_ref()).is_ok() {
         handler.forget();
     }
+}
+
+/// Fetches `models/` once, on the first call, and installs the recogniser; a failure is shown
+/// like a document that could not be opened, and the next call tries again.
+#[cfg(target_arch = "wasm32")]
+fn ocr_models_fetcher(failed: pdfcraft_ui_egui::FailedInbox, ctx: egui::Context) -> pdfcraft_ui_egui::OcrModelsFn {
+    use pdfcraft_engine::ocr::{DETECTION_MODEL, Ocr, RECOGNITION_MODEL, install};
+    use std::{cell::Cell, rc::Rc};
+    let busy = Rc::new(Cell::new(false));
+    Box::new(move || {
+        if busy.replace(true) {
+            return;
+        }
+        let (busy, failed, ctx) = (busy.clone(), failed.clone(), ctx.clone());
+        wasm_bindgen_futures::spawn_local(async move {
+            let loaded = async {
+                let (detection, _) = fetch_bytes(&format!("models/{DETECTION_MODEL}")).await?;
+                let (recognition, _) = fetch_bytes(&format!("models/{RECOGNITION_MODEL}")).await?;
+                Ocr::from_bytes(detection, recognition).map_err(|e| e.to_string())
+            };
+            match loaded.await {
+                Ok(ocr) => install(ocr),
+                Err(e) => {
+                    if let Ok(mut q) = failed.lock() {
+                        q.push(("text recognition models".into(), e));
+                    }
+                    busy.set(false);
+                }
+            }
+            ctx.request_repaint();
+        });
+    })
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -235,7 +271,10 @@ mod source {
                 }
             } else if key.eq_ignore_ascii_case("filename") {
                 let value = value.strip_prefix('"').map(|v| v.split('"').next().unwrap_or_default()).unwrap_or(value);
-                plain = Some(pdf_name(value));
+                // Servers often percent-encode this one too (`Quittance%20de%20loyer.pdf`), and
+                // Chrome shows it decoded; a value that isn't valid UTF-8 once decoded stays as sent.
+                let decoded = percent_decode(value);
+                plain = Some(pdf_name(if decoded.contains('\u{FFFD}') { value } else { &decoded }));
             }
         }
         plain
@@ -314,6 +353,8 @@ mod source {
             assert_eq!(name_from_disposition("inline; filename=\"Facture 12.pdf\"").as_deref(), Some("Facture 12.pdf"));
             assert_eq!(name_from_disposition("inline; filename=plan; filename*=UTF-8''Plan%20%C3%A9tage.pdf").as_deref(), Some("Plan étage.pdf"));
             assert_eq!(name_from_disposition("INLINE; FILENAME=x.pdf").as_deref(), Some("x.pdf"));
+            assert_eq!(name_from_disposition("inline; filename=\"Quittance%20de%20loyer.pdf\"").as_deref(), Some("Quittance de loyer.pdf"));
+            assert_eq!(name_from_disposition("inline; filename=\"r%E9el.pdf\"").as_deref(), Some("r%E9el.pdf"));
             assert_eq!(name_from_disposition("inline"), None);
             assert_eq!(name_from_disposition("inline; filename*=broken"), None);
             assert_eq!(name_from_disposition("inline; filename*=broken; filename=ok.pdf").as_deref(), Some("ok.pdf"));
