@@ -24,7 +24,7 @@ pub fn register() -> Result<(), String> {
 /// and remembered (egui's temporary memory), then again after each change.
 #[cfg(windows)]
 pub(crate) fn preferences_row(ui: &mut egui::Ui, app: &mut crate::PdfCraftApp, t: &crate::theme::Tokens) {
-    let id = egui::Id::new("explorer-menu-status");
+    let id = egui::Id::unique("explorer-menu-status");
     let status = match ui.ctx().data(|d| d.get_temp::<menu::Status>(id)) {
         Some(status) => status,
         None => {

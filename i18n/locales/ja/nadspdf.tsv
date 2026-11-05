@@ -1,0 +1,139 @@
+# NadsPDF's own rows for ja: strings only NadsPDF has (vaults, bubbles, extensions,
+# conversion, compression…) and wordings NadsPDF chose over the shared PdfCraft catalog.
+# Same format as pdfcraft.tsv (context <TAB> English source <TAB> translation). build.rs merges
+# this file over pdfcraft.tsv: a row here replaces pdfcraft.tsv's row with the same context and
+# source text.
+#
+# Clean room: every entry was written from the plain meaning of the English text in ordinary
+# computing vocabulary. No other product's localisation, string table or translated UI was
+# consulted or copied; add entries the same way.
+
+	Images, text and documents (converted to PDF)	画像・テキスト・文書（PDF に変換）
+	PDF, images, text and documents	PDF・画像・テキスト・文書
+	NadsPDF tools	NadsPDF ツール
+	PdfCraft (upstream) on GitHub	GitHub の PdfCraft（元のプロジェクト）
+	Combine with NadsPDF	NadsPDF で結合
+	Open with NadsPDF	NadsPDF で開く
+	Show NadsPDF in the File Explorer right-click menu	エクスプローラーの右クリック メニューに NadsPDF を表示
+	Added for all users when NadsPDF was installed.	NadsPDF のインストール時にすべてのユーザーに追加されました。
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	文書、画像、PDF に「PDF に変換」「結合」「開く」を追加します。Windows 11 では「その他のオプションを確認」の中にあります。
+	Couldn't change the File Explorer menu: {e}	エクスプローラーのメニューを変更できませんでした: {e}
+	Couldn't find {name}	{name} が見つかりません
+@plural	{n} file|{n} files	{n} 個のファイル
+	Give the vault a name	保管庫に名前を付けてください
+	You can have up to {n} vaults. Delete one first.	保管庫は最大 {n} 個までです。先に 1 つ削除してください。
+	That vault no longer exists	その保管庫はもう存在しません
+	Added {files} to {vault}	{vault} に追加しました: {files}
+	Already in {vault}	すでに {vault} にあります
+	A vault holds up to {n} files	保管庫には最大 {n} 個のファイルを入れられます
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	保管庫には、このコンピューター上の PDF と NadsPDF が変換できるファイルを入れられます
+	No files to open in this vault	この保管庫には開けるファイルがありません
+	Opening the first {n} files	最初の {n} 個のファイルを開いています
+	Deleted the vault {vault}. Its files were not touched.	保管庫 {vault} を削除しました。ファイルには手を加えていません。
+	Moved {file} to {vault}	{file} を {vault} に移動しました
+	Vaults need the desktop app	保管庫はデスクトップアプリで使えます
+	Locate {file}	{file} を探す
+	Save this document to a file first, then add it to a vault	まずこの書類をファイルとして保存してから、保管庫に追加してください
+	Vaults	保管庫
+	New vault	新しい保管庫
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	コンピューターのあちこちにある PDF を、名前・色・アイコン付きの保管庫にまとめます。ファイルは元の場所のままです。
+	Click to show its files. Drag to reorder, or drop files here.	クリックでファイルを表示。ドラッグで並べ替え、またはここにファイルをドロップします。
+	Open all	すべて開く
+	Edit vault…	保管庫を編集…
+	Move left	左へ移動
+	Move right	右へ移動
+	Delete vault…	保管庫を削除…
+	New vault…	新しい保管庫…
+	No files yet. Drop files here to add them.	まだファイルがありません。ここにファイルをドロップすると追加されます。
+	Locate…	場所を指定…
+	Remove {name} from this vault	{name} をこの保管庫から外す
+	This file has moved or been deleted. Locate it, or remove it from the vault.	このファイルは移動または削除されました。場所を指定するか、保管庫から外してください。
+	Move to vault	保管庫へ移動
+	Remove from vault	保管庫から外す
+	Show this vault on Home	この保管庫をホームに表示
+	Vault: {name}	保管庫: {name}
+	Vault	保管庫
+	Edit vault	保管庫を編集
+	Vault name	保管庫の名前
+	Create vault	保管庫を作成
+	Delete the vault {vault}?	保管庫 {vault} を削除しますか?
+	Its files stay where they are on your computer. Only the vault is deleted.	ファイルはコンピューター上の元の場所に残ります。削除されるのは保管庫だけです。
+	Delete vault	保管庫を削除
+	Add to vault	保管庫に追加
+	Already in it	追加済み
+	Add document to vault…	書類を保管庫に追加…
+	Dark pages	ダークページ
+	Rasterize pages (strong compression)…	ページをラスタライズ（強力な圧縮）…
+	Rasterize pages (strong compression)	ページをラスタライズ（強力な圧縮）
+	Rasterizing… page {d} of {t}	ラスタライズ中… {t} ページ中 {d} ページ目
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	すべてのページを画像に変換します。最も強力な圧縮で、スキャン文書に最適です。テキストは選択も検索もできなくなり、リンク、しおり、フォームフィールドは保持されません。結果はコピーとして保存されます。
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi、JPEG 品質 {q}
+compression level	Light	弱
+compression level	Medium	中
+compression level	Strong	強
+	Compress	圧縮
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	ラスタライズしてもこのファイルは小さくなりません（{size}）。コピーは保存されませんでした。
+	Add faint watermark	薄い透かしを追加
+	Recognize text if available	利用可能ならテキストを認識
+	Prepare for Sending	送信用に準備
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	ページの下部中央に「n / 総数」でページ番号を付け、メールで送れるようにファイルを小さくします。
+	Archive Scans	スキャンをアーカイブ
+	Make scans searchable (when text recognition is available), then make them smaller.	スキャン文書を検索可能にし（テキスト認識がインストールされている場合）、その後小さくします。
+	Confidential	社外秘
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	すべてのページに薄い斜めの「社外秘」透かしと「n / 総数」のページ番号を付けます。
+	{name} (copy)	{name}（コピー）
+watermark text	CONFIDENTIAL	社外秘
+	Group name	グループ名
+	Rename Group	グループ名を変更
+	Close Group	グループを閉じる
+	Add Tab to New Group	タブを新しいグループに追加
+	Add Tab to Group	タブをグループに追加
+	Remove from Group	グループから削除
+	Click to fold or unfold the group	クリックしてグループを折りたたむ／展開する
+	Filter tools	ツールを絞り込む
+	No tool matches	一致するツールはありません
+	Essentials	基本
+	Float as a bubble	バブルとして浮かせる
+	Show this PDF in a small window over the others	このPDFを他の上の小さなウィンドウに表示
+	Put back as a tab	タブに戻す
+	Fold into a bubble	バブルにたたむ
+	Click to open, drag onto the tabs to put it back	クリックで開き、タブにドラッグすると戻ります
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	お使いのバージョンは {c} です。NadsPDF を閉じ、このバージョンに代わって新しいバージョンをインストールしてから再び開きます。設定はそのまま残ります。
+	You have version {c}.	お使いのバージョンは {c} です。
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	この NadsPDF は Microsoft Store から入手したもので、新しいバージョンは Store が自動でインストールします。
+	Downloading the update…	アップデートをダウンロードしています…
+	Couldn't install the update: {e}	アップデートをインストールできませんでした: {e}
+	Check for updates when NadsPDF starts (once a day)	NadsPDF の起動時にアップデートを確認する（1 日 1 回）
+	Open in New Window	新しいウィンドウで開く
+	Or drag the tab out of the strip, to another screen for instance	またはタブをバーの外へドラッグします（別の画面へなど）
+	Release to open in a new window	離すと新しいウィンドウで開きます
+	Save this PDF before opening it in a new window.	新しいウィンドウで開く前にこの PDF を保存してください。
+	Save your changes before opening this PDF in a new window.	新しいウィンドウでこの PDF を開く前に変更を保存してください。
+	Element	要素
+	Point at a line of the drawing to see its length. Click it to keep the measurement.	図面の線にポインターを合わせると長さが表示されます。クリックすると計測を残します。
+	Actual size (no scale)	実寸（縮尺なし）
+	This page	このページ
+	Usual scales	一般的な縮尺
+	Other unit	その他の単位
+	Click both ends of a length you know, then type it on the right.	長さが分かっている区間の両端をクリックし、右側にその長さを入力します。
+	Whole document	文書全体
+	Total area	合計面積
+	Total length	合計長さ
+	Know when you open or close a document (its name and number of pages)	ドキュメントを開いたり閉じたりしたことを知る（名前とページ数）
+	Read the text of the documents you open	開いたドキュメントのテキストを読む
+	Know where the documents you open are saved	開いたドキュメントの保存場所を知る
+	Show a message bar with buttons above a document	ドキュメントの上にボタン付きのメッセージバーを表示する
+	Open web pages on the sites it lists	指定したサイトの Web ページを開く
+	Extensions	拡張機能
+	This extension can't be used: {e}	この拡張機能は使用できません: {e}
+	Extensions folder: {path}	拡張機能フォルダー: {path}
+	Turn off	オフにする
+	Turn on…	オンにする…
+	Stopped: {e}	停止しました: {e}
+	On at the next start	次回の起動時にオン
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} はこのコンピューター上であなたの権限で動作するプログラムです。次のことができます:
+	• Nothing beyond running.	• 動作する以外は何もできません。
+	Only turn on extensions you trust.	信頼できる拡張機能だけをオンにしてください。
+	Turn on	オンにする
+	Couldn't save the extension settings: {e}	拡張機能の設定を保存できませんでした: {e}
+	Loading text recognition…	テキスト認識を読み込んでいます…

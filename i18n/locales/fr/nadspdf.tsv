@@ -1,0 +1,155 @@
+# NadsPDF's own rows for fr: strings only NadsPDF has (vaults, bubbles, extensions,
+# conversion, compression…) and wordings NadsPDF chose over the shared PdfCraft catalog.
+# Same format as pdfcraft.tsv (context <TAB> English source <TAB> translation). build.rs merges
+# this file over pdfcraft.tsv: a row here replaces pdfcraft.tsv's row with the same context and
+# source text.
+#
+# Clean room: every entry was written from the plain meaning of the English text in ordinary
+# computing vocabulary. No other product's localisation, string table or translated UI was
+# consulted or copied; add entries the same way.
+
+	A diagonal CONFIDENTIAL watermark on every page.	Un filigrane diagonal « CONFIDENTIEL » sur chaque page.
+	Images, text and documents (converted to PDF)	Images, texte et documents (convertis en PDF)
+	PDF, images, text and documents	PDF, images, texte et documents
+	NadsPDF tools	Outils NadsPDF
+	PdfCraft (upstream) on GitHub	PdfCraft (projet d'origine) sur GitHub
+	Convert to PDF	Convertir en PDF
+	Word, Excel, CSV, text, HTML, images	Word, Excel, CSV, texte, HTML, images
+	Compress	Compresser
+	Make PDFs lighter	Alléger vos PDF
+	Combine several PDFs	Assembler plusieurs PDF
+	Split & organize	Diviser et organiser
+	Extract, delete, rotate pages	Extraire, supprimer, pivoter des pages
+	Change the words of a PDF	Changer les mots d'un PDF
+	PDF to images	PDF → images
+	Export pages as PNG or JPEG	Exporter les pages en PNG ou JPEG
+	Images to PDF	Images → PDF
+	PNG and JPEG into one PDF	PNG et JPEG en un seul PDF
+	Pipelines	Pipelines
+	Chain steps over many files	Enchaîner des étapes sur plusieurs fichiers
+	Stamp CONFIDENTIAL across pages	Apposer CONFIDENTIEL sur les pages
+	Page numbers	Numéros de page
+	Number pages like 1 / 10	Numéroter les pages : 1 / 10
+	Combine with NadsPDF	Fusionner avec NadsPDF
+	Open with NadsPDF	Ouvrir avec NadsPDF
+	Show NadsPDF in the File Explorer right-click menu	Afficher NadsPDF dans le menu contextuel de l’Explorateur de fichiers
+	Added for all users when NadsPDF was installed.	Ajouté pour tous les utilisateurs lors de l’installation de NadsPDF.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	Convertir en PDF, Fusionner et Ouvrir sur les documents, les images et les PDF. Sous Windows 11, dans « Afficher plus d’options ».
+	Couldn't change the File Explorer menu: {e}	Impossible de modifier le menu de l’Explorateur de fichiers : {e}
+	Couldn't find {name}	{name} est introuvable
+	Give the vault a name	Donnez un nom au coffre
+	You can have up to {n} vaults. Delete one first.	Vous pouvez avoir jusqu'à {n} coffres. Supprimez-en un d'abord.
+	That vault no longer exists	Ce coffre n'existe plus
+	Added {files} to {vault}	Ajouté à {vault} : {files}
+	Already in {vault}	Déjà dans {vault}
+	A vault holds up to {n} files	Un coffre contient au maximum {n} fichiers
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	Les coffres contiennent des PDF et des fichiers que NadsPDF sait convertir, présents sur cet ordinateur
+	No files to open in this vault	Aucun fichier à ouvrir dans ce coffre
+	Opening the first {n} files	Ouverture des {n} premiers fichiers
+	Deleted the vault {vault}. Its files were not touched.	Coffre {vault} supprimé. Ses fichiers n'ont pas été touchés.
+	Moved {file} to {vault}	{file} déplacé vers {vault}
+	Vaults need the desktop app	Les coffres nécessitent l'application de bureau
+	Locate {file}	Retrouver {file}
+	Save this document to a file first, then add it to a vault	Enregistrez d'abord ce document dans un fichier, puis ajoutez-le à un coffre
+	Vaults	Coffres
+	New vault	Nouveau coffre
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	Regroupez des PDF dispersés partout sur votre ordinateur dans des coffres nommés, avec une couleur et une icône. Les fichiers restent à leur place.
+	Click to show its files. Drag to reorder, or drop files here.	Cliquez pour afficher ses fichiers. Faites glisser pour réordonner, ou déposez des fichiers ici.
+	Open all	Tout ouvrir
+	Edit vault…	Modifier le coffre…
+	Move left	Déplacer à gauche
+	Move right	Déplacer à droite
+	Delete vault…	Supprimer le coffre…
+	New vault…	Nouveau coffre…
+	No files yet. Drop files here to add them.	Aucun fichier pour l'instant. Déposez des fichiers ici pour les ajouter.
+	Locate…	Retrouver…
+	Remove {name} from this vault	Retirer {name} de ce coffre
+	This file has moved or been deleted. Locate it, or remove it from the vault.	Ce fichier a été déplacé ou supprimé. Retrouvez-le, ou retirez-le du coffre.
+	Move to vault	Déplacer vers le coffre
+	Remove from vault	Retirer du coffre
+	Show this vault on Home	Afficher ce coffre dans l'Accueil
+	Vault: {name}	Coffre : {name}
+	Vault	Coffre
+	Edit vault	Modifier le coffre
+	Vault name	Nom du coffre
+	Create vault	Créer le coffre
+	Delete the vault {vault}?	Supprimer le coffre {vault} ?
+	Its files stay where they are on your computer. Only the vault is deleted.	Ses fichiers restent à leur place sur votre ordinateur. Seul le coffre est supprimé.
+	Delete vault	Supprimer le coffre
+	Add to vault	Ajouter au coffre
+	Already in it	Déjà dedans
+	Add document to vault…	Ajouter le document à un coffre…
+	Dark pages	Pages sombres
+	Rasterize pages (strong compression)…	Rastériser les pages (compression forte)…
+	Rasterize pages (strong compression)	Rastériser les pages (compression forte)
+	Rasterizing… page {d} of {t}	Rastérisation… page {d} sur {t}
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	Chaque page devient une image : la compression la plus forte, idéale pour les documents numérisés. Le texte n’est plus sélectionnable ni consultable par recherche, et les liens, signets et champs de formulaire ne sont pas conservés. Le résultat est enregistré dans une copie.
+	{dpi} dpi, JPEG quality {q}	{dpi} ppp, qualité JPEG {q}
+compression level	Light	Léger
+compression level	Medium	Moyen
+compression level	Strong	Fort
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	La rastérisation ne réduirait pas la taille de ce fichier ({size}). Aucune copie n’a été enregistrée.
+	Add faint watermark	Ajouter un filigrane discret
+	Recognize text if available	Reconnaître le texte si disponible
+	Prepare for Sending	Préparer pour envoi
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	Numéroter les pages « n / total » en bas au centre, puis réduire la taille du fichier pour l’envoyer par e-mail.
+	Archive Scans	Archiver des scans
+	Make scans searchable (when text recognition is available), then make them smaller.	Rendre les documents numérisés consultables par recherche (si la reconnaissance de texte est installée), puis réduire leur taille.
+	Confidential	Confidentiel
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	Un filigrane diagonal discret « CONFIDENTIEL » et une numérotation « n / total » sur chaque page.
+	{name} (copy)	{name} (copie)
+watermark text	CONFIDENTIAL	CONFIDENTIEL
+	Group name	Nom du groupe
+	Rename Group	Renommer le groupe
+	Close Group	Fermer le groupe
+	Add Tab to New Group	Ajouter l'onglet à un nouveau groupe
+	Add Tab to Group	Ajouter l'onglet au groupe
+	Remove from Group	Retirer du groupe
+	Click to fold or unfold the group	Cliquez pour replier ou déplier le groupe
+	Filter tools	Filtrer les outils
+	No tool matches	Aucun outil ne correspond
+	Essentials	Essentiels
+	Float as a bubble	Mettre en bulle
+	Show this PDF in a small window over the others	Afficher ce PDF dans une petite fenêtre par-dessus les autres
+	Put back as a tab	Remettre en onglet
+	Fold into a bubble	Réduire en bulle
+	Click to open, drag onto the tabs to put it back	Cliquez pour ouvrir, glissez sur les onglets pour la remettre
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	Vous avez la version {c}. NadsPDF va se fermer, installer la nouvelle version à la place de celle-ci et se rouvrir. Vos réglages sont conservés.
+	You have version {c}.	Vous avez la version {c}.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	Cette copie de NadsPDF vient du Microsoft Store, qui installe lui-même les nouvelles versions.
+	Downloading the update…	Téléchargement de la mise à jour…
+	Couldn't install the update: {e}	Impossible d'installer la mise à jour : {e}
+	Check for updates when NadsPDF starts (once a day)	Rechercher les mises à jour au démarrage de NadsPDF (une fois par jour)
+	Open in New Window	Ouvrir dans une nouvelle fenêtre
+	Or drag the tab out of the strip, to another screen for instance	Ou faites glisser l'onglet hors de la barre, vers un autre écran par exemple
+	Release to open in a new window	Relâchez pour ouvrir dans une nouvelle fenêtre
+	Save this PDF before opening it in a new window.	Enregistrez ce PDF avant de l'ouvrir dans une nouvelle fenêtre.
+	Save your changes before opening this PDF in a new window.	Enregistrez vos modifications avant d'ouvrir ce PDF dans une nouvelle fenêtre.
+	Element	Élément
+	Point at a line of the drawing to see its length. Click it to keep the measurement.	Survolez un trait du plan pour voir sa longueur. Cliquez dessus pour garder la mesure.
+	Actual size (no scale)	Taille réelle (sans échelle)
+	This page	Cette page
+	Usual scales	Échelles courantes
+	Other unit	Autre unité
+	Click both ends of a length you know, then type it on the right.	Cliquez les deux bouts d'une longueur connue, puis tapez-la à droite.
+	Whole document	Tout le document
+	Total area	Surface totale
+	Total length	Longueur totale
+	Know when you open or close a document (its name and number of pages)	Savoir quand vous ouvrez ou fermez un document (son nom et son nombre de pages)
+	Read the text of the documents you open	Lire le texte des documents que vous ouvrez
+	Know where the documents you open are saved	Savoir où sont enregistrés les documents que vous ouvrez
+	Show a message bar with buttons above a document	Afficher un bandeau avec des boutons au-dessus d'un document
+	Open web pages on the sites it lists	Ouvrir des pages web sur les sites qu'elle déclare
+	Extensions	Extensions
+	This extension can't be used: {e}	Cette extension ne peut pas être utilisée : {e}
+	Extensions folder: {path}	Dossier des extensions : {path}
+	Turn off	Désactiver
+	Turn on…	Activer…
+	Stopped: {e}	Arrêtée : {e}
+	On at the next start	Activée au prochain démarrage
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} est un programme qui s'exécute sur cet ordinateur, avec vos droits. Il pourra :
+	• Nothing beyond running.	• Rien d'autre que s'exécuter.
+	Only turn on extensions you trust.	N'activez que des extensions de confiance.
+	Turn on	Activer
+	Couldn't save the extension settings: {e}	Impossible d'enregistrer les réglages des extensions : {e}
+	Loading text recognition…	Chargement de la reconnaissance de texte…

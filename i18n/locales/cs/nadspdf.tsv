@@ -1,0 +1,138 @@
+# NadsPDF's own rows for cs: strings only NadsPDF has (vaults, bubbles, extensions,
+# conversion, compression…) and wordings NadsPDF chose over the shared PdfCraft catalog.
+# Same format as pdfcraft.tsv (context <TAB> English source <TAB> translation). build.rs merges
+# this file over pdfcraft.tsv: a row here replaces pdfcraft.tsv's row with the same context and
+# source text.
+#
+# Clean room: every entry was written from the plain meaning of the English text in ordinary
+# computing vocabulary. No other product's localisation, string table or translated UI was
+# consulted or copied; add entries the same way.
+
+	Images, text and documents (converted to PDF)	Obrázky, text a dokumenty (převedené do PDF)
+	PDF, images, text and documents	PDF, obrázky, text a dokumenty
+	NadsPDF tools	Nástroje NadsPDF
+	PdfCraft (upstream) on GitHub	PdfCraft (původní projekt) na GitHubu
+	Combine with NadsPDF	Sloučit pomocí NadsPDF
+	Open with NadsPDF	Otevřít pomocí NadsPDF
+	Show NadsPDF in the File Explorer right-click menu	Zobrazit NadsPDF v místní nabídce Průzkumníka souborů
+	Added for all users when NadsPDF was installed.	Přidáno pro všechny uživatele při instalaci NadsPDF.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	Převést do PDF, Sloučit a Otevřít u dokumentů, obrázků a PDF. Ve Windows 11 pod „Zobrazit další možnosti“.
+	Couldn't change the File Explorer menu: {e}	Nabídku Průzkumníka souborů nelze změnit: {e}
+	Couldn't find {name}	{name} nebyl nalezen
+	Give the vault a name	Pojmenujte trezor
+	You can have up to {n} vaults. Delete one first.	Můžete mít až {n} trezorů. Nejprve jeden smažte.
+	That vault no longer exists	Tento trezor už neexistuje
+	Added {files} to {vault}	Přidáno do {vault}: {files}
+	Already in {vault}	Už je v {vault}
+	A vault holds up to {n} files	Trezor pojme až {n} souborů
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	Trezory obsahují PDF a soubory, které NadsPDF umí převést, na tomto počítači
+	No files to open in this vault	V tomto trezoru nejsou žádné soubory k otevření
+	Opening the first {n} files	Otevírá se prvních {n} souborů
+	Deleted the vault {vault}. Its files were not touched.	Trezor {vault} byl smazán. Jeho souborů se to nedotklo.
+	Moved {file} to {vault}	{file} přesunut do {vault}
+	Vaults need the desktop app	Trezory vyžadují desktopovou aplikaci
+	Locate {file}	Najít {file}
+	Save this document to a file first, then add it to a vault	Nejprve dokument uložte do souboru, pak ho přidejte do trezoru
+	Vaults	Trezory
+	New vault	Nový trezor
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	Seskupte PDF odkudkoli z počítače do pojmenovaných trezorů s barvou a ikonou. Soubory zůstávají tam, kde jsou.
+	Click to show its files. Drag to reorder, or drop files here.	Kliknutím zobrazíte soubory. Přetažením změníte pořadí, nebo sem přetáhněte soubory.
+	Open all	Otevřít vše
+	Edit vault…	Upravit trezor…
+	Move left	Posunout doleva
+	Move right	Posunout doprava
+	Delete vault…	Smazat trezor…
+	New vault…	Nový trezor…
+	No files yet. Drop files here to add them.	Zatím žádné soubory. Přetáhněte sem soubory a přidejte je.
+	Locate…	Najít…
+	Remove {name} from this vault	Odebrat {name} z tohoto trezoru
+	This file has moved or been deleted. Locate it, or remove it from the vault.	Tento soubor byl přesunut nebo smazán. Najděte ho, nebo ho z trezoru odeberte.
+	Move to vault	Přesunout do trezoru
+	Remove from vault	Odebrat z trezoru
+	Show this vault on Home	Zobrazit tento trezor na úvodní stránce
+	Vault: {name}	Trezor: {name}
+	Vault	Trezor
+	Edit vault	Upravit trezor
+	Vault name	Název trezoru
+	Create vault	Vytvořit trezor
+	Delete the vault {vault}?	Smazat trezor {vault}?
+	Its files stay where they are on your computer. Only the vault is deleted.	Soubory zůstanou tam, kde jsou. Smaže se jen trezor.
+	Delete vault	Smazat trezor
+	Add to vault	Přidat do trezoru
+	Already in it	Už je tu
+	Add document to vault…	Přidat dokument do trezoru…
+	Dark pages	Tmavé stránky
+	Rasterize pages (strong compression)…	Rastrovat stránky (silná komprese)…
+	Rasterize pages (strong compression)	Rastrovat stránky (silná komprese)
+	Rasterizing… page {d} of {t}	Rastrování… stránka {d} z {t}
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	Každá stránka se stane obrázkem: nejsilnější komprese, nejlepší pro skeny. Text už nelze vybrat ani prohledávat a odkazy, záložky a pole formulářů se nezachovají. Výsledek se uloží jako kopie.
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi, kvalita JPEG {q}
+compression level	Light	Lehká
+compression level	Medium	Střední
+compression level	Strong	Silná
+	Compress	Komprimovat
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	Rastrování by tento soubor nezmenšilo ({size}). Žádná kopie nebyla uložena.
+	Add faint watermark	Přidat jemný vodoznak
+	Recognize text if available	Rozpoznat text, je-li k dispozici
+	Prepare for Sending	Připravit k odeslání
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	Očíslovat stránky „n / celkem“ dole uprostřed a pak soubor zmenšit pro odeslání e-mailem.
+	Archive Scans	Archivovat skeny
+	Make scans searchable (when text recognition is available), then make them smaller.	Umožnit prohledávání skenů (pokud je nainstalováno rozpoznávání textu) a pak je zmenšit.
+	Confidential	Důvěrné
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	Jemný diagonální vodoznak DŮVĚRNÉ a čísla stránek „n / celkem“ na každé stránce.
+	{name} (copy)	{name} (kopie)
+watermark text	CONFIDENTIAL	DŮVĚRNÉ
+	Group name	Název skupiny
+	Rename Group	Přejmenovat skupinu
+	Close Group	Zavřít skupinu
+	Add Tab to New Group	Přidat kartu do nové skupiny
+	Add Tab to Group	Přidat kartu do skupiny
+	Remove from Group	Odebrat ze skupiny
+	Click to fold or unfold the group	Kliknutím skupinu sbalíte nebo rozbalíte
+	Filter tools	Filtrovat nástroje
+	No tool matches	Žádný nástroj neodpovídá
+	Essentials	Základní
+	Float as a bubble	Plovoucí bublina
+	Show this PDF in a small window over the others	Zobrazit toto PDF v malém okně nad ostatními
+	Put back as a tab	Vrátit jako kartu
+	Fold into a bubble	Sbalit do bubliny
+	Click to open, drag onto the tabs to put it back	Kliknutím otevřete, přetažením na karty vrátíte
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	Máte verzi {c}. NadsPDF se zavře, nainstaluje novou verzi místo této a znovu se otevře. Vaše nastavení zůstanou zachována.
+	You have version {c}.	Máte verzi {c}.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	Tato kopie NadsPDF pochází z Microsoft Store, který nové verze instaluje sám.
+	Downloading the update…	Stahování aktualizace…
+	Couldn't install the update: {e}	Aktualizaci se nepodařilo nainstalovat: {e}
+	Check for updates when NadsPDF starts (once a day)	Hledat aktualizace při spuštění NadsPDF (jednou denně)
+	Open in New Window	Otevřít v novém okně
+	Or drag the tab out of the strip, to another screen for instance	Nebo kartu přetáhněte mimo lištu, třeba na jinou obrazovku
+	Release to open in a new window	Uvolněním otevřete v novém okně
+	Save this PDF before opening it in a new window.	Před otevřením v novém okně toto PDF uložte.
+	Save your changes before opening this PDF in a new window.	Před otevřením tohoto PDF v novém okně uložte změny.
+	Element	Prvek
+	Point at a line of the drawing to see its length. Click it to keep the measurement.	Ukažte na čáru výkresu a uvidíte její délku. Kliknutím měření ponecháte.
+	Actual size (no scale)	Skutečná velikost (bez měřítka)
+	This page	Tato stránka
+	Usual scales	Obvyklá měřítka
+	Other unit	Jiná jednotka
+	Click both ends of a length you know, then type it on the right.	Klikněte na oba konce známé délky a pak ji zadejte vpravo.
+	Whole document	Celý dokument
+	Total area	Celková plocha
+	Total length	Celková délka
+	Know when you open or close a document (its name and number of pages)	Vědět, kdy otevřete nebo zavřete dokument (jeho název a počet stran)
+	Read the text of the documents you open	Číst text otevřených dokumentů
+	Know where the documents you open are saved	Vědět, kde jsou otevřené dokumenty uloženy
+	Show a message bar with buttons above a document	Zobrazit nad dokumentem panel zpráv s tlačítky
+	Open web pages on the sites it lists	Otevírat webové stránky na webech, které uvádí
+	Extensions	Rozšíření
+	This extension can't be used: {e}	Toto rozšíření nelze použít: {e}
+	Extensions folder: {path}	Složka rozšíření: {path}
+	Turn off	Vypnout
+	Turn on…	Zapnout…
+	Stopped: {e}	Zastaveno: {e}
+	On at the next start	Zapnuto od příštího spuštění
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} je program, který běží na tomto počítači s vašimi oprávněními. Bude moci:
+	• Nothing beyond running.	• Nic kromě spuštění.
+	Only turn on extensions you trust.	Zapínejte jen rozšíření, kterým důvěřujete.
+	Turn on	Zapnout
+	Couldn't save the extension settings: {e}	Nastavení rozšíření se nepodařilo uložit: {e}
+	Loading text recognition…	Načítání rozpoznávání textu…

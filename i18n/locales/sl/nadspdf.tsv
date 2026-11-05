@@ -1,0 +1,141 @@
+# NadsPDF's own rows for sl: strings only NadsPDF has (vaults, bubbles, extensions,
+# conversion, compression…) and wordings NadsPDF chose over the shared PdfCraft catalog.
+# Same format as pdfcraft.tsv (context <TAB> English source <TAB> translation). build.rs merges
+# this file over pdfcraft.tsv: a row here replaces pdfcraft.tsv's row with the same context and
+# source text.
+#
+# Clean room: every entry was written from the plain meaning of the English text in ordinary
+# computing vocabulary. No other product's localisation, string table or translated UI was
+# consulted or copied; add entries the same way.
+
+	Images, text and documents (converted to PDF)	Slike, besedilo in dokumenti (pretvorjeni v PDF)
+	PDF, images, text and documents	PDF, slike, besedilo in dokumenti
+	NadsPDF tools	Orodja NadsPDF
+	PdfCraft (upstream) on GitHub	PdfCraft (izvirni projekt) na GitHubu
+	Combine with NadsPDF	Združi z NadsPDF
+	Open with NadsPDF	Odpri z NadsPDF
+	Show NadsPDF in the File Explorer right-click menu	Prikaži NadsPDF v priročnem meniju Raziskovalca
+	Added for all users when NadsPDF was installed.	Dodano za vse uporabnike ob namestitvi NadsPDF.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	Pretvori v PDF, Združi in Odpri za dokumente, slike in datoteke PDF. V sistemu Windows 11 pod »Pokaži več možnosti«.
+	Couldn't change the File Explorer menu: {e}	Menija Raziskovalca ni bilo mogoče spremeniti: {e}
+	Couldn't find {name}	{name} ni bilo mogoče najti
+@plural	{n} file|{n} files	{n} datoteka|{n} datoteki|{n} datoteke|{n} datotek
+	Give the vault a name	Poimenujte trezor
+	You can have up to {n} vaults. Delete one first.	Imate lahko do {n} trezorjev. Najprej izbrišite enega.
+	That vault no longer exists	Ta trezor ne obstaja več
+	Added {files} to {vault}	Dodano v {vault}: {files}
+	Already in {vault}	Že v {vault}
+	A vault holds up to {n} files	Trezor sprejme do {n} datotek
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	Trezorji hranijo PDF-je in datoteke, ki jih NadsPDF zna pretvoriti, na tem računalniku
+	No files to open in this vault	V tem trezorju ni datotek za odpiranje
+	Opening the first {n} files	Odpiranje prvih {n} datotek
+	Deleted the vault {vault}. Its files were not touched.	Trezor {vault} je izbrisan. Njegove datoteke so nedotaknjene.
+	Moved {file} to {vault}	{file} premaknjena v {vault}
+	Vaults need the desktop app	Trezorji potrebujejo namizno aplikacijo
+	Locate {file}	Poišči {file}
+	Save this document to a file first, then add it to a vault	Najprej shranite dokument v datoteko, nato ga dodajte v trezor
+	Vaults	Trezorji
+	New vault	Nov trezor
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	Združite PDF-je od kjerkoli na računalniku v poimenovane trezorje z barvo in ikono. Datoteke ostanejo, kjer so.
+	Click to show its files. Drag to reorder, or drop files here.	Kliknite za prikaz datotek. Povlecite za spremembo vrstnega reda ali spustite datoteke sem.
+	Open all	Odpri vse
+	Edit vault…	Uredi trezor…
+	Move left	Premakni levo
+	Move right	Premakni desno
+	Delete vault…	Izbriši trezor…
+	New vault…	Nov trezor…
+	No files yet. Drop files here to add them.	Še ni datotek. Spustite datoteke sem, da jih dodate.
+	Locate…	Poišči…
+	Missing	Manjka
+	Remove {name} from this vault	Odstrani {name} iz tega trezorja
+	This file has moved or been deleted. Locate it, or remove it from the vault.	Ta datoteka je bila premaknjena ali izbrisana. Poiščite jo ali jo odstranite iz trezorja.
+	Move to vault	Premakni v trezor
+	Remove from vault	Odstrani iz trezorja
+	Show this vault on Home	Prikaži ta trezor na domači strani
+	Vault: {name}	Trezor: {name}
+	Vault	Trezor
+	Edit vault	Uredi trezor
+	Vault name	Ime trezorja
+	Create vault	Ustvari trezor
+	Delete the vault {vault}?	Izbrišem trezor {vault}?
+	Its files stay where they are on your computer. Only the vault is deleted.	Datoteke ostanejo, kjer so na računalniku. Izbriše se le trezor.
+	Delete vault	Izbriši trezor
+	Add to vault	Dodaj v trezor
+	Already in it	Že tukaj
+	Add document to vault…	Dodaj dokument v trezor…
+	Dark pages	Temne strani
+	Rasterize pages (strong compression)…	Rastriraj strani (močno stiskanje)…
+	Rasterize pages (strong compression)	Rastriraj strani (močno stiskanje)
+	Rasterizing… page {d} of {t}	Rastriranje … stran {d} od {t}
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	Vsaka stran postane slika: najmočnejše stiskanje, najboljše za skene. Besedila ni več mogoče izbirati ali iskati, povezave, zaznamki in polja obrazcev pa se ne ohranijo. Rezultat se shrani kot kopija.
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi, kakovost JPEG {q}
+compression level	Light	Rahlo
+compression level	Medium	Srednje
+compression level	Strong	Močno
+	Compress	Stisni
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	Rastriranje te datoteke ne bi zmanjšalo ({size}). Kopija ni bila shranjena.
+	Add faint watermark	Dodaj bled vodni žig
+	Recognize text if available	Prepoznaj besedilo, če je na voljo
+	Prepare for Sending	Pripravi za pošiljanje
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	Oštevilči strani »n / skupaj« spodaj na sredini, nato zmanjšaj datoteko za pošiljanje po e-pošti.
+	Archive Scans	Arhiviraj skene
+	Make scans searchable (when text recognition is available), then make them smaller.	Omogoči iskanje po skenih (če je prepoznavanje besedila nameščeno), nato jih zmanjšaj.
+	Confidential	Zaupno
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	Bled diagonalni vodni žig ZAUPNO in številke strani »n / skupaj« na vsaki strani.
+	{name} (copy)	{name} (kopija)
+watermark text	CONFIDENTIAL	ZAUPNO
+	Group name	Ime skupine
+	Rename Group	Preimenuj skupino
+	Close Group	Zapri skupino
+	Add Tab to New Group	Dodaj zavihek v novo skupino
+	Add Tab to Group	Dodaj zavihek v skupino
+	Remove from Group	Odstrani iz skupine
+	Click to fold or unfold the group	Kliknite, da skupino strnete ali razširite
+	Filter tools	Filtriraj orodja
+	No tool matches	Nobeno orodje se ne ujema
+	Essentials	Osnovno
+	Float as a bubble	Lebdeči mehurček
+	Show this PDF in a small window over the others	Prikaži ta PDF v majhnem oknu nad drugimi
+	Put back as a tab	Vrni kot zavihek
+	Fold into a bubble	Strni v mehurček
+	Click to open, drag onto the tabs to put it back	Kliknite za odpiranje, povlecite na zavihke za vrnitev
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	Imate različico {c}. NadsPDF se bo zaprl, namestil novo različico namesto te in se znova odprl. Vaše nastavitve ostanejo.
+	You have version {c}.	Imate različico {c}.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	Ta kopija NadsPDF je iz trgovine Microsoft Store, ki nove različice namešča sama.
+	Downloading the update…	Prenašanje posodobitve…
+	Couldn't install the update: {e}	Posodobitve ni bilo mogoče namestiti: {e}
+	Check for updates when NadsPDF starts (once a day)	Ob zagonu NadsPDF preveri posodobitve (enkrat na dan)
+	Open in New Window	Odpri v novem oknu
+	Or drag the tab out of the strip, to another screen for instance	Ali pa zavihek povlecite iz vrstice, na primer na drug zaslon
+	Release to open in a new window	Spustite, da odprete v novem oknu
+	Save this PDF before opening it in a new window.	Preden ta PDF odprete v novem oknu, ga shranite.
+	Save your changes before opening this PDF in a new window.	Preden ta PDF odprete v novem oknu, shranite spremembe.
+	Element	Element
+	Point at a line of the drawing to see its length. Click it to keep the measurement.	Pokažite na črto risbe, da vidite njeno dolžino. Kliknite nanjo, da meritev ohranite.
+	Actual size (no scale)	Dejanska velikost (brez merila)
+	This page	Ta stran
+	Usual scales	Običajna merila
+	Other unit	Druga enota
+	Click both ends of a length you know, then type it on the right.	Kliknite oba konca znane dolžine, nato jo vnesite na desni.
+	Whole document	Celoten dokument
+	Total area	Skupna površina
+	Total length	Skupna dolžina
+	Know when you open or close a document (its name and number of pages)	Vedeti, kdaj odprete ali zaprete dokument (njegovo ime in število strani)
+	Read the text of the documents you open	Brati besedilo dokumentov, ki jih odprete
+	Know where the documents you open are saved	Vedeti, kje so shranjeni dokumenti, ki jih odprete
+	Show a message bar with buttons above a document	Nad dokumentom prikazati vrstico s sporočilom in gumbi
+	Open web pages on the sites it lists	Odpirati spletne strani na mestih, ki jih navaja
+	Extensions	Razširitve
+	This extension can't be used: {e}	Te razširitve ni mogoče uporabiti: {e}
+	Extensions folder: {path}	Mapa razširitev: {path}
+	Turn off	Izklopi
+	Turn on…	Vklopi …
+	On	Vklopljeno
+	Stopped: {e}	Ustavljeno: {e}
+	On at the next start	Vklopljeno ob naslednjem zagonu
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} je program, ki se izvaja v tem računalniku z vašimi pravicami. Lahko bo:
+	• Nothing beyond running.	• Nič drugega kot se izvajati.
+	Only turn on extensions you trust.	Vklopite samo razširitve, ki jim zaupate.
+	Turn on	Vklopi
+	Couldn't save the extension settings: {e}	Nastavitev razširitev ni bilo mogoče shraniti: {e}
+	Loading text recognition…	Nalaganje prepoznavanja besedila…

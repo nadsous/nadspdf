@@ -1,0 +1,138 @@
+# NadsPDF's own rows for ru: strings only NadsPDF has (vaults, bubbles, extensions,
+# conversion, compression…) and wordings NadsPDF chose over the shared PdfCraft catalog.
+# Same format as pdfcraft.tsv (context <TAB> English source <TAB> translation). build.rs merges
+# this file over pdfcraft.tsv: a row here replaces pdfcraft.tsv's row with the same context and
+# source text.
+#
+# Clean room: every entry was written from the plain meaning of the English text in ordinary
+# computing vocabulary. No other product's localisation, string table or translated UI was
+# consulted or copied; add entries the same way.
+
+	Images, text and documents (converted to PDF)	Изображения, текст и документы (преобразуются в PDF)
+	PDF, images, text and documents	PDF, изображения, текст и документы
+	NadsPDF tools	Инструменты NadsPDF
+	PdfCraft (upstream) on GitHub	PdfCraft (исходный проект) на GitHub
+	Combine with NadsPDF	Объединить с помощью NadsPDF
+	Open with NadsPDF	Открыть с помощью NadsPDF
+	Show NadsPDF in the File Explorer right-click menu	Показывать NadsPDF в контекстном меню Проводника
+	Added for all users when NadsPDF was installed.	Добавлено для всех пользователей при установке NadsPDF.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	«Преобразовать в PDF», «Объединить» и «Открыть» для документов, изображений и PDF. В Windows 11 — в разделе «Показать дополнительные параметры».
+	Couldn't change the File Explorer menu: {e}	Не удалось изменить меню Проводника: {e}
+	Couldn't find {name}	{name} не найден
+	Give the vault a name	Дайте сейфу название
+	You can have up to {n} vaults. Delete one first.	Можно создать до {n} сейфов. Сначала удалите один.
+	That vault no longer exists	Этого сейфа больше нет
+	Added {files} to {vault}	Добавлено в {vault}: {files}
+	Already in {vault}	Уже в {vault}
+	A vault holds up to {n} files	В сейфе может быть до {n} файлов
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	В сейфах хранятся PDF и файлы, которые NadsPDF умеет преобразовывать, на этом компьютере
+	No files to open in this vault	В этом сейфе нет файлов для открытия
+	Opening the first {n} files	Открываются первые {n} файлов
+	Deleted the vault {vault}. Its files were not touched.	Сейф {vault} удалён. Его файлы не затронуты.
+	Moved {file} to {vault}	{file} перемещён в {vault}
+	Vaults need the desktop app	Для сейфов нужно настольное приложение
+	Locate {file}	Найти {file}
+	Save this document to a file first, then add it to a vault	Сначала сохраните документ в файл, затем добавьте его в сейф
+	Vaults	Сейфы
+	New vault	Новый сейф
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	Собирайте PDF из любых мест на компьютере в именованные сейфы с цветом и значком. Файлы остаются на своих местах.
+	Click to show its files. Drag to reorder, or drop files here.	Щёлкните, чтобы показать файлы. Перетащите, чтобы изменить порядок, или бросьте сюда файлы.
+	Open all	Открыть все
+	Edit vault…	Изменить сейф…
+	Move left	Переместить влево
+	Move right	Переместить вправо
+	Delete vault…	Удалить сейф…
+	New vault…	Новый сейф…
+	No files yet. Drop files here to add them.	Файлов пока нет. Перетащите файлы сюда, чтобы добавить их.
+	Locate…	Найти…
+	Remove {name} from this vault	Убрать {name} из этого сейфа
+	This file has moved or been deleted. Locate it, or remove it from the vault.	Этот файл перемещён или удалён. Найдите его или уберите из сейфа.
+	Move to vault	Переместить в сейф
+	Remove from vault	Убрать из сейфа
+	Show this vault on Home	Показать этот сейф на главной
+	Vault: {name}	Сейф: {name}
+	Vault	Сейф
+	Edit vault	Изменить сейф
+	Vault name	Название сейфа
+	Create vault	Создать сейф
+	Delete the vault {vault}?	Удалить сейф {vault}?
+	Its files stay where they are on your computer. Only the vault is deleted.	Файлы остаются на своих местах на компьютере. Удаляется только сейф.
+	Delete vault	Удалить сейф
+	Add to vault	Добавить в сейф
+	Already in it	Уже здесь
+	Add document to vault…	Добавить документ в сейф…
+	Dark pages	Тёмные страницы
+	Rasterize pages (strong compression)…	Растрировать страницы (сильное сжатие)…
+	Rasterize pages (strong compression)	Растрировать страницы (сильное сжатие)
+	Rasterizing… page {d} of {t}	Растрирование… страница {d} из {t}
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	Каждая страница становится изображением: самое сильное сжатие, лучше всего для сканов. Текст больше нельзя выделить или найти, а ссылки, закладки и поля форм не сохраняются. Результат сохраняется как копия.
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi, качество JPEG {q}
+compression level	Light	Слабое
+compression level	Medium	Среднее
+compression level	Strong	Сильное
+	Compress	Сжать
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	Растрирование не уменьшит этот файл ({size}). Копия не сохранена.
+	Add faint watermark	Добавить бледный водяной знак
+	Recognize text if available	Распознать текст, если доступно
+	Prepare for Sending	Подготовить к отправке
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	Пронумеровать страницы «n / всего» внизу по центру, затем уменьшить файл для отправки по почте.
+	Archive Scans	Архивировать сканы
+	Make scans searchable (when text recognition is available), then make them smaller.	Сделать сканы доступными для поиска (если установлено распознавание текста), затем уменьшить их.
+	Confidential	Конфиденциально
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	Бледный диагональный водяной знак КОНФИДЕНЦИАЛЬНО и номера страниц «n / всего» на каждой странице.
+	{name} (copy)	{name} (копия)
+watermark text	CONFIDENTIAL	КОНФИДЕНЦИАЛЬНО
+	Group name	Название группы
+	Rename Group	Переименовать группу
+	Close Group	Закрыть группу
+	Add Tab to New Group	Добавить вкладку в новую группу
+	Add Tab to Group	Добавить вкладку в группу
+	Remove from Group	Убрать из группы
+	Click to fold or unfold the group	Нажмите, чтобы свернуть или развернуть группу
+	Filter tools	Фильтр инструментов
+	No tool matches	Нет подходящих инструментов
+	Essentials	Основное
+	Float as a bubble	Сделать пузырём
+	Show this PDF in a small window over the others	Показать этот PDF в маленьком окне поверх остальных
+	Put back as a tab	Вернуть во вкладку
+	Fold into a bubble	Свернуть в пузырь
+	Click to open, drag onto the tabs to put it back	Нажмите, чтобы открыть; перетащите на вкладки, чтобы вернуть
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	У вас версия {c}. NadsPDF закроется, установит новую версию вместо этой и откроется снова. Ваши настройки сохранятся.
+	You have version {c}.	У вас версия {c}.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	Эта копия NadsPDF установлена из Microsoft Store, который сам устанавливает новые версии.
+	Downloading the update…	Загрузка обновления…
+	Couldn't install the update: {e}	Не удалось установить обновление: {e}
+	Check for updates when NadsPDF starts (once a day)	Проверять обновления при запуске NadsPDF (раз в день)
+	Open in New Window	Открыть в новом окне
+	Or drag the tab out of the strip, to another screen for instance	Или перетащите вкладку за пределы панели, например на другой экран
+	Release to open in a new window	Отпустите, чтобы открыть в новом окне
+	Save this PDF before opening it in a new window.	Сохраните этот PDF, прежде чем открывать его в новом окне.
+	Save your changes before opening this PDF in a new window.	Сохраните изменения, прежде чем открывать этот PDF в новом окне.
+	Element	Элемент
+	Point at a line of the drawing to see its length. Click it to keep the measurement.	Наведите указатель на линию чертежа, чтобы увидеть её длину. Щёлкните, чтобы сохранить измерение.
+	Actual size (no scale)	Фактический размер (без масштаба)
+	This page	Эта страница
+	Usual scales	Обычные масштабы
+	Other unit	Другая единица
+	Click both ends of a length you know, then type it on the right.	Щёлкните оба конца известной длины, затем введите её справа.
+	Whole document	Весь документ
+	Total area	Общая площадь
+	Total length	Общая длина
+	Know when you open or close a document (its name and number of pages)	Знать, когда вы открываете или закрываете документ (его имя и число страниц)
+	Read the text of the documents you open	Читать текст открытых документов
+	Know where the documents you open are saved	Знать, где сохранены открытые документы
+	Show a message bar with buttons above a document	Показывать над документом панель сообщения с кнопками
+	Open web pages on the sites it lists	Открывать веб-страницы на указанных им сайтах
+	Extensions	Расширения
+	This extension can't be used: {e}	Это расширение нельзя использовать: {e}
+	Extensions folder: {path}	Папка расширений: {path}
+	Turn off	Выключить
+	Turn on…	Включить…
+	Stopped: {e}	Остановлено: {e}
+	On at the next start	Включится при следующем запуске
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} — программа, которая работает на этом компьютере с вашими правами. Она сможет:
+	• Nothing beyond running.	• Ничего, кроме работы.
+	Only turn on extensions you trust.	Включайте только расширения, которым доверяете.
+	Turn on	Включить
+	Couldn't save the extension settings: {e}	Не удалось сохранить настройки расширений: {e}
+	Loading text recognition…	Загрузка распознавания текста…

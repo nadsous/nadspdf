@@ -1,0 +1,141 @@
+# NadsPDF's own rows for te: strings only NadsPDF has (vaults, bubbles, extensions,
+# conversion, compression…) and wordings NadsPDF chose over the shared PdfCraft catalog.
+# Same format as pdfcraft.tsv (context <TAB> English source <TAB> translation). build.rs merges
+# this file over pdfcraft.tsv: a row here replaces pdfcraft.tsv's row with the same context and
+# source text.
+#
+# Clean room: every entry was written from the plain meaning of the English text in ordinary
+# computing vocabulary. No other product's localisation, string table or translated UI was
+# consulted or copied; add entries the same way.
+
+	Images, text and documents (converted to PDF)	చిత్రాలు, టెక్స్ట్ మరియు పత్రాలు (PDFకి మార్చబడతాయి)
+	PDF, images, text and documents	PDF, చిత్రాలు, టెక్స్ట్ మరియు పత్రాలు
+	NadsPDF tools	NadsPDF సాధనాలు
+	PdfCraft (upstream) on GitHub	GitHub లో PdfCraft (మూల ప్రాజెక్ట్)
+	Combine with NadsPDF	NadsPDFతో కలుపు
+	Open with NadsPDF	NadsPDFతో తెరువు
+	Show NadsPDF in the File Explorer right-click menu	ఫైల్ ఎక్స్‌ప్లోరర్ రైట్-క్లిక్ మెనూలో NadsPDFను చూపించు
+	Added for all users when NadsPDF was installed.	NadsPDF ఇన్‌స్టాల్ చేసినప్పుడు వినియోగదారులందరికీ జోడించబడింది.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	పత్రాలు, చిత్రాలు మరియు PDFలపై PDFగా మార్చు, కలుపు మరియు తెరువు. Windows 11లో "మరిన్ని ఎంపికలను చూపించు" కింద.
+	Couldn't change the File Explorer menu: {e}	ఫైల్ ఎక్స్‌ప్లోరర్ మెనూను మార్చలేకపోయాము: {e}
+	Couldn't find {name}	{name} కనబడలేదు
+@plural	{n} file|{n} files	{n} ఫైల్|{n} ఫైల్‌లు
+	Give the vault a name	వాల్ట్‌కు పేరు ఇవ్వండి
+	You can have up to {n} vaults. Delete one first.	మీరు గరిష్ఠంగా {n} వాల్ట్‌లు ఉంచుకోవచ్చు. ముందు ఒకదాన్ని తొలగించండి.
+	That vault no longer exists	ఆ వాల్ట్ ఇప్పుడు లేదు
+	Added {files} to {vault}	{vault}కు జోడించబడ్డాయి: {files}
+	Already in {vault}	ఇప్పటికే {vault}లో ఉంది
+	A vault holds up to {n} files	ఒక వాల్ట్‌లో గరిష్ఠంగా {n} ఫైల్‌లు ఉండవచ్చు
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	వాల్ట్‌లు ఈ కంప్యూటర్‌లోని PDFలు మరియు NadsPDF మార్చగల ఫైల్‌లను ఉంచుతాయి
+	No files to open in this vault	ఈ వాల్ట్‌లో తెరవడానికి ఫైల్‌లు లేవు
+	Opening the first {n} files	మొదటి {n} ఫైల్‌లు తెరుస్తోంది
+	Deleted the vault {vault}. Its files were not touched.	{vault} వాల్ట్ తొలగించబడింది. దాని ఫైల్‌లను తాకలేదు.
+	Moved {file} to {vault}	{file} {vault}కు తరలించబడింది
+	Vaults need the desktop app	వాల్ట్‌లకు డెస్క్‌టాప్ యాప్ అవసరం
+	Locate {file}	{file}ను కనుగొను
+	Save this document to a file first, then add it to a vault	ముందు ఈ పత్రాన్ని ఫైల్‌గా సేవ్ చేసి, ఆపై వాల్ట్‌కు జోడించండి
+	Vaults	వాల్ట్‌లు
+	New vault	కొత్త వాల్ట్
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	మీ కంప్యూటర్‌లో ఎక్కడైనా ఉన్న PDFలను పేరు, రంగు, చిహ్నం ఉన్న వాల్ట్‌లలో సమూహపరచండి. ఫైల్‌లు ఉన్నచోటే ఉంటాయి.
+	Click to show its files. Drag to reorder, or drop files here.	దాని ఫైల్‌లను చూడటానికి క్లిక్ చేయండి. క్రమం మార్చడానికి లాగండి, లేదా ఫైల్‌లను ఇక్కడ వదలండి.
+	Open all	అన్నీ తెరువు
+	Edit vault…	వాల్ట్‌ను సవరించు…
+	Move left	ఎడమకు జరుపు
+	Move right	కుడికి జరుపు
+	Delete vault…	వాల్ట్‌ను తొలగించు…
+	New vault…	కొత్త వాల్ట్…
+	No files yet. Drop files here to add them.	ఇంకా ఫైల్‌లు లేవు. జోడించడానికి ఫైల్‌లను ఇక్కడ వదలండి.
+	Locate…	కనుగొను…
+	Missing	లేదు
+	Remove {name} from this vault	ఈ వాల్ట్ నుండి {name}ను తీసివేయి
+	This file has moved or been deleted. Locate it, or remove it from the vault.	ఈ ఫైల్ తరలించబడింది లేదా తొలగించబడింది. దాన్ని కనుగొనండి, లేదా వాల్ట్ నుండి తీసివేయండి.
+	Move to vault	వాల్ట్‌కు తరలించు
+	Remove from vault	వాల్ట్ నుండి తీసివేయి
+	Show this vault on Home	ఈ వాల్ట్‌ను హోమ్‌లో చూపు
+	Vault: {name}	వాల్ట్: {name}
+	Vault	వాల్ట్
+	Edit vault	వాల్ట్‌ను సవరించు
+	Vault name	వాల్ట్ పేరు
+	Create vault	వాల్ట్ సృష్టించు
+	Delete the vault {vault}?	{vault} వాల్ట్‌ను తొలగించాలా?
+	Its files stay where they are on your computer. Only the vault is deleted.	ఫైల్‌లు మీ కంప్యూటర్‌లో ఉన్నచోటే ఉంటాయి. వాల్ట్ మాత్రమే తొలగించబడుతుంది.
+	Delete vault	వాల్ట్‌ను తొలగించు
+	Add to vault	వాల్ట్‌కు జోడించు
+	Already in it	ఇప్పటికే ఉంది
+	Add document to vault…	పత్రాన్ని వాల్ట్‌కు జోడించు…
+	Dark pages	ముదురు పేజీలు
+	Rasterize pages (strong compression)…	పేజీలను రాస్టరైజ్ చేయి (బలమైన కుదింపు)…
+	Rasterize pages (strong compression)	పేజీలను రాస్టరైజ్ చేయి (బలమైన కుదింపు)
+	Rasterizing… page {d} of {t}	రాస్టరైజ్ చేస్తోంది… {t}లో పేజీ {d}
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	ప్రతి పేజీ ఒక చిత్రంగా మారుతుంది: అత్యంత బలమైన కుదింపు, స్కాన్‌లకు ఉత్తమం. టెక్స్ట్‌ను ఇకపై ఎంచుకోలేరు లేదా శోధించలేరు, లింక్‌లు, బుక్‌మార్క్‌లు, ఫారమ్ ఫీల్డ్‌లు ఉంచబడవు. ఫలితం కాపీగా సేవ్ అవుతుంది.
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi, JPEG నాణ్యత {q}
+compression level	Light	తేలిక
+compression level	Medium	మధ్యస్థం
+compression level	Strong	బలమైనది
+	Compress	కుదించు
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	రాస్టరైజ్ చేయడం ఈ ఫైల్‌ను చిన్నదిగా చేయదు ({size}). కాపీ సేవ్ కాలేదు.
+	Add faint watermark	మసక వాటర్‌మార్క్ జోడించు
+	Recognize text if available	అందుబాటులో ఉంటే టెక్స్ట్‌ను గుర్తించు
+	Prepare for Sending	పంపడానికి సిద్ధం చేయి
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	పేజీలకు కింద మధ్యలో "n / మొత్తం" సంఖ్యలు వేసి, ఆపై ఈమెయిల్‌లో పంపడానికి ఫైల్‌ను చిన్నదిగా చేయి.
+	Archive Scans	స్కాన్‌లను ఆర్కైవ్ చేయి
+	Make scans searchable (when text recognition is available), then make them smaller.	స్కాన్‌లను శోధించదగినవిగా చేయి (టెక్స్ట్ గుర్తింపు ఇన్‌స్టాల్ అయి ఉంటే), ఆపై వాటిని చిన్నవిగా చేయి.
+	Confidential	రహస్యం
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	ప్రతి పేజీపై మసక వికర్ణ రహస్యం వాటర్‌మార్క్ మరియు "n / మొత్తం" పేజీ సంఖ్యలు.
+	{name} (copy)	{name} (కాపీ)
+watermark text	CONFIDENTIAL	రహస్యం
+	Group name	సమూహం పేరు
+	Rename Group	సమూహం పేరు మార్చు
+	Close Group	సమూహాన్ని మూసివేయి
+	Add Tab to New Group	ట్యాబ్‌ను కొత్త సమూహానికి జోడించు
+	Add Tab to Group	ట్యాబ్‌ను సమూహానికి జోడించు
+	Remove from Group	సమూహం నుండి తీసివేయి
+	Click to fold or unfold the group	సమూహాన్ని మడవడానికి లేదా విప్పడానికి క్లిక్ చేయండి
+	Filter tools	సాధనాలను ఫిల్టర్ చేయి
+	No tool matches	సరిపోలే సాధనం లేదు
+	Essentials	ప్రాథమికాలు
+	Float as a bubble	బుడగగా తేల్చు
+	Show this PDF in a small window over the others	ఈ PDFను ఇతరుల పైన చిన్న విండోలో చూపు
+	Put back as a tab	ట్యాబ్‌గా తిరిగి ఉంచు
+	Fold into a bubble	బుడగగా ముడుచు
+	Click to open, drag onto the tabs to put it back	తెరవడానికి క్లిక్ చేయండి, తిరిగి ఉంచడానికి ట్యాబ్‌లపైకి లాగండి
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	మీ వద్ద వెర్షన్ {c} ఉంది. NadsPDF మూసివేయబడి, దీని స్థానంలో కొత్త వెర్షన్‌ను ఇన్‌స్టాల్ చేసి మళ్లీ తెరుచుకుంటుంది. మీ సెట్టింగ్‌లు అలాగే ఉంటాయి.
+	You have version {c}.	మీ వద్ద వెర్షన్ {c} ఉంది.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	ఈ NadsPDF కాపీ Microsoft Store నుండి వచ్చింది, అది కొత్త వెర్షన్‌లను తనంతట తానే ఇన్‌స్టాల్ చేస్తుంది.
+	Downloading the update…	అప్‌డేట్ డౌన్‌లోడ్ అవుతోంది…
+	Couldn't install the update: {e}	అప్‌డేట్‌ను ఇన్‌స్టాల్ చేయలేకపోయాము: {e}
+	Check for updates when NadsPDF starts (once a day)	NadsPDF ప్రారంభమైనప్పుడు అప్‌డేట్‌ల కోసం తనిఖీ చేయి (రోజుకు ఒకసారి)
+	Open in New Window	కొత్త విండోలో తెరువు
+	Or drag the tab out of the strip, to another screen for instance	లేదా ట్యాబ్‌ను బార్ బయటకు, ఉదాహరణకు మరో స్క్రీన్‌కు లాగండి
+	Release to open in a new window	కొత్త విండోలో తెరవడానికి వదలండి
+	Save this PDF before opening it in a new window.	కొత్త విండోలో తెరవడానికి ముందు ఈ PDFను సేవ్ చేయండి.
+	Save your changes before opening this PDF in a new window.	ఈ PDFను కొత్త విండోలో తెరవడానికి ముందు మీ మార్పులను సేవ్ చేయండి.
+	Element	అంశం
+	Point at a line of the drawing to see its length. Click it to keep the measurement.	పొడవు చూడటానికి డ్రాయింగ్‌లోని ఒక గీతపై పాయింటర్ ఉంచండి. కొలతను ఉంచడానికి దానిపై క్లిక్ చేయండి.
+	Actual size (no scale)	వాస్తవ పరిమాణం (స్కేల్ లేదు)
+	This page	ఈ పేజీ
+	Usual scales	సాధారణ స్కేళ్లు
+	Other unit	ఇతర యూనిట్
+	Click both ends of a length you know, then type it on the right.	తెలిసిన పొడవు యొక్క రెండు చివరలను క్లిక్ చేసి, కుడివైపు దాన్ని టైప్ చేయండి.
+	Whole document	మొత్తం పత్రం
+	Total area	మొత్తం వైశాల్యం
+	Total length	మొత్తం పొడవు
+	Know when you open or close a document (its name and number of pages)	మీరు పత్రాన్ని ఎప్పుడు తెరుస్తారో లేదా మూసివేస్తారో తెలుసుకోవడం (దాని పేరు, పేజీల సంఖ్య)
+	Read the text of the documents you open	మీరు తెరిచిన పత్రాల వచనాన్ని చదవడం
+	Know where the documents you open are saved	మీరు తెరిచిన పత్రాలు ఎక్కడ సేవ్ అయ్యాయో తెలుసుకోవడం
+	Show a message bar with buttons above a document	పత్రం పైన బటన్లతో సందేశ పట్టీని చూపడం
+	Open web pages on the sites it lists	అది పేర్కొన్న సైట్‌లలో వెబ్ పేజీలను తెరవడం
+	Extensions	పొడిగింపులు
+	This extension can't be used: {e}	ఈ పొడిగింపును ఉపయోగించలేము: {e}
+	Extensions folder: {path}	పొడిగింపుల ఫోల్డర్: {path}
+	Turn off	ఆఫ్ చేయి
+	Turn on…	ఆన్ చేయి…
+	On	ఆన్
+	Stopped: {e}	ఆగిపోయింది: {e}
+	On at the next start	తదుపరి ప్రారంభంలో ఆన్
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} అనేది ఈ కంప్యూటర్‌లో మీ హక్కులతో నడిచే ప్రోగ్రామ్. ఇది చేయగలదు:
+	• Nothing beyond running.	• నడవడం తప్ప మరేమీ కాదు.
+	Only turn on extensions you trust.	మీరు నమ్మే పొడిగింపులను మాత్రమే ఆన్ చేయండి.
+	Turn on	ఆన్ చేయి
+	Couldn't save the extension settings: {e}	పొడిగింపుల సెట్టింగ్‌లను సేవ్ చేయలేకపోయాము: {e}
+	Loading text recognition…	టెక్స్ట్ గుర్తింపు లోడ్ అవుతోంది…

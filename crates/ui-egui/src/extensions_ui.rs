@@ -515,7 +515,7 @@ pub fn banners(app: &mut PdfCraftApp, doc: DocId, ui: &mut egui::Ui, t: &Tokens)
     for b in &shown {
         let name = app.extensions.installed(&b.ext).map_or(b.ext.clone(), |i| i.manifest.name.clone());
         let text = format!("{name} · {}", b.text);
-        crate::canvas::notice_bar(ui, t, "info", t.accent_text, text, |ui| {
+        crate::canvas::bars::notice_bar(ui, t, "info", t.accent_text, text, |ui| {
             if crate::icons::button(ui, "x", 22.0, false, tl!("Dismiss")).clicked() {
                 dismissed.push((b.ext.clone(), b.id.clone()));
             }

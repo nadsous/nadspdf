@@ -1,0 +1,138 @@
+# NadsPDF's own rows for pt-br: strings only NadsPDF has (vaults, bubbles, extensions,
+# conversion, compression…) and wordings NadsPDF chose over the shared PdfCraft catalog.
+# Same format as pdfcraft.tsv (context <TAB> English source <TAB> translation). build.rs merges
+# this file over pdfcraft.tsv: a row here replaces pdfcraft.tsv's row with the same context and
+# source text.
+#
+# Clean room: every entry was written from the plain meaning of the English text in ordinary
+# computing vocabulary. No other product's localisation, string table or translated UI was
+# consulted or copied; add entries the same way.
+
+	Images, text and documents (converted to PDF)	Imagens, texto e documentos (convertidos em PDF)
+	PDF, images, text and documents	PDF, imagens, texto e documentos
+	NadsPDF tools	Ferramentas NadsPDF
+	PdfCraft (upstream) on GitHub	PdfCraft (projeto original) no GitHub
+	Combine with NadsPDF	Combinar com o NadsPDF
+	Open with NadsPDF	Abrir com o NadsPDF
+	Show NadsPDF in the File Explorer right-click menu	Mostrar o NadsPDF no menu de contexto do Explorador de Arquivos
+	Added for all users when NadsPDF was installed.	Adicionado para todos os usuários na instalação do NadsPDF.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	Converter em PDF, Combinar e Abrir em documentos, imagens e PDFs. No Windows 11, em “Mostrar mais opções”.
+	Couldn't change the File Explorer menu: {e}	Não foi possível alterar o menu do Explorador de Arquivos: {e}
+	Couldn't find {name}	{name} não foi encontrado
+	Give the vault a name	Dê um nome ao cofre
+	You can have up to {n} vaults. Delete one first.	Você pode ter até {n} cofres. Exclua um primeiro.
+	That vault no longer exists	Esse cofre não existe mais
+	Added {files} to {vault}	Adicionado a {vault}: {files}
+	Already in {vault}	Já está em {vault}
+	A vault holds up to {n} files	Um cofre comporta até {n} arquivos
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	Cofres guardam PDFs e arquivos que o NadsPDF consegue converter, neste computador
+	No files to open in this vault	Nenhum arquivo para abrir neste cofre
+	Opening the first {n} files	Abrindo os primeiros {n} arquivos
+	Deleted the vault {vault}. Its files were not touched.	Cofre {vault} excluído. Os arquivos dele não foram alterados.
+	Moved {file} to {vault}	{file} movido para {vault}
+	Vaults need the desktop app	Cofres precisam do aplicativo para desktop
+	Locate {file}	Localizar {file}
+	Save this document to a file first, then add it to a vault	Salve este documento em um arquivo primeiro e depois adicione-o a um cofre
+	Vaults	Cofres
+	New vault	Novo cofre
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	Agrupe PDFs de qualquer lugar do computador em cofres com nome, cor e ícone. Os arquivos ficam onde estão.
+	Click to show its files. Drag to reorder, or drop files here.	Clique para ver os arquivos. Arraste para reordenar ou solte arquivos aqui.
+	Open all	Abrir todos
+	Edit vault…	Editar cofre…
+	Move left	Mover para a esquerda
+	Move right	Mover para a direita
+	Delete vault…	Excluir cofre…
+	New vault…	Novo cofre…
+	No files yet. Drop files here to add them.	Nenhum arquivo ainda. Solte arquivos aqui para adicioná-los.
+	Locate…	Localizar…
+	Remove {name} from this vault	Remover {name} deste cofre
+	This file has moved or been deleted. Locate it, or remove it from the vault.	Este arquivo foi movido ou excluído. Localize-o ou remova-o do cofre.
+	Move to vault	Mover para cofre
+	Remove from vault	Remover do cofre
+	Show this vault on Home	Mostrar este cofre no Início
+	Vault: {name}	Cofre: {name}
+	Vault	Cofre
+	Edit vault	Editar cofre
+	Vault name	Nome do cofre
+	Create vault	Criar cofre
+	Delete the vault {vault}?	Excluir o cofre {vault}?
+	Its files stay where they are on your computer. Only the vault is deleted.	Os arquivos continuam onde estão no computador. Só o cofre é excluído.
+	Delete vault	Excluir cofre
+	Add to vault	Adicionar ao cofre
+	Already in it	Já está nele
+	Add document to vault…	Adicionar documento a um cofre…
+	Dark pages	Páginas escuras
+	Rasterize pages (strong compression)…	Rasterizar páginas (compressão forte)…
+	Rasterize pages (strong compression)	Rasterizar páginas (compressão forte)
+	Rasterizing… page {d} of {t}	Rasterizando… página {d} de {t}
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	Cada página vira uma imagem: a compressão mais forte, ideal para digitalizações. O texto deixa de ser selecionável ou pesquisável, e links, marcadores e campos de formulário não são mantidos. O resultado é salvo como cópia.
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi, qualidade JPEG {q}
+compression level	Light	Leve
+compression level	Medium	Média
+compression level	Strong	Forte
+	Compress	Compactar
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	Rasterizar não deixaria este arquivo menor ({size}). Nenhuma cópia foi salva.
+	Add faint watermark	Adicionar marca d’água suave
+	Recognize text if available	Reconhecer texto se disponível
+	Prepare for Sending	Preparar para envio
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	Numerar as páginas “n / total” embaixo, no centro, e depois reduzir o arquivo para enviar por e-mail.
+	Archive Scans	Arquivar digitalizações
+	Make scans searchable (when text recognition is available), then make them smaller.	Tornar as digitalizações pesquisáveis (se o reconhecimento de texto estiver instalado) e depois reduzi-las.
+	Confidential	Confidencial
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	Uma marca d’água diagonal suave CONFIDENCIAL e números de página “n / total” em todas as páginas.
+	{name} (copy)	{name} (cópia)
+watermark text	CONFIDENTIAL	CONFIDENCIAL
+	Group name	Nome do grupo
+	Rename Group	Renomear grupo
+	Close Group	Fechar grupo
+	Add Tab to New Group	Adicionar guia a um novo grupo
+	Add Tab to Group	Adicionar guia ao grupo
+	Remove from Group	Remover do grupo
+	Click to fold or unfold the group	Clique para recolher ou expandir o grupo
+	Filter tools	Filtrar ferramentas
+	No tool matches	Nenhuma ferramenta corresponde
+	Essentials	Essenciais
+	Float as a bubble	Flutuar como bolha
+	Show this PDF in a small window over the others	Mostrar este PDF em uma janela pequena sobre os outros
+	Put back as a tab	Voltar para a guia
+	Fold into a bubble	Recolher em bolha
+	Click to open, drag onto the tabs to put it back	Clique para abrir, arraste para as guias para devolver
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	Você tem a versão {c}. O NadsPDF será fechado, instalará a nova versão no lugar desta e abrirá novamente. Suas configurações são mantidas.
+	You have version {c}.	Você tem a versão {c}.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	Esta cópia do NadsPDF vem da Microsoft Store, que instala as novas versões sozinha.
+	Downloading the update…	Baixando a atualização…
+	Couldn't install the update: {e}	Não foi possível instalar a atualização: {e}
+	Check for updates when NadsPDF starts (once a day)	Procurar atualizações ao iniciar o NadsPDF (uma vez por dia)
+	Open in New Window	Abrir em nova janela
+	Or drag the tab out of the strip, to another screen for instance	Ou arraste a guia para fora da barra, para outra tela por exemplo
+	Release to open in a new window	Solte para abrir em uma nova janela
+	Save this PDF before opening it in a new window.	Salve este PDF antes de abri-lo em uma nova janela.
+	Save your changes before opening this PDF in a new window.	Salve suas alterações antes de abrir este PDF em uma nova janela.
+	Element	Elemento
+	Point at a line of the drawing to see its length. Click it to keep the measurement.	Aponte para uma linha do desenho para ver seu comprimento. Clique nela para manter a medida.
+	Actual size (no scale)	Tamanho real (sem escala)
+	This page	Esta página
+	Usual scales	Escalas usuais
+	Other unit	Outra unidade
+	Click both ends of a length you know, then type it on the right.	Clique nas duas pontas de um comprimento conhecido e digite-o à direita.
+	Whole document	Documento inteiro
+	Total area	Área total
+	Total length	Comprimento total
+	Know when you open or close a document (its name and number of pages)	Saber quando você abre ou fecha um documento (nome e número de páginas)
+	Read the text of the documents you open	Ler o texto dos documentos que você abre
+	Know where the documents you open are saved	Saber onde os documentos que você abre estão salvos
+	Show a message bar with buttons above a document	Mostrar uma barra de mensagem com botões acima de um documento
+	Open web pages on the sites it lists	Abrir páginas da web nos sites que ela declara
+	Extensions	Extensões
+	This extension can't be used: {e}	Não é possível usar esta extensão: {e}
+	Extensions folder: {path}	Pasta de extensões: {path}
+	Turn off	Desativar
+	Turn on…	Ativar…
+	Stopped: {e}	Parada: {e}
+	On at the next start	Ativada na próxima inicialização
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} é um programa executado neste computador com as suas permissões. Ele poderá:
+	• Nothing beyond running.	• Nada além de ser executado.
+	Only turn on extensions you trust.	Ative apenas extensões em que você confia.
+	Turn on	Ativar
+	Couldn't save the extension settings: {e}	Não foi possível salvar as configurações das extensões: {e}
+	Loading text recognition…	Carregando o reconhecimento de texto…

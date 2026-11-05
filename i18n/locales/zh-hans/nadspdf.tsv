@@ -1,0 +1,139 @@
+# NadsPDF's own rows for zh-hans: strings only NadsPDF has (vaults, bubbles, extensions,
+# conversion, compression…) and wordings NadsPDF chose over the shared PdfCraft catalog.
+# Same format as pdfcraft.tsv (context <TAB> English source <TAB> translation). build.rs merges
+# this file over pdfcraft.tsv: a row here replaces pdfcraft.tsv's row with the same context and
+# source text.
+#
+# Clean room: every entry was written from the plain meaning of the English text in ordinary
+# computing vocabulary. No other product's localisation, string table or translated UI was
+# consulted or copied; add entries the same way.
+
+	Images, text and documents (converted to PDF)	图像、文本和文档（转换为 PDF）
+	PDF, images, text and documents	PDF、图像、文本和文档
+	NadsPDF tools	NadsPDF 工具
+	PdfCraft (upstream) on GitHub	GitHub 上的 PdfCraft（上游项目）
+	Combine with NadsPDF	使用 NadsPDF 合并
+	Open with NadsPDF	使用 NadsPDF 打开
+	Show NadsPDF in the File Explorer right-click menu	在文件资源管理器的右键菜单中显示 NadsPDF
+	Added for all users when NadsPDF was installed.	安装 NadsPDF 时已为所有用户添加。
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	在文档、图像和 PDF 上提供“转换为 PDF”“合并”和“打开”。在 Windows 11 中位于“显示更多选项”下。
+	Couldn't change the File Explorer menu: {e}	无法更改文件资源管理器菜单：{e}
+	Couldn't find {name}	找不到 {name}
+@plural	{n} file|{n} files	{n} 个文件
+	Give the vault a name	请为保险库命名
+	You can have up to {n} vaults. Delete one first.	最多可以有 {n} 个保险库。请先删除一个。
+	That vault no longer exists	该保险库已不存在
+	Added {files} to {vault}	已添加到 {vault}：{files}
+	Already in {vault}	已在 {vault} 中
+	A vault holds up to {n} files	一个保险库最多容纳 {n} 个文件
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	保险库存放此电脑上的 PDF 以及 NadsPDF 可以转换的文件
+	No files to open in this vault	此保险库中没有可打开的文件
+	Opening the first {n} files	正在打开前 {n} 个文件
+	Deleted the vault {vault}. Its files were not touched.	已删除保险库 {vault}。其中的文件未受影响。
+	Moved {file} to {vault}	已将 {file} 移到 {vault}
+	Vaults need the desktop app	保险库需要桌面版应用
+	Locate {file}	查找 {file}
+	Save this document to a file first, then add it to a vault	请先将此文档保存为文件，再添加到保险库
+	Vaults	保险库
+	New vault	新建保险库
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	把电脑上各处的 PDF 归入有名称、颜色和图标的保险库。文件仍留在原处。
+	Click to show its files. Drag to reorder, or drop files here.	单击显示其文件。拖动可重新排序，也可将文件拖放到这里。
+	Open all	全部打开
+	Edit vault…	编辑保险库…
+	Move left	左移
+	Move right	右移
+	Delete vault…	删除保险库…
+	New vault…	新建保险库…
+	No files yet. Drop files here to add them.	还没有文件。将文件拖放到这里即可添加。
+	Locate…	查找…
+	Remove {name} from this vault	从此保险库移除 {name}
+	This file has moved or been deleted. Locate it, or remove it from the vault.	此文件已被移动或删除。请找到它，或将其从保险库移除。
+	Move to vault	移到保险库
+	Remove from vault	从保险库移除
+	Show this vault on Home	在主页显示此保险库
+	Vault: {name}	保险库：{name}
+	Vault	保险库
+	Edit vault	编辑保险库
+	Vault name	保险库名称
+	Create vault	创建保险库
+	Delete the vault {vault}?	要删除保险库 {vault} 吗？
+	Its files stay where they are on your computer. Only the vault is deleted.	文件仍留在电脑上的原处。只会删除保险库。
+	Delete vault	删除保险库
+	Add to vault	添加到保险库
+	Already in it	已在其中
+	Add document to vault…	将文档添加到保险库…
+	Dark pages	深色页面
+	Rasterize pages (strong compression)…	将页面栅格化（强力压缩）…
+	Rasterize pages (strong compression)	将页面栅格化（强力压缩）
+	Rasterizing… page {d} of {t}	正在栅格化… 第 {d} 页，共 {t} 页
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	每一页都会变成图片：压缩最强，最适合扫描件。文本将无法再选择或搜索，链接、书签和表单域也不会保留。结果另存为副本。
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi，JPEG 质量 {q}
+compression level	Light	轻度
+compression level	Medium	中度
+compression level	Strong	强力
+	Compress	压缩
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	栅格化不会让此文件变小（{size}）。未保存副本。
+	Add faint watermark	添加淡色水印
+	Recognize text if available	如可用则识别文本
+	Prepare for Sending	准备发送
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	在底部居中以“n / 总数”编号页面，然后缩小文件以便通过电子邮件发送。
+	Archive Scans	归档扫描件
+	Make scans searchable (when text recognition is available), then make them smaller.	使扫描件可搜索（如已安装文本识别），然后将其缩小。
+	Confidential	机密
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	每页添加淡色对角“机密”水印和“n / 总数”页码。
+	{name} (copy)	{name}（副本）
+watermark text	CONFIDENTIAL	机密
+	Group name	组名称
+	Rename Group	重命名组
+	Close Group	关闭组
+	Add Tab to New Group	将标签页添加到新组
+	Add Tab to Group	将标签页添加到组
+	Remove from Group	从组中移除
+	Click to fold or unfold the group	点击以折叠或展开该组
+	Filter tools	筛选工具
+	No tool matches	没有匹配的工具
+	Essentials	常用
+	Float as a bubble	悬浮为气泡
+	Show this PDF in a small window over the others	在其他文档上方的小窗口中显示此 PDF
+	Put back as a tab	放回为标签页
+	Fold into a bubble	收起为气泡
+	Click to open, drag onto the tabs to put it back	点击打开，拖到标签栏即可放回
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	你的版本是 {c}。NadsPDF 将关闭，安装新版本替换当前版本，然后重新打开。你的设置会保留。
+	You have version {c}.	你的版本是 {c}。
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	此 NadsPDF 来自 Microsoft Store，新版本由 Store 自动安装。
+	Downloading the update…	正在下载更新…
+	Couldn't install the update: {e}	无法安装更新：{e}
+	Check for updates when NadsPDF starts (once a day)	启动 NadsPDF 时检查更新（每天一次）
+	Open in New Window	在新窗口中打开
+	Or drag the tab out of the strip, to another screen for instance	或将标签页拖出标签栏，例如拖到另一块屏幕
+	Release to open in a new window	松开即可在新窗口中打开
+	Save this PDF before opening it in a new window.	请先保存此 PDF，再在新窗口中打开。
+	Save your changes before opening this PDF in a new window.	请先保存更改，再在新窗口中打开此 PDF。
+	Element	元素
+	Point at a line of the drawing to see its length. Click it to keep the measurement.	将指针指向图纸中的线条即可查看其长度。单击即可保留该测量。
+	Actual size (no scale)	实际大小（无比例）
+	This page	此页
+	Usual scales	常用比例
+	Other unit	其他单位
+	Click both ends of a length you know, then type it on the right.	单击已知长度的两端，然后在右侧输入该长度。
+	Whole document	整个文档
+	Total area	总面积
+	Total length	总长度
+	Know when you open or close a document (its name and number of pages)	得知您何时打开或关闭文档（文档名称和页数）
+	Read the text of the documents you open	读取您打开的文档的文本
+	Know where the documents you open are saved	得知您打开的文档保存在何处
+	Show a message bar with buttons above a document	在文档上方显示带按钮的消息栏
+	Open web pages on the sites it lists	在其列出的网站上打开网页
+	Extensions	扩展
+	This extension can't be used: {e}	无法使用此扩展：{e}
+	Extensions folder: {path}	扩展文件夹：{path}
+	Turn off	关闭
+	Turn on…	启用…
+	Stopped: {e}	已停止：{e}
+	On at the next start	下次启动时启用
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} 是在此计算机上以您的权限运行的程序。它将能够：
+	• Nothing beyond running.	• 仅运行，无其他权限。
+	Only turn on extensions you trust.	请只启用您信任的扩展。
+	Turn on	启用
+	Couldn't save the extension settings: {e}	无法保存扩展设置：{e}
+	Loading text recognition…	正在加载文字识别…

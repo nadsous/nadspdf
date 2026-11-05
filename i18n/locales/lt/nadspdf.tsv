@@ -1,0 +1,156 @@
+# NadsPDF's own rows for lt: strings only NadsPDF has (vaults, bubbles, extensions,
+# conversion, compression…) and wordings NadsPDF chose over the shared PdfCraft catalog.
+# Same format as pdfcraft.tsv (context <TAB> English source <TAB> translation). build.rs merges
+# this file over pdfcraft.tsv: a row here replaces pdfcraft.tsv's row with the same context and
+# source text.
+#
+# Clean room: every entry was written from the plain meaning of the English text in ordinary
+# computing vocabulary. No other product's localisation, string table or translated UI was
+# consulted or copied; add entries the same way.
+
+	Images, text and documents (converted to PDF)	Paveikslėliai, tekstas ir dokumentai (konvertuojami į PDF)
+	PDF, images, text and documents	PDF, paveikslėliai, tekstas ir dokumentai
+	NadsPDF tools	NadsPDF įrankiai
+	PdfCraft (upstream) on GitHub	PdfCraft (pirminis projektas) „GitHub“
+	Convert to PDF	Konvertuoti į PDF
+	Word, Excel, CSV, text, HTML, images	Word, Excel, CSV, tekstas, HTML, vaizdai
+	Compress	Suspausti
+	Make PDFs lighter	Sumažinti PDF dydį
+	Merge	Sujungti
+	Combine several PDFs	Sujungti kelis PDF
+	Split & organize	Skaidyti ir tvarkyti
+	Extract, delete, rotate pages	Išskleisti, šalinti, pasukti puslapius
+	Change the words of a PDF	Keisti PDF žodžius
+	PDF to images	PDF į vaizdus
+	Export pages as PNG or JPEG	Eksportuoti puslapius kaip PNG arba JPEG
+	Images to PDF	Vaizdai į PDF
+	PNG and JPEG into one PDF	PNG ir JPEG į vieną PDF
+	Pipelines	Veiksmų sekos
+	Chain steps over many files	Vykdyti veiksmų seką keliems failams
+	Stamp CONFIDENTIAL across pages	Pažymėti puslapius CONFIDENTIAL
+	Page numbers	Puslapių numeriai
+	Number pages like 1 / 10	Numeruoti puslapius: 1 / 10
+	Combine with NadsPDF	Sujungti su „NadsPDF“
+	Open with NadsPDF	Atverti su „NadsPDF“
+	Show NadsPDF in the File Explorer right-click menu	Rodyti „NadsPDF“ failų naršyklės kontekstiniame meniu
+	Added for all users when NadsPDF was installed.	Pridėta visiems naudotojams diegiant „NadsPDF“.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	Konvertuoti į PDF, Sujungti ir Atverti dokumentams, paveikslams ir PDF failams. „Windows 11“ – skiltyje „Rodyti daugiau parinkčių“.
+	Couldn't change the File Explorer menu: {e}	Nepavyko pakeisti failų naršyklės meniu: {e}
+	Couldn't find {name}	Nerasta: {name}
+	Give the vault a name	Suteikite seifui pavadinimą
+	You can have up to {n} vaults. Delete one first.	Galite turėti iki {n} seifų. Pirma ištrinkite vieną.
+	That vault no longer exists	Šio seifo nebėra
+	Added {files} to {vault}	Pridėta į {vault}: {files}
+	Already in {vault}	Jau yra {vault}
+	A vault holds up to {n} files	Seife telpa iki {n} failų
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	Seifuose laikomi PDF ir failai, kuriuos NadsPDF gali konvertuoti, šiame kompiuteryje
+	No files to open in this vault	Šiame seife nėra failų, kuriuos būtų galima atidaryti
+	Opening the first {n} files	Atidaromi pirmieji {n} failai
+	Deleted the vault {vault}. Its files were not touched.	Seifas {vault} ištrintas. Jo failai nepaliesti.
+	Moved {file} to {vault}	{file} perkeltas į {vault}
+	Vaults need the desktop app	Seifams reikia darbalaukio programos
+	Locate {file}	Rasti {file}
+	Save this document to a file first, then add it to a vault	Pirma įrašykite dokumentą į failą, tada pridėkite jį į seifą
+	Vaults	Seifai
+	New vault	Naujas seifas
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	Grupuokite PDF iš bet kurios kompiuterio vietos į pavadintus seifus su spalva ir piktograma. Failai lieka savo vietose.
+	Click to show its files. Drag to reorder, or drop files here.	Spustelėkite, kad matytumėte failus. Vilkite, kad pakeistumėte tvarką, arba numeskite failus čia.
+	Open all	Atidaryti visus
+	Edit vault…	Redaguoti seifą…
+	Move left	Perkelti kairėn
+	Move right	Perkelti dešinėn
+	Delete vault…	Ištrinti seifą…
+	New vault…	Naujas seifas…
+	No files yet. Drop files here to add them.	Failų dar nėra. Numeskite failus čia, kad juos pridėtumėte.
+	Locate…	Rasti…
+	Missing	Trūksta
+	Remove {name} from this vault	Pašalinti {name} iš šio seifo
+	This file has moved or been deleted. Locate it, or remove it from the vault.	Šis failas perkeltas arba ištrintas. Raskite jį arba pašalinkite iš seifo.
+	Move to vault	Perkelti į seifą
+	Remove from vault	Pašalinti iš seifo
+	Show this vault on Home	Rodyti šį seifą pradžios puslapyje
+	Vault: {name}	Seifas: {name}
+	Vault	Seifas
+	Edit vault	Redaguoti seifą
+	Vault name	Seifo pavadinimas
+	Create vault	Sukurti seifą
+	Delete the vault {vault}?	Ištrinti seifą {vault}?
+	Its files stay where they are on your computer. Only the vault is deleted.	Failai lieka savo vietose kompiuteryje. Ištrinamas tik seifas.
+	Delete vault	Ištrinti seifą
+	Add to vault	Pridėti į seifą
+	Already in it	Jau čia
+	Add document to vault…	Pridėti dokumentą į seifą…
+	Dark pages	Tamsūs puslapiai
+	Rasterize pages (strong compression)…	Rastrinti puslapius (stiprus glaudinimas)…
+	Rasterize pages (strong compression)	Rastrinti puslapius (stiprus glaudinimas)
+	Rasterizing… page {d} of {t}	Rastrinama… {d} puslapis iš {t}
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	Kiekvienas puslapis tampa paveikslu: stipriausias glaudinimas, geriausias nuskaitytiems dokumentams. Teksto nebegalima pažymėti ar ieškoti, o nuorodos, žymelės ir formų laukai neišsaugomi. Rezultatas įrašomas kaip kopija.
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi, JPEG kokybė {q}
+compression level	Light	Lengvas
+compression level	Medium	Vidutinis
+compression level	Strong	Stiprus
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	Rastrinimas šio failo nesumažintų ({size}). Kopija neįrašyta.
+	Add faint watermark	Pridėti blankų vandenženklį
+	Recognize text if available	Atpažinti tekstą, jei įmanoma
+	Prepare for Sending	Paruošti siuntimui
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	Sunumeruoti puslapius „n / iš viso“ apačioje per vidurį, tada sumažinti failą siuntimui el. paštu.
+	Archive Scans	Archyvuoti nuskaitytus dokumentus
+	Make scans searchable (when text recognition is available), then make them smaller.	Padaryti nuskaitytus dokumentus ieškomus (jei įdiegtas teksto atpažinimas), tada juos sumažinti.
+	Confidential	Konfidencialu
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	Blankus įstrižas vandenženklis KONFIDENCIALU ir puslapių numeriai „n / iš viso“ kiekviename puslapyje.
+	{name} (copy)	{name} (kopija)
+watermark text	CONFIDENTIAL	KONFIDENCIALU
+	Group name	Grupės pavadinimas
+	Rename Group	Pervadinti grupę
+	Close Group	Uždaryti grupę
+	Add Tab to New Group	Pridėti kortelę į naują grupę
+	Add Tab to Group	Pridėti kortelę į grupę
+	Remove from Group	Pašalinti iš grupės
+	Click to fold or unfold the group	Spustelėkite, kad suskleistumėte arba išskleistumėte grupę
+	Filter tools	Filtruoti įrankius
+	No tool matches	Nėra atitinkančių įrankių
+	Essentials	Pagrindiniai
+	Float as a bubble	Rodyti burbule
+	Show this PDF in a small window over the others	Rodyti šį PDF mažame lange virš kitų
+	Put back as a tab	Grąžinti į kortelę
+	Fold into a bubble	Sutraukti į burbulą
+	Click to open, drag onto the tabs to put it back	Spustelėkite, kad atidarytumėte, nutempkite ant kortelių, kad grąžintumėte
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	Turite {c} versiją. NadsPDF užsidarys, vietoj šios įdiegs naują versiją ir vėl atsidarys. Jūsų nustatymai išsaugomi.
+	You have version {c}.	Turite {c} versiją.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	Ši NadsPDF kopija gauta iš „Microsoft Store“, kuri pati įdiegia naujas versijas.
+	Downloading the update…	Atsisiunčiamas naujinys…
+	Couldn't install the update: {e}	Nepavyko įdiegti naujinio: {e}
+	Check for updates when NadsPDF starts (once a day)	Ieškoti naujinių paleidžiant NadsPDF (kartą per dieną)
+	Open in New Window	Atidaryti naujame lange
+	Or drag the tab out of the strip, to another screen for instance	Arba nutempkite kortelę iš juostos, pavyzdžiui, į kitą ekraną
+	Release to open in a new window	Atleiskite, kad atidarytumėte naujame lange
+	Save this PDF before opening it in a new window.	Prieš atidarydami šį PDF naujame lange, jį įrašykite.
+	Save your changes before opening this PDF in a new window.	Prieš atidarydami šį PDF naujame lange, įrašykite pakeitimus.
+	Element	Elementas
+	Point at a line of the drawing to see its length. Click it to keep the measurement.	Užveskite ant brėžinio linijos, kad matytumėte jos ilgį. Spustelėkite, kad išsaugotumėte matavimą.
+	Actual size (no scale)	Tikrasis dydis (be mastelio)
+	This page	Šis puslapis
+	Usual scales	Įprasti masteliai
+	Other unit	Kitas vienetas
+	Click both ends of a length you know, then type it on the right.	Spustelėkite abu žinomo ilgio galus, tada įveskite jį dešinėje.
+	Whole document	Visas dokumentas
+	Total area	Bendras plotas
+	Total length	Bendras ilgis
+	Know when you open or close a document (its name and number of pages)	Žinoti, kada atidarote ar uždarote dokumentą (jo pavadinimą ir puslapių skaičių)
+	Read the text of the documents you open	Skaityti atidarytų dokumentų tekstą
+	Know where the documents you open are saved	Žinoti, kur įrašyti atidaryti dokumentai
+	Show a message bar with buttons above a document	Virš dokumento rodyti pranešimų juostą su mygtukais
+	Open web pages on the sites it lists	Atidaryti tinklalapius jo nurodytose svetainėse
+	Extensions	Plėtiniai
+	This extension can't be used: {e}	Šio plėtinio naudoti negalima: {e}
+	Extensions folder: {path}	Plėtinių aplankas: {path}
+	Turn off	Išjungti
+	Turn on…	Įjungti…
+	Stopped: {e}	Sustabdytas: {e}
+	On at the next start	Įjungtas nuo kito paleidimo
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} yra programa, veikianti šiame kompiuteryje su jūsų teisėmis. Ji galės:
+	• Nothing beyond running.	• Nieko daugiau, tik veikti.
+	Only turn on extensions you trust.	Įjunkite tik tuos plėtinius, kuriais pasitikite.
+	Turn on	Įjungti
+	Couldn't save the extension settings: {e}	Nepavyko įrašyti plėtinių nustatymų: {e}
+	Loading text recognition…	Įkeliamas teksto atpažinimas…

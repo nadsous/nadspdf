@@ -1,0 +1,138 @@
+# NadsPDF's own rows for pl: strings only NadsPDF has (vaults, bubbles, extensions,
+# conversion, compression…) and wordings NadsPDF chose over the shared PdfCraft catalog.
+# Same format as pdfcraft.tsv (context <TAB> English source <TAB> translation). build.rs merges
+# this file over pdfcraft.tsv: a row here replaces pdfcraft.tsv's row with the same context and
+# source text.
+#
+# Clean room: every entry was written from the plain meaning of the English text in ordinary
+# computing vocabulary. No other product's localisation, string table or translated UI was
+# consulted or copied; add entries the same way.
+
+	Images, text and documents (converted to PDF)	Obrazy, tekst i dokumenty (konwertowane do PDF)
+	PDF, images, text and documents	PDF, obrazy, tekst i dokumenty
+	NadsPDF tools	Narzędzia NadsPDF
+	PdfCraft (upstream) on GitHub	PdfCraft (projekt źródłowy) na GitHubie
+	Combine with NadsPDF	Połącz za pomocą NadsPDF
+	Open with NadsPDF	Otwórz za pomocą NadsPDF
+	Show NadsPDF in the File Explorer right-click menu	Pokaż NadsPDF w menu kontekstowym Eksploratora plików
+	Added for all users when NadsPDF was installed.	Dodano dla wszystkich użytkowników podczas instalacji NadsPDF.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	Konwertuj do PDF, Połącz i Otwórz dla dokumentów, obrazów i plików PDF. W systemie Windows 11 w sekcji „Pokaż więcej opcji”.
+	Couldn't change the File Explorer menu: {e}	Nie udało się zmienić menu Eksploratora plików: {e}
+	Couldn't find {name}	Nie znaleziono {name}
+	Give the vault a name	Nadaj sejfowi nazwę
+	You can have up to {n} vaults. Delete one first.	Możesz mieć do {n} sejfów. Najpierw usuń jeden.
+	That vault no longer exists	Ten sejf już nie istnieje
+	Added {files} to {vault}	Dodano do {vault}: {files}
+	Already in {vault}	Już w {vault}
+	A vault holds up to {n} files	Sejf mieści do {n} plików
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	Sejfy przechowują pliki PDF i pliki, które NadsPDF potrafi przekonwertować, na tym komputerze
+	No files to open in this vault	W tym sejfie nie ma plików do otwarcia
+	Opening the first {n} files	Otwieranie pierwszych {n} plików
+	Deleted the vault {vault}. Its files were not touched.	Usunięto sejf {vault}. Jego pliki pozostały nietknięte.
+	Moved {file} to {vault}	Przeniesiono {file} do {vault}
+	Vaults need the desktop app	Sejfy wymagają aplikacji komputerowej
+	Locate {file}	Znajdź {file}
+	Save this document to a file first, then add it to a vault	Najpierw zapisz ten dokument w pliku, a potem dodaj go do sejfu
+	Vaults	Sejfy
+	New vault	Nowy sejf
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	Grupuj pliki PDF z dowolnych miejsc na komputerze w nazwanych sejfach z kolorem i ikoną. Pliki zostają na swoich miejscach.
+	Click to show its files. Drag to reorder, or drop files here.	Kliknij, aby pokazać pliki. Przeciągnij, aby zmienić kolejność, lub upuść tu pliki.
+	Open all	Otwórz wszystkie
+	Edit vault…	Edytuj sejf…
+	Move left	Przesuń w lewo
+	Move right	Przesuń w prawo
+	Delete vault…	Usuń sejf…
+	New vault…	Nowy sejf…
+	No files yet. Drop files here to add them.	Na razie brak plików. Upuść tu pliki, aby je dodać.
+	Locate…	Znajdź…
+	Remove {name} from this vault	Usuń {name} z tego sejfu
+	This file has moved or been deleted. Locate it, or remove it from the vault.	Ten plik został przeniesiony lub usunięty. Znajdź go lub usuń z sejfu.
+	Move to vault	Przenieś do sejfu
+	Remove from vault	Usuń z sejfu
+	Show this vault on Home	Pokaż ten sejf na stronie głównej
+	Vault: {name}	Sejf: {name}
+	Vault	Sejf
+	Edit vault	Edytuj sejf
+	Vault name	Nazwa sejfu
+	Create vault	Utwórz sejf
+	Delete the vault {vault}?	Usunąć sejf {vault}?
+	Its files stay where they are on your computer. Only the vault is deleted.	Pliki zostają na swoich miejscach na komputerze. Usuwany jest tylko sejf.
+	Delete vault	Usuń sejf
+	Add to vault	Dodaj do sejfu
+	Already in it	Już tutaj
+	Add document to vault…	Dodaj dokument do sejfu…
+	Dark pages	Ciemne strony
+	Rasterize pages (strong compression)…	Rasteryzuj strony (silna kompresja)…
+	Rasterize pages (strong compression)	Rasteryzuj strony (silna kompresja)
+	Rasterizing… page {d} of {t}	Rasteryzowanie… strona {d} z {t}
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	Każda strona staje się obrazem: najsilniejsza kompresja, najlepsza dla skanów. Tekstu nie można już zaznaczać ani wyszukiwać, a łącza, zakładki i pola formularzy nie są zachowywane. Wynik jest zapisywany jako kopia.
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi, jakość JPEG {q}
+compression level	Light	Lekka
+compression level	Medium	Średnia
+compression level	Strong	Silna
+	Compress	Kompresuj
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	Rasteryzacja nie zmniejszyłaby tego pliku ({size}). Nie zapisano kopii.
+	Add faint watermark	Dodaj delikatny znak wodny
+	Recognize text if available	Rozpoznaj tekst, jeśli dostępne
+	Prepare for Sending	Przygotuj do wysłania
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	Ponumeruj strony „n / razem” na dole pośrodku, a następnie zmniejsz plik do wysłania e-mailem.
+	Archive Scans	Archiwizuj skany
+	Make scans searchable (when text recognition is available), then make them smaller.	Umożliw wyszukiwanie w skanach (jeśli rozpoznawanie tekstu jest zainstalowane), a następnie je zmniejsz.
+	Confidential	Poufne
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	Delikatny ukośny znak wodny POUFNE i numery stron „n / razem” na każdej stronie.
+	{name} (copy)	{name} (kopia)
+watermark text	CONFIDENTIAL	POUFNE
+	Group name	Nazwa grupy
+	Rename Group	Zmień nazwę grupy
+	Close Group	Zamknij grupę
+	Add Tab to New Group	Dodaj kartę do nowej grupy
+	Add Tab to Group	Dodaj kartę do grupy
+	Remove from Group	Usuń z grupy
+	Click to fold or unfold the group	Kliknij, aby zwinąć lub rozwinąć grupę
+	Filter tools	Filtruj narzędzia
+	No tool matches	Brak pasujących narzędzi
+	Essentials	Podstawowe
+	Float as a bubble	Pływający dymek
+	Show this PDF in a small window over the others	Pokaż ten PDF w małym oknie nad innymi
+	Put back as a tab	Przywróć jako kartę
+	Fold into a bubble	Zwiń do dymka
+	Click to open, drag onto the tabs to put it back	Kliknij, aby otworzyć, przeciągnij na karty, aby przywrócić
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	Masz wersję {c}. NadsPDF zamknie się, zainstaluje nową wersję w miejsce tej i otworzy się ponownie. Twoje ustawienia zostaną zachowane.
+	You have version {c}.	Masz wersję {c}.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	Ta kopia NadsPDF pochodzi ze sklepu Microsoft Store, który sam instaluje nowe wersje.
+	Downloading the update…	Pobieranie aktualizacji…
+	Couldn't install the update: {e}	Nie udało się zainstalować aktualizacji: {e}
+	Check for updates when NadsPDF starts (once a day)	Sprawdzaj aktualizacje przy uruchamianiu NadsPDF (raz dziennie)
+	Open in New Window	Otwórz w nowym oknie
+	Or drag the tab out of the strip, to another screen for instance	Lub przeciągnij kartę poza pasek, np. na inny ekran
+	Release to open in a new window	Upuść, aby otworzyć w nowym oknie
+	Save this PDF before opening it in a new window.	Zapisz ten PDF, zanim otworzysz go w nowym oknie.
+	Save your changes before opening this PDF in a new window.	Zapisz zmiany, zanim otworzysz ten PDF w nowym oknie.
+	Element	Element
+	Point at a line of the drawing to see its length. Click it to keep the measurement.	Wskaż linię rysunku, aby zobaczyć jej długość. Kliknij ją, aby zachować pomiar.
+	Actual size (no scale)	Rzeczywisty rozmiar (bez skali)
+	This page	Ta strona
+	Usual scales	Typowe skale
+	Other unit	Inna jednostka
+	Click both ends of a length you know, then type it on the right.	Kliknij oba końce znanej długości, a następnie wpisz ją po prawej.
+	Whole document	Cały dokument
+	Total area	Łączna powierzchnia
+	Total length	Łączna długość
+	Know when you open or close a document (its name and number of pages)	Wiedzieć, kiedy otwierasz lub zamykasz dokument (jego nazwę i liczbę stron)
+	Read the text of the documents you open	Czytać tekst otwieranych dokumentów
+	Know where the documents you open are saved	Wiedzieć, gdzie zapisane są otwierane dokumenty
+	Show a message bar with buttons above a document	Wyświetlać nad dokumentem pasek komunikatu z przyciskami
+	Open web pages on the sites it lists	Otwierać strony internetowe w witrynach, które podaje
+	Extensions	Rozszerzenia
+	This extension can't be used: {e}	Nie można użyć tego rozszerzenia: {e}
+	Extensions folder: {path}	Folder rozszerzeń: {path}
+	Turn off	Wyłącz
+	Turn on…	Włącz…
+	Stopped: {e}	Zatrzymane: {e}
+	On at the next start	Włączone od następnego uruchomienia
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} to program działający na tym komputerze z Twoimi uprawnieniami. Będzie mógł:
+	• Nothing beyond running.	• Nic poza działaniem.
+	Only turn on extensions you trust.	Włączaj tylko rozszerzenia, którym ufasz.
+	Turn on	Włącz
+	Couldn't save the extension settings: {e}	Nie udało się zapisać ustawień rozszerzeń: {e}
+	Loading text recognition…	Wczytywanie rozpoznawania tekstu…

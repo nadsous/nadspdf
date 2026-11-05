@@ -1,0 +1,138 @@
+# NadsPDF's own rows for de: strings only NadsPDF has (vaults, bubbles, extensions,
+# conversion, compression…) and wordings NadsPDF chose over the shared PdfCraft catalog.
+# Same format as pdfcraft.tsv (context <TAB> English source <TAB> translation). build.rs merges
+# this file over pdfcraft.tsv: a row here replaces pdfcraft.tsv's row with the same context and
+# source text.
+#
+# Clean room: every entry was written from the plain meaning of the English text in ordinary
+# computing vocabulary. No other product's localisation, string table or translated UI was
+# consulted or copied; add entries the same way.
+
+	Images, text and documents (converted to PDF)	Bilder, Text und Dokumente (in PDF umgewandelt)
+	PDF, images, text and documents	PDF, Bilder, Text und Dokumente
+	NadsPDF tools	NadsPDF-Werkzeuge
+	PdfCraft (upstream) on GitHub	PdfCraft (Originalprojekt) auf GitHub
+	Combine with NadsPDF	Mit NadsPDF zusammenführen
+	Open with NadsPDF	Mit NadsPDF öffnen
+	Show NadsPDF in the File Explorer right-click menu	NadsPDF im Kontextmenü des Datei-Explorers anzeigen
+	Added for all users when NadsPDF was installed.	Bei der Installation von NadsPDF für alle Benutzer hinzugefügt.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	In PDF konvertieren, Zusammenführen und Öffnen für Dokumente, Bilder und PDFs. Unter Windows 11 unter „Weitere Optionen anzeigen“.
+	Couldn't change the File Explorer menu: {e}	Das Kontextmenü des Datei-Explorers konnte nicht geändert werden: {e}
+	Couldn't find {name}	{name} wurde nicht gefunden
+	Give the vault a name	Gib dem Tresor einen Namen
+	You can have up to {n} vaults. Delete one first.	Du kannst bis zu {n} Tresore haben. Lösche zuerst einen.
+	That vault no longer exists	Dieser Tresor existiert nicht mehr
+	Added {files} to {vault}	Zu {vault} hinzugefügt: {files}
+	Already in {vault}	Bereits in {vault}
+	A vault holds up to {n} files	Ein Tresor fasst bis zu {n} Dateien
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	Tresore enthalten PDFs und Dateien, die NadsPDF umwandeln kann, auf diesem Computer
+	No files to open in this vault	In diesem Tresor gibt es keine Dateien zum Öffnen
+	Opening the first {n} files	Die ersten {n} Dateien werden geöffnet
+	Deleted the vault {vault}. Its files were not touched.	Tresor {vault} gelöscht. Seine Dateien wurden nicht angerührt.
+	Moved {file} to {vault}	{file} nach {vault} verschoben
+	Vaults need the desktop app	Tresore benötigen die Desktop-App
+	Locate {file}	{file} suchen
+	Save this document to a file first, then add it to a vault	Speichere dieses Dokument zuerst als Datei und füge es dann einem Tresor hinzu
+	Vaults	Tresore
+	New vault	Neuer Tresor
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	Fasse PDFs von überall auf deinem Computer in benannten Tresoren mit Farbe und Symbol zusammen. Die Dateien bleiben, wo sie sind.
+	Click to show its files. Drag to reorder, or drop files here.	Klicken, um die Dateien zu zeigen. Ziehen zum Umsortieren, oder Dateien hier ablegen.
+	Open all	Alle öffnen
+	Edit vault…	Tresor bearbeiten…
+	Move left	Nach links
+	Move right	Nach rechts
+	Delete vault…	Tresor löschen…
+	New vault…	Neuer Tresor…
+	No files yet. Drop files here to add them.	Noch keine Dateien. Lege Dateien hier ab, um sie hinzuzufügen.
+	Locate…	Suchen…
+	Remove {name} from this vault	{name} aus diesem Tresor entfernen
+	This file has moved or been deleted. Locate it, or remove it from the vault.	Diese Datei wurde verschoben oder gelöscht. Suche sie oder entferne sie aus dem Tresor.
+	Move to vault	In Tresor verschieben
+	Remove from vault	Aus Tresor entfernen
+	Show this vault on Home	Diesen Tresor auf der Startseite zeigen
+	Vault: {name}	Tresor: {name}
+	Vault	Tresor
+	Edit vault	Tresor bearbeiten
+	Vault name	Name des Tresors
+	Create vault	Tresor erstellen
+	Delete the vault {vault}?	Tresor {vault} löschen?
+	Its files stay where they are on your computer. Only the vault is deleted.	Die Dateien bleiben, wo sie auf deinem Computer sind. Nur der Tresor wird gelöscht.
+	Delete vault	Tresor löschen
+	Add to vault	Zum Tresor hinzufügen
+	Already in it	Bereits enthalten
+	Add document to vault…	Dokument zu Tresor hinzufügen…
+	Dark pages	Dunkle Seiten
+	Rasterize pages (strong compression)…	Seiten rastern (starke Komprimierung)…
+	Rasterize pages (strong compression)	Seiten rastern (starke Komprimierung)
+	Rasterizing… page {d} of {t}	Rastern… Seite {d} von {t}
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	Jede Seite wird zu einem Bild: die stärkste Komprimierung, ideal für Scans. Text ist nicht mehr auswählbar oder durchsuchbar, und Links, Lesezeichen und Formularfelder bleiben nicht erhalten. Das Ergebnis wird als Kopie gespeichert.
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi, JPEG-Qualität {q}
+compression level	Light	Leicht
+compression level	Medium	Mittel
+compression level	Strong	Stark
+	Compress	Komprimieren
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	Durch Rastern würde diese Datei nicht kleiner ({size}). Es wurde keine Kopie gespeichert.
+	Add faint watermark	Dezentes Wasserzeichen hinzufügen
+	Recognize text if available	Text erkennen, falls verfügbar
+	Prepare for Sending	Zum Versenden vorbereiten
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	Seiten unten mittig mit „n / gesamt“ nummerieren und die Datei dann für den Versand per E-Mail verkleinern.
+	Archive Scans	Scans archivieren
+	Make scans searchable (when text recognition is available), then make them smaller.	Scans durchsuchbar machen (wenn Texterkennung installiert ist) und dann verkleinern.
+	Confidential	Vertraulich
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	Ein dezentes diagonales Wasserzeichen VERTRAULICH und Seitenzahlen „n / gesamt“ auf jeder Seite.
+	{name} (copy)	{name} (Kopie)
+watermark text	CONFIDENTIAL	VERTRAULICH
+	Group name	Gruppenname
+	Rename Group	Gruppe umbenennen
+	Close Group	Gruppe schließen
+	Add Tab to New Group	Tab zu neuer Gruppe hinzufügen
+	Add Tab to Group	Tab zu Gruppe hinzufügen
+	Remove from Group	Aus Gruppe entfernen
+	Click to fold or unfold the group	Klicken, um die Gruppe ein- oder auszuklappen
+	Filter tools	Werkzeuge filtern
+	No tool matches	Kein passendes Werkzeug
+	Essentials	Grundlagen
+	Float as a bubble	Als Blase schweben lassen
+	Show this PDF in a small window over the others	Dieses PDF in einem kleinen Fenster über den anderen zeigen
+	Put back as a tab	Wieder als Tab anzeigen
+	Fold into a bubble	Zur Blase verkleinern
+	Click to open, drag onto the tabs to put it back	Klicken zum Öffnen, auf die Tabs ziehen zum Zurücklegen
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	Sie haben Version {c}. NadsPDF wird geschlossen, installiert die neue Version anstelle dieser und öffnet sich wieder. Ihre Einstellungen bleiben erhalten.
+	You have version {c}.	Sie haben Version {c}.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	Diese Kopie von NadsPDF stammt aus dem Microsoft Store, der neue Versionen selbst installiert.
+	Downloading the update…	Update wird heruntergeladen…
+	Couldn't install the update: {e}	Das Update konnte nicht installiert werden: {e}
+	Check for updates when NadsPDF starts (once a day)	Beim Start von NadsPDF nach Updates suchen (einmal täglich)
+	Open in New Window	In neuem Fenster öffnen
+	Or drag the tab out of the strip, to another screen for instance	Oder den Tab aus der Leiste ziehen, etwa auf einen anderen Bildschirm
+	Release to open in a new window	Loslassen, um in einem neuen Fenster zu öffnen
+	Save this PDF before opening it in a new window.	Speichern Sie dieses PDF, bevor Sie es in einem neuen Fenster öffnen.
+	Save your changes before opening this PDF in a new window.	Speichern Sie Ihre Änderungen, bevor Sie dieses PDF in einem neuen Fenster öffnen.
+	Element	Element
+	Point at a line of the drawing to see its length. Click it to keep the measurement.	Zeigen Sie auf eine Linie der Zeichnung, um ihre Länge zu sehen. Klicken Sie darauf, um die Messung zu behalten.
+	Actual size (no scale)	Originalgröße (ohne Maßstab)
+	This page	Diese Seite
+	Usual scales	Übliche Maßstäbe
+	Other unit	Andere Einheit
+	Click both ends of a length you know, then type it on the right.	Klicken Sie beide Enden einer bekannten Länge an und geben Sie sie rechts ein.
+	Whole document	Gesamtes Dokument
+	Total area	Gesamtfläche
+	Total length	Gesamtlänge
+	Know when you open or close a document (its name and number of pages)	Erfahren, wann Sie ein Dokument öffnen oder schließen (Name und Seitenzahl)
+	Read the text of the documents you open	Den Text der geöffneten Dokumente lesen
+	Know where the documents you open are saved	Erfahren, wo die geöffneten Dokumente gespeichert sind
+	Show a message bar with buttons above a document	Über einem Dokument eine Meldungsleiste mit Schaltflächen anzeigen
+	Open web pages on the sites it lists	Webseiten auf den angegebenen Websites öffnen
+	Extensions	Erweiterungen
+	This extension can't be used: {e}	Diese Erweiterung kann nicht verwendet werden: {e}
+	Extensions folder: {path}	Ordner für Erweiterungen: {path}
+	Turn off	Ausschalten
+	Turn on…	Einschalten…
+	Stopped: {e}	Beendet: {e}
+	On at the next start	Ein ab dem nächsten Start
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} ist ein Programm, das auf diesem Computer mit Ihren Rechten läuft. Es kann:
+	• Nothing beyond running.	• Nichts außer laufen.
+	Only turn on extensions you trust.	Schalten Sie nur Erweiterungen ein, denen Sie vertrauen.
+	Turn on	Einschalten
+	Couldn't save the extension settings: {e}	Die Einstellungen der Erweiterungen konnten nicht gespeichert werden: {e}
+	Loading text recognition…	Texterkennung wird geladen…

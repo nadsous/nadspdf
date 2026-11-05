@@ -1,0 +1,139 @@
+# NadsPDF's own rows for el: strings only NadsPDF has (vaults, bubbles, extensions,
+# conversion, compression…) and wordings NadsPDF chose over the shared PdfCraft catalog.
+# Same format as pdfcraft.tsv (context <TAB> English source <TAB> translation). build.rs merges
+# this file over pdfcraft.tsv: a row here replaces pdfcraft.tsv's row with the same context and
+# source text.
+#
+# Clean room: every entry was written from the plain meaning of the English text in ordinary
+# computing vocabulary. No other product's localisation, string table or translated UI was
+# consulted or copied; add entries the same way.
+
+	Images, text and documents (converted to PDF)	Εικόνες, κείμενο και έγγραφα (μετατρέπονται σε PDF)
+	PDF, images, text and documents	PDF, εικόνες, κείμενο και έγγραφα
+	NadsPDF tools	Εργαλεία NadsPDF
+	PdfCraft (upstream) on GitHub	Το PdfCraft (αρχικό έργο) στο GitHub
+	Combine with NadsPDF	Συνδυασμός με το NadsPDF
+	Open with NadsPDF	Άνοιγμα με το NadsPDF
+	Show NadsPDF in the File Explorer right-click menu	Εμφάνιση του NadsPDF στο μενού δεξιού κλικ της Εξερεύνησης αρχείων
+	Added for all users when NadsPDF was installed.	Προστέθηκε για όλους τους χρήστες κατά την εγκατάσταση του NadsPDF.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	Μετατροπή σε PDF, Συνδυασμός και Άνοιγμα σε έγγραφα, εικόνες και PDF. Στα Windows 11, στο «Εμφάνιση περισσότερων επιλογών».
+	Couldn't change the File Explorer menu: {e}	Δεν ήταν δυνατή η αλλαγή του μενού της Εξερεύνησης αρχείων: {e}
+	Couldn't find {name}	Δεν βρέθηκε το {name}
+@plural	{n} file|{n} files	{n} αρχείο|{n} αρχεία
+	Give the vault a name	Δώστε όνομα στο θησαυροφυλάκιο
+	You can have up to {n} vaults. Delete one first.	Μπορείτε να έχετε έως {n} θησαυροφυλάκια. Διαγράψτε πρώτα ένα.
+	That vault no longer exists	Αυτό το θησαυροφυλάκιο δεν υπάρχει πια
+	Added {files} to {vault}	Προστέθηκαν στο {vault}: {files}
+	Already in {vault}	Ήδη στο {vault}
+	A vault holds up to {n} files	Ένα θησαυροφυλάκιο χωράει έως {n} αρχεία
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	Τα θησαυροφυλάκια περιέχουν PDF και αρχεία που μετατρέπει το NadsPDF, σε αυτόν τον υπολογιστή
+	No files to open in this vault	Δεν υπάρχουν αρχεία για άνοιγμα σε αυτό το θησαυροφυλάκιο
+	Opening the first {n} files	Άνοιγμα των πρώτων {n} αρχείων
+	Deleted the vault {vault}. Its files were not touched.	Το θησαυροφυλάκιο {vault} διαγράφηκε. Τα αρχεία του δεν άλλαξαν.
+	Moved {file} to {vault}	Το {file} μετακινήθηκε στο {vault}
+	Vaults need the desktop app	Τα θησαυροφυλάκια χρειάζονται την εφαρμογή υπολογιστή
+	Locate {file}	Εντοπισμός {file}
+	Save this document to a file first, then add it to a vault	Αποθηκεύστε πρώτα το έγγραφο σε αρχείο και μετά προσθέστε το σε θησαυροφυλάκιο
+	Vaults	Θησαυροφυλάκια
+	New vault	Νέο θησαυροφυλάκιο
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	Ομαδοποιήστε PDF από οπουδήποτε στον υπολογιστή σε θησαυροφυλάκια με όνομα, χρώμα και εικονίδιο. Τα αρχεία μένουν εκεί που είναι.
+	Click to show its files. Drag to reorder, or drop files here.	Κάντε κλικ για να δείτε τα αρχεία. Σύρετε για αλλαγή σειράς ή αφήστε αρχεία εδώ.
+	Open all	Άνοιγμα όλων
+	Edit vault…	Επεξεργασία θησαυροφυλακίου…
+	Move left	Μετακίνηση αριστερά
+	Move right	Μετακίνηση δεξιά
+	Delete vault…	Διαγραφή θησαυροφυλακίου…
+	New vault…	Νέο θησαυροφυλάκιο…
+	No files yet. Drop files here to add them.	Δεν υπάρχουν ακόμη αρχεία. Αφήστε αρχεία εδώ για να τα προσθέσετε.
+	Locate…	Εντοπισμός…
+	Remove {name} from this vault	Αφαίρεση του {name} από αυτό το θησαυροφυλάκιο
+	This file has moved or been deleted. Locate it, or remove it from the vault.	Αυτό το αρχείο μετακινήθηκε ή διαγράφηκε. Εντοπίστε το ή αφαιρέστε το από το θησαυροφυλάκιο.
+	Move to vault	Μετακίνηση σε θησαυροφυλάκιο
+	Remove from vault	Αφαίρεση από το θησαυροφυλάκιο
+	Show this vault on Home	Εμφάνιση αυτού του θησαυροφυλακίου στην Αρχική
+	Vault: {name}	Θησαυροφυλάκιο: {name}
+	Vault	Θησαυροφυλάκιο
+	Edit vault	Επεξεργασία θησαυροφυλακίου
+	Vault name	Όνομα θησαυροφυλακίου
+	Create vault	Δημιουργία θησαυροφυλακίου
+	Delete the vault {vault}?	Διαγραφή του θησαυροφυλακίου {vault};
+	Its files stay where they are on your computer. Only the vault is deleted.	Τα αρχεία μένουν εκεί που είναι στον υπολογιστή σας. Διαγράφεται μόνο το θησαυροφυλάκιο.
+	Delete vault	Διαγραφή θησαυροφυλακίου
+	Add to vault	Προσθήκη σε θησαυροφυλάκιο
+	Already in it	Ήδη εδώ
+	Add document to vault…	Προσθήκη εγγράφου σε θησαυροφυλάκιο…
+	Dark pages	Σκοτεινές σελίδες
+	Rasterize pages (strong compression)…	Ψηφιογράφηση σελίδων (ισχυρή συμπίεση)…
+	Rasterize pages (strong compression)	Ψηφιογράφηση σελίδων (ισχυρή συμπίεση)
+	Rasterizing… page {d} of {t}	Ψηφιογράφηση… σελίδα {d} από {t}
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	Κάθε σελίδα γίνεται εικόνα: η ισχυρότερη συμπίεση, ιδανική για σαρώσεις. Το κείμενο δεν μπορεί πλέον να επιλεγεί ή να αναζητηθεί, και οι σύνδεσμοι, οι σελιδοδείκτες και τα πεδία φόρμας δεν διατηρούνται. Το αποτέλεσμα αποθηκεύεται ως αντίγραφο.
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi, ποιότητα JPEG {q}
+compression level	Light	Ελαφριά
+compression level	Medium	Μέτρια
+compression level	Strong	Ισχυρή
+	Compress	Συμπίεση
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	Η ψηφιογράφηση δεν θα μίκραινε αυτό το αρχείο ({size}). Δεν αποθηκεύτηκε αντίγραφο.
+	Add faint watermark	Προσθήκη αχνού υδατογραφήματος
+	Recognize text if available	Αναγνώριση κειμένου αν είναι διαθέσιμη
+	Prepare for Sending	Προετοιμασία για αποστολή
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	Αρίθμηση σελίδων «n / σύνολο» κάτω στο κέντρο και μετά σμίκρυνση του αρχείου για αποστολή με email.
+	Archive Scans	Αρχειοθέτηση σαρώσεων
+	Make scans searchable (when text recognition is available), then make them smaller.	Οι σαρώσεις γίνονται αναζητήσιμες (αν είναι εγκατεστημένη η αναγνώριση κειμένου) και μετά σμικρύνονται.
+	Confidential	Εμπιστευτικό
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	Αχνό διαγώνιο υδατογράφημα ΕΜΠΙΣΤΕΥΤΙΚΟ και αριθμοί σελίδων «n / σύνολο» σε κάθε σελίδα.
+	{name} (copy)	{name} (αντίγραφο)
+watermark text	CONFIDENTIAL	ΕΜΠΙΣΤΕΥΤΙΚΟ
+	Group name	Όνομα ομάδας
+	Rename Group	Μετονομασία ομάδας
+	Close Group	Κλείσιμο ομάδας
+	Add Tab to New Group	Προσθήκη καρτέλας σε νέα ομάδα
+	Add Tab to Group	Προσθήκη καρτέλας σε ομάδα
+	Remove from Group	Αφαίρεση από την ομάδα
+	Click to fold or unfold the group	Κάντε κλικ για σύμπτυξη ή ανάπτυξη της ομάδας
+	Filter tools	Φιλτράρισμα εργαλείων
+	No tool matches	Κανένα εργαλείο δεν ταιριάζει
+	Essentials	Βασικά
+	Float as a bubble	Αιώρηση ως φούσκα
+	Show this PDF in a small window over the others	Εμφάνιση αυτού του PDF σε μικρό παράθυρο πάνω από τα άλλα
+	Put back as a tab	Επαναφορά ως καρτέλα
+	Fold into a bubble	Σύμπτυξη σε φούσκα
+	Click to open, drag onto the tabs to put it back	Κάντε κλικ για άνοιγμα, σύρετε στις καρτέλες για επαναφορά
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	Έχετε την έκδοση {c}. Το NadsPDF θα κλείσει, θα εγκαταστήσει τη νέα έκδοση στη θέση αυτής και θα ανοίξει ξανά. Οι ρυθμίσεις σας διατηρούνται.
+	You have version {c}.	Έχετε την έκδοση {c}.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	Αυτό το αντίγραφο του NadsPDF προέρχεται από το Microsoft Store, που εγκαθιστά μόνο του τις νέες εκδόσεις.
+	Downloading the update…	Λήψη της ενημέρωσης…
+	Couldn't install the update: {e}	Δεν ήταν δυνατή η εγκατάσταση της ενημέρωσης: {e}
+	Check for updates when NadsPDF starts (once a day)	Έλεγχος για ενημερώσεις κατά την εκκίνηση του NadsPDF (μία φορά την ημέρα)
+	Open in New Window	Άνοιγμα σε νέο παράθυρο
+	Or drag the tab out of the strip, to another screen for instance	Ή σύρετε την καρτέλα έξω από τη γραμμή, π.χ. σε άλλη οθόνη
+	Release to open in a new window	Αφήστε για άνοιγμα σε νέο παράθυρο
+	Save this PDF before opening it in a new window.	Αποθηκεύστε αυτό το PDF πριν το ανοίξετε σε νέο παράθυρο.
+	Save your changes before opening this PDF in a new window.	Αποθηκεύστε τις αλλαγές πριν ανοίξετε αυτό το PDF σε νέο παράθυρο.
+	Element	Στοιχείο
+	Point at a line of the drawing to see its length. Click it to keep the measurement.	Δείξτε μια γραμμή του σχεδίου για να δείτε το μήκος της. Κάντε κλικ για να κρατήσετε τη μέτρηση.
+	Actual size (no scale)	Πραγματικό μέγεθος (χωρίς κλίμακα)
+	This page	Αυτή η σελίδα
+	Usual scales	Συνήθεις κλίμακες
+	Other unit	Άλλη μονάδα
+	Click both ends of a length you know, then type it on the right.	Κάντε κλικ στα δύο άκρα ενός γνωστού μήκους και πληκτρολογήστε το δεξιά.
+	Whole document	Όλο το έγγραφο
+	Total area	Συνολικό εμβαδόν
+	Total length	Συνολικό μήκος
+	Know when you open or close a document (its name and number of pages)	Να γνωρίζει πότε ανοίγετε ή κλείνετε ένα έγγραφο (το όνομα και τον αριθμό σελίδων του)
+	Read the text of the documents you open	Να διαβάζει το κείμενο των εγγράφων που ανοίγετε
+	Know where the documents you open are saved	Να γνωρίζει πού είναι αποθηκευμένα τα έγγραφα που ανοίγετε
+	Show a message bar with buttons above a document	Να εμφανίζει πάνω από ένα έγγραφο μια γραμμή μηνύματος με κουμπιά
+	Open web pages on the sites it lists	Να ανοίγει ιστοσελίδες στους ιστότοπους που δηλώνει
+	Extensions	Επεκτάσεις
+	This extension can't be used: {e}	Αυτή η επέκταση δεν μπορεί να χρησιμοποιηθεί: {e}
+	Extensions folder: {path}	Φάκελος επεκτάσεων: {path}
+	Turn off	Απενεργοποίηση
+	Turn on…	Ενεργοποίηση…
+	Stopped: {e}	Σταμάτησε: {e}
+	On at the next start	Ενεργή στην επόμενη εκκίνηση
+	{name} is a program that runs on this computer, with your rights. It will be able to:	Το {name} είναι πρόγραμμα που εκτελείται σε αυτόν τον υπολογιστή με τα δικαιώματά σας. Θα μπορεί:
+	• Nothing beyond running.	• Τίποτα πέρα από την εκτέλεση.
+	Only turn on extensions you trust.	Ενεργοποιείτε μόνο επεκτάσεις που εμπιστεύεστε.
+	Turn on	Ενεργοποίηση
+	Couldn't save the extension settings: {e}	Δεν ήταν δυνατή η αποθήκευση των ρυθμίσεων επεκτάσεων: {e}
+	Loading text recognition…	Φόρτωση αναγνώρισης κειμένου…

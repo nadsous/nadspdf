@@ -1,0 +1,139 @@
+# NadsPDF's own rows for ar: strings only NadsPDF has (vaults, bubbles, extensions,
+# conversion, compression…) and wordings NadsPDF chose over the shared PdfCraft catalog.
+# Same format as pdfcraft.tsv (context <TAB> English source <TAB> translation). build.rs merges
+# this file over pdfcraft.tsv: a row here replaces pdfcraft.tsv's row with the same context and
+# source text.
+#
+# Clean room: every entry was written from the plain meaning of the English text in ordinary
+# computing vocabulary. No other product's localisation, string table or translated UI was
+# consulted or copied; add entries the same way.
+
+	Images, text and documents (converted to PDF)	صور ونص ومستندات (تُحوَّل إلى PDF)
+	PDF, images, text and documents	PDF وصور ونص ومستندات
+	NadsPDF tools	أدوات NadsPDF
+	PdfCraft (upstream) on GitHub	PdfCraft (المشروع الأصلي) على GitHub
+	Combine with NadsPDF	الدمج باستخدام NadsPDF
+	Open with NadsPDF	الفتح باستخدام NadsPDF
+	Show NadsPDF in the File Explorer right-click menu	إظهار NadsPDF في قائمة النقر بزر الماوس الأيمن في مستكشف الملفات
+	Added for all users when NadsPDF was installed.	أُضيف لجميع المستخدمين عند تثبيت NadsPDF.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	التحويل إلى PDF والدمج والفتح للمستندات والصور وملفات PDF. في Windows 11 ضمن «إظهار المزيد من الخيارات».
+	Couldn't change the File Explorer menu: {e}	تعذّر تغيير قائمة مستكشف الملفات: {e}
+	Couldn't find {name}	تعذّر العثور على {name}
+	Give the vault a name	أعطِ الخزنة اسمًا
+	You can have up to {n} vaults. Delete one first.	يمكنك امتلاك {n} خزنة كحد أقصى. احذف واحدة أولًا.
+	That vault no longer exists	لم تعد هذه الخزنة موجودة
+	Added {files} to {vault}	أُضيف إلى {vault}: {files}
+	Already in {vault}	موجود بالفعل في {vault}
+	A vault holds up to {n} files	تتسع الخزنة لـ {n} ملف كحد أقصى
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	تحفظ الخزائن ملفات PDF والملفات التي يستطيع NadsPDF تحويلها، على هذا الحاسوب
+	No files to open in this vault	لا توجد ملفات لفتحها في هذه الخزنة
+	Opening the first {n} files	جارٍ فتح أول {n} ملف
+	Deleted the vault {vault}. Its files were not touched.	حُذفت الخزنة {vault}. لم تُمسّ ملفاتها.
+	Moved {file} to {vault}	نُقل {file} إلى {vault}
+	Vaults need the desktop app	تحتاج الخزائن إلى تطبيق سطح المكتب
+	Locate {file}	تحديد موقع {file}
+	Save this document to a file first, then add it to a vault	احفظ هذا المستند في ملف أولًا، ثم أضفه إلى خزنة
+	Vaults	الخزائن
+	New vault	خزنة جديدة
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	اجمع ملفات PDF من أي مكان على حاسوبك في خزائن لها اسم ولون وأيقونة. تبقى الملفات في أماكنها.
+	Click to show its files. Drag to reorder, or drop files here.	انقر لعرض ملفاتها. اسحب لإعادة الترتيب، أو أفلت الملفات هنا.
+	Open all	فتح الكل
+	Edit vault…	تعديل الخزنة…
+	Move left	نقل لليسار
+	Move right	نقل لليمين
+	Delete vault…	حذف الخزنة…
+	New vault…	خزنة جديدة…
+	No files yet. Drop files here to add them.	لا ملفات بعد. أفلت الملفات هنا لإضافتها.
+	Locate…	تحديد الموقع…
+	Missing	مفقود
+	Remove {name} from this vault	إزالة {name} من هذه الخزنة
+	This file has moved or been deleted. Locate it, or remove it from the vault.	نُقل هذا الملف أو حُذف. حدّد موقعه أو أزله من الخزنة.
+	Move to vault	نقل إلى خزنة
+	Remove from vault	إزالة من الخزنة
+	Show this vault on Home	عرض هذه الخزنة في الرئيسية
+	Vault: {name}	خزنة: {name}
+	Vault	خزنة
+	Edit vault	تعديل الخزنة
+	Vault name	اسم الخزنة
+	Create vault	إنشاء الخزنة
+	Delete the vault {vault}?	حذف الخزنة {vault}؟
+	Its files stay where they are on your computer. Only the vault is deleted.	تبقى الملفات في أماكنها على حاسوبك. تُحذف الخزنة فقط.
+	Delete vault	حذف الخزنة
+	Add to vault	إضافة إلى خزنة
+	Already in it	موجود فيها
+	Add document to vault…	إضافة المستند إلى خزنة…
+	Dark pages	صفحات داكنة
+	Rasterize pages (strong compression)…	تحويل الصفحات إلى صور نقطية (ضغط قوي)…
+	Rasterize pages (strong compression)	تحويل الصفحات إلى صور نقطية (ضغط قوي)
+	Rasterizing… page {d} of {t}	جارٍ التحويل إلى صور… الصفحة {d} من {t}
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	تصبح كل صفحة صورة: أقوى ضغط، وهو الأفضل للمستندات الممسوحة ضوئيًا. لن يعود النص قابلًا للتحديد أو البحث، ولن تُحفظ الروابط والإشارات المرجعية وحقول النماذج. تُحفظ النتيجة كنسخة.
+	{dpi} dpi, JPEG quality {q}	{dpi} نقطة/بوصة، جودة JPEG {q}
+compression level	Light	خفيف
+compression level	Medium	متوسط
+compression level	Strong	قوي
+	Compress	ضغط
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	لن يؤدي التحويل إلى صور إلى تصغير هذا الملف ({size}). لم تُحفظ أي نسخة.
+	Add faint watermark	إضافة علامة مائية باهتة
+	Recognize text if available	التعرّف على النص إن كان متاحًا
+	Prepare for Sending	تجهيز للإرسال
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	ترقيم الصفحات «n / الإجمالي» في أسفل الوسط، ثم تصغير الملف لإرساله بالبريد الإلكتروني.
+	Archive Scans	أرشفة المستندات الممسوحة
+	Make scans searchable (when text recognition is available), then make them smaller.	جعل المستندات الممسوحة قابلة للبحث (إذا كان التعرّف على النص مثبتًا)، ثم تصغيرها.
+	Confidential	سري
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	علامة مائية قطرية باهتة «سري» وأرقام صفحات «n / الإجمالي» في كل صفحة.
+	{name} (copy)	{name} (نسخة)
+watermark text	CONFIDENTIAL	سري
+	Group name	اسم المجموعة
+	Rename Group	إعادة تسمية المجموعة
+	Close Group	إغلاق المجموعة
+	Add Tab to New Group	إضافة علامة التبويب إلى مجموعة جديدة
+	Add Tab to Group	إضافة علامة التبويب إلى مجموعة
+	Remove from Group	إزالة من المجموعة
+	Click to fold or unfold the group	انقر لطي المجموعة أو توسيعها
+	Filter tools	تصفية الأدوات
+	No tool matches	لا توجد أداة مطابقة
+	Essentials	الأساسيات
+	Float as a bubble	تعويم كفقاعة
+	Show this PDF in a small window over the others	عرض ملف PDF هذا في نافذة صغيرة فوق الأخرى
+	Put back as a tab	إعادته كعلامة تبويب
+	Fold into a bubble	طيّ إلى فقاعة
+	Click to open, drag onto the tabs to put it back	انقر للفتح، واسحب إلى علامات التبويب لإعادتها
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	لديك الإصدار {c}. سيُغلق NadsPDF ويثبّت الإصدار الجديد مكان هذا الإصدار ثم يُفتح من جديد. تُحفظ إعداداتك.
+	You have version {c}.	لديك الإصدار {c}.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	هذه النسخة من NadsPDF مصدرها Microsoft Store، الذي يثبّت الإصدارات الجديدة تلقائيًا.
+	Downloading the update…	جارٍ تنزيل التحديث…
+	Couldn't install the update: {e}	تعذّر تثبيت التحديث: {e}
+	Check for updates when NadsPDF starts (once a day)	البحث عن تحديثات عند بدء NadsPDF (مرة يوميًا)
+	Open in New Window	فتح في نافذة جديدة
+	Or drag the tab out of the strip, to another screen for instance	أو اسحب علامة التبويب خارج الشريط، إلى شاشة أخرى مثلًا
+	Release to open in a new window	أفلت للفتح في نافذة جديدة
+	Save this PDF before opening it in a new window.	احفظ ملف PDF هذا قبل فتحه في نافذة جديدة.
+	Save your changes before opening this PDF in a new window.	احفظ تغييراتك قبل فتح ملف PDF هذا في نافذة جديدة.
+	Element	عنصر
+	Point at a line of the drawing to see its length. Click it to keep the measurement.	أشر إلى خط في الرسم لرؤية طوله. انقر عليه للاحتفاظ بالقياس.
+	Actual size (no scale)	الحجم الفعلي (بلا مقياس)
+	This page	هذه الصفحة
+	Usual scales	مقاييس شائعة
+	Other unit	وحدة أخرى
+	Click both ends of a length you know, then type it on the right.	انقر طرفي طول معروف، ثم اكتبه على اليمين.
+	Whole document	المستند كله
+	Total area	المساحة الإجمالية
+	Total length	الطول الإجمالي
+	Know when you open or close a document (its name and number of pages)	معرفة متى تفتح مستندًا أو تغلقه (اسمه وعدد صفحاته)
+	Read the text of the documents you open	قراءة نص المستندات التي تفتحها
+	Know where the documents you open are saved	معرفة مكان حفظ المستندات التي تفتحها
+	Show a message bar with buttons above a document	عرض شريط رسائل بأزرار فوق المستند
+	Open web pages on the sites it lists	فتح صفحات ويب على المواقع التي يذكرها
+	Extensions	الإضافات
+	This extension can't be used: {e}	لا يمكن استخدام هذه الإضافة: {e}
+	Extensions folder: {path}	مجلد الإضافات: {path}
+	Turn off	إيقاف
+	Turn on…	تشغيل…
+	Stopped: {e}	متوقفة: {e}
+	On at the next start	تعمل عند التشغيل التالي
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} برنامج يعمل على هذا الكمبيوتر بصلاحياتك. سيتمكن من:
+	• Nothing beyond running.	• لا شيء سوى العمل.
+	Only turn on extensions you trust.	لا تشغّل إلا الإضافات التي تثق بها.
+	Turn on	تشغيل
+	Couldn't save the extension settings: {e}	تعذّر حفظ إعدادات الإضافات: {e}
+	Loading text recognition…	جارٍ تحميل التعرّف على النص…

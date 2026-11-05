@@ -1,0 +1,139 @@
+# NadsPDF's own rows for tr: strings only NadsPDF has (vaults, bubbles, extensions,
+# conversion, compression…) and wordings NadsPDF chose over the shared PdfCraft catalog.
+# Same format as pdfcraft.tsv (context <TAB> English source <TAB> translation). build.rs merges
+# this file over pdfcraft.tsv: a row here replaces pdfcraft.tsv's row with the same context and
+# source text.
+#
+# Clean room: every entry was written from the plain meaning of the English text in ordinary
+# computing vocabulary. No other product's localisation, string table or translated UI was
+# consulted or copied; add entries the same way.
+
+	Images, text and documents (converted to PDF)	Görüntüler, metin ve belgeler (PDF'ye dönüştürülür)
+	PDF, images, text and documents	PDF, görüntüler, metin ve belgeler
+	NadsPDF tools	NadsPDF araçları
+	PdfCraft (upstream) on GitHub	GitHub'da PdfCraft (özgün proje)
+	Combine with NadsPDF	NadsPDF ile birleştir
+	Open with NadsPDF	NadsPDF ile aç
+	Show NadsPDF in the File Explorer right-click menu	NadsPDF'yi Dosya Gezgini sağ tıklama menüsünde göster
+	Added for all users when NadsPDF was installed.	NadsPDF yüklenirken tüm kullanıcılar için eklendi.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	Belgelerde, resimlerde ve PDF'lerde PDF'ye dönüştür, Birleştir ve Aç. Windows 11'de “Daha fazla seçenek göster” altında.
+	Couldn't change the File Explorer menu: {e}	Dosya Gezgini menüsü değiştirilemedi: {e}
+	Couldn't find {name}	{name} bulunamadı
+	Give the vault a name	Kasaya bir ad verin
+	You can have up to {n} vaults. Delete one first.	En fazla {n} kasanız olabilir. Önce birini silin.
+	That vault no longer exists	Bu kasa artık yok
+	Added {files} to {vault}	{vault} kasasına eklendi: {files}
+	Already in {vault}	Zaten {vault} içinde
+	A vault holds up to {n} files	Bir kasa en fazla {n} dosya tutar
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	Kasalar bu bilgisayardaki PDF'leri ve NadsPDF'in dönüştürebildiği dosyaları tutar
+	No files to open in this vault	Bu kasada açılacak dosya yok
+	Opening the first {n} files	İlk {n} dosya açılıyor
+	Deleted the vault {vault}. Its files were not touched.	{vault} kasası silindi. Dosyalarına dokunulmadı.
+	Moved {file} to {vault}	{file}, {vault} kasasına taşındı
+	Vaults need the desktop app	Kasalar masaüstü uygulamasını gerektirir
+	Locate {file}	{file} dosyasını bul
+	Save this document to a file first, then add it to a vault	Önce bu belgeyi bir dosyaya kaydedin, sonra bir kasaya ekleyin
+	Vaults	Kasalar
+	New vault	Yeni kasa
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	Bilgisayarınızın her yerindeki PDF'leri adı, rengi ve simgesi olan kasalarda toplayın. Dosyalar yerinde kalır.
+	Click to show its files. Drag to reorder, or drop files here.	Dosyalarını görmek için tıklayın. Sıralamak için sürükleyin ya da dosyaları buraya bırakın.
+	Open all	Tümünü aç
+	Edit vault…	Kasayı düzenle…
+	Move left	Sola taşı
+	Move right	Sağa taşı
+	Delete vault…	Kasayı sil…
+	New vault…	Yeni kasa…
+	No files yet. Drop files here to add them.	Henüz dosya yok. Eklemek için dosyaları buraya bırakın.
+	Locate…	Bul…
+	Missing	Eksik
+	Remove {name} from this vault	{name} dosyasını bu kasadan çıkar
+	This file has moved or been deleted. Locate it, or remove it from the vault.	Bu dosya taşınmış ya da silinmiş. Bulun ya da kasadan çıkarın.
+	Move to vault	Kasaya taşı
+	Remove from vault	Kasadan çıkar
+	Show this vault on Home	Bu kasayı Ana Sayfa'da göster
+	Vault: {name}	Kasa: {name}
+	Vault	Kasa
+	Edit vault	Kasayı düzenle
+	Vault name	Kasa adı
+	Create vault	Kasa oluştur
+	Delete the vault {vault}?	{vault} kasası silinsin mi?
+	Its files stay where they are on your computer. Only the vault is deleted.	Dosyalar bilgisayarınızda yerinde kalır. Yalnızca kasa silinir.
+	Delete vault	Kasayı sil
+	Add to vault	Kasaya ekle
+	Already in it	Zaten içinde
+	Add document to vault…	Belgeyi kasaya ekle…
+	Dark pages	Koyu sayfalar
+	Rasterize pages (strong compression)…	Sayfaları rasterleştir (güçlü sıkıştırma)…
+	Rasterize pages (strong compression)	Sayfaları rasterleştir (güçlü sıkıştırma)
+	Rasterizing… page {d} of {t}	Rasterleştiriliyor… sayfa {d} / {t}
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	Her sayfa bir resme dönüşür: en güçlü sıkıştırma, taranmış belgeler için idealdir. Metin artık seçilemez veya aranamaz; bağlantılar, yer imleri ve form alanları korunmaz. Sonuç bir kopya olarak kaydedilir.
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi, JPEG kalitesi {q}
+compression level	Light	Hafif
+compression level	Medium	Orta
+compression level	Strong	Güçlü
+	Compress	Sıkıştır
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	Rasterleştirme bu dosyayı küçültmezdi ({size}). Kopya kaydedilmedi.
+	Add faint watermark	Soluk filigran ekle
+	Recognize text if available	Varsa metni tanı
+	Prepare for Sending	Göndermeye hazırla
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	Sayfaları alt ortada "n / toplam" olarak numaralandır, ardından e-postayla göndermek için dosyayı küçült.
+	Archive Scans	Taramaları arşivle
+	Make scans searchable (when text recognition is available), then make them smaller.	Taramaları aranabilir yap (metin tanıma yüklüyse), ardından küçült.
+	Confidential	Gizli
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	Her sayfada soluk çapraz GİZLİ filigranı ve "n / toplam" sayfa numaraları.
+	{name} (copy)	{name} (kopya)
+watermark text	CONFIDENTIAL	GİZLİ
+	Group name	Grup adı
+	Rename Group	Grubu yeniden adlandır
+	Close Group	Grubu kapat
+	Add Tab to New Group	Sekmeyi yeni gruba ekle
+	Add Tab to Group	Sekmeyi gruba ekle
+	Remove from Group	Gruptan çıkar
+	Click to fold or unfold the group	Grubu daraltmak veya genişletmek için tıklayın
+	Filter tools	Araçları filtrele
+	No tool matches	Eşleşen araç yok
+	Essentials	Temel
+	Float as a bubble	Baloncuk olarak yüzdür
+	Show this PDF in a small window over the others	Bu PDF'yi diğerlerinin üzerinde küçük bir pencerede göster
+	Put back as a tab	Sekmeye geri koy
+	Fold into a bubble	Baloncuğa küçült
+	Click to open, drag onto the tabs to put it back	Açmak için tıklayın, geri koymak için sekmelere sürükleyin
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	{c} sürümünü kullanıyorsunuz. NadsPDF kapanacak, yeni sürümü bunun yerine yükleyecek ve yeniden açılacak. Ayarlarınız korunur.
+	You have version {c}.	{c} sürümünü kullanıyorsunuz.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	Bu NadsPDF kopyası, yeni sürümleri kendisi yükleyen Microsoft Store'dan gelmektedir.
+	Downloading the update…	Güncelleme indiriliyor…
+	Couldn't install the update: {e}	Güncelleme yüklenemedi: {e}
+	Check for updates when NadsPDF starts (once a day)	NadsPDF başlarken güncellemeleri denetle (günde bir kez)
+	Open in New Window	Yeni pencerede aç
+	Or drag the tab out of the strip, to another screen for instance	Ya da sekmeyi çubuğun dışına, örneğin başka bir ekrana sürükleyin
+	Release to open in a new window	Yeni pencerede açmak için bırakın
+	Save this PDF before opening it in a new window.	Bu PDF'yi yeni pencerede açmadan önce kaydedin.
+	Save your changes before opening this PDF in a new window.	Bu PDF'yi yeni pencerede açmadan önce değişikliklerinizi kaydedin.
+	Element	Öğe
+	Point at a line of the drawing to see its length. Click it to keep the measurement.	Uzunluğunu görmek için çizimdeki bir çizginin üzerine gelin. Ölçümü saklamak için tıklayın.
+	Actual size (no scale)	Gerçek boyut (ölçeksiz)
+	This page	Bu sayfa
+	Usual scales	Yaygın ölçekler
+	Other unit	Diğer birim
+	Click both ends of a length you know, then type it on the right.	Bilinen bir uzunluğun iki ucuna tıklayın, sonra sağa yazın.
+	Whole document	Belgenin tamamı
+	Total area	Toplam alan
+	Total length	Toplam uzunluk
+	Know when you open or close a document (its name and number of pages)	Bir belgeyi ne zaman açıp kapattığınızı bilmek (adı ve sayfa sayısı)
+	Read the text of the documents you open	Açtığınız belgelerin metnini okumak
+	Know where the documents you open are saved	Açtığınız belgelerin nereye kaydedildiğini bilmek
+	Show a message bar with buttons above a document	Bir belgenin üstünde düğmeli bir ileti çubuğu göstermek
+	Open web pages on the sites it lists	Belirttiği sitelerde web sayfaları açmak
+	Extensions	Uzantılar
+	This extension can't be used: {e}	Bu uzantı kullanılamıyor: {e}
+	Extensions folder: {path}	Uzantılar klasörü: {path}
+	Turn off	Kapat
+	Turn on…	Aç…
+	Stopped: {e}	Durduruldu: {e}
+	On at the next start	Bir sonraki başlatmada açık
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name}, bu bilgisayarda sizin haklarınızla çalışan bir programdır. Şunları yapabilecek:
+	• Nothing beyond running.	• Çalışmak dışında hiçbir şey.
+	Only turn on extensions you trust.	Yalnızca güvendiğiniz uzantıları açın.
+	Turn on	Aç
+	Couldn't save the extension settings: {e}	Uzantı ayarları kaydedilemedi: {e}
+	Loading text recognition…	Metin tanıma yükleniyor…

@@ -351,7 +351,7 @@ fn tile(ui: &egui::Ui, rect: Rect, color: [u8; 3], icon: &str, radius: u8) {
 /// A small text button painted inside a row.
 fn row_button(ui: &mut egui::Ui, t: &Tokens, rect: Rect, id: egui::Id, label: &str, strong: bool) -> egui::Response {
     let resp = ui.interact(rect, id, Sense::click());
-    resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, label));
+    resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, label));
     let fill = if resp.hovered() { t.pressed } else { t.hover };
     ui.painter().rect(rect, CornerRadius::same(8), fill, Stroke::new(1.0, t.border), egui::StrokeKind::Inside);
     ui.painter().text(rect.center(), Align2::CENTER_CENTER, label, theme::medium(12.0), if strong { t.accent_text } else { t.text });
@@ -407,7 +407,7 @@ pub(crate) fn section(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
             let selected = app.vaults.selected == Some(v.id);
             let (rect, resp) = ui.allocate_exact_size(vec2(200.0, 60.0), Sense::click_and_drag());
             targets.push((v.id, rect));
-            resp.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::SelectableLabel, true, selected, &v.name));
+            resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::Button, true, selected, &v.name));
             resp.dnd_set_drag_payload(DragVault(v.id));
             let press = theme::Press::track(ui, &resp);
             let drop_hover = resp.dnd_hover_payload::<DragFile>().is_some_and(|d| d.from != v.id)
@@ -425,7 +425,7 @@ pub(crate) fn section(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
             let body = rect.translate(press.offset());
             tile(ui, Rect::from_min_size(body.min + vec2(12.0, 12.0), vec2(36.0, 36.0)), v.color, v.icon, 9);
             let w = body.width() - 70.0;
-            widgets::row_text(ui, body.min + vec2(58.0, 22.0), crate::bidi::visual(&v.name), theme::semibold(13.5), t.text, w);
+            widgets::row_text(ui, body.min + vec2(58.0, 22.0), std::borrow::Cow::<str>::Borrowed(&v.name), theme::semibold(13.5), t.text, w);
             widgets::row_text(ui, body.min + vec2(58.0, 40.0), count_label(v.files.len()), theme::regular(11.5), t.text_muted, w);
             if let Some(d) = resp.dnd_release_payload::<DragFile>() {
                 act = Some(Act::Move(d.from, v.id, d.path.clone()));
@@ -461,7 +461,7 @@ pub(crate) fn section(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
         }
         // New vault card.
         let (rect, resp) = ui.allocate_exact_size(vec2(150.0, 60.0), Sense::click());
-        resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, tl!("New vault…")));
+        resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, tl!("New vault…")));
         let press = theme::Press::track(ui, &resp);
         ui.painter().rect(
             rect,
@@ -494,7 +494,7 @@ pub(crate) fn section(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                     tile(ui, r, v.color, v.icon, 10);
                     ui.add_space(4.0);
                     ui.vertical(|ui| {
-                        ui.label(egui::RichText::new(crate::bidi::visual(&v.name)).font(theme::semibold(16.0)));
+                        ui.label(egui::RichText::new(std::borrow::Cow::<str>::Borrowed(&v.name)).font(theme::semibold(16.0)));
                         ui.label(egui::RichText::new(count_label(v.files.len())).color(t.text_muted).font(theme::regular(12.0)));
                     });
                     ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
@@ -523,7 +523,7 @@ pub(crate) fn section(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                     let missing = stat.is_some_and(|s| !s.exists);
                     let name = vaults::file_name(f);
                     let (rect, resp) = ui.allocate_exact_size(vec2(ui.available_width(), 46.0), Sense::click_and_drag());
-                    resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, !missing, &name));
+                    resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, !missing, &name));
                     if !missing {
                         resp.dnd_set_drag_payload(DragFile { from: v.id, path: f.clone() });
                     }
@@ -540,7 +540,7 @@ pub(crate) fn section(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                         for (label, strong, is_locate) in [(tl!("Remove"), false, false), (tl!("Locate…"), true, true)] {
                             let w = text_w(ui, label, &font) + 20.0;
                             let r = Rect::from_min_max(egui::pos2(right - w, rect.center().y - 13.0), egui::pos2(right, rect.center().y + 13.0));
-                            let id = ui.id().with(("vault-file", label, f));
+                            let id = ui.scope_id().with(("vault-file", label, f));
                             if row_button(ui, &t, r, id, label, strong).clicked() {
                                 act = Some(if is_locate { Act::Locate(v.id, f.clone()) } else { Act::Remove(v.id, f.clone()) });
                             }
@@ -557,9 +557,9 @@ pub(crate) fn section(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                     } else {
                         if hovered {
                             let x_rect = Rect::from_center_size(egui::pos2(right - 14.0, rect.center().y), vec2(28.0, 28.0));
-                            let x = ui.interact(x_rect, ui.id().with(("vault-remove", f)), Sense::click());
+                            let x = ui.interact(x_rect, ui.scope_id().with(("vault-remove", f)), Sense::click());
                             let label = crate::i18n::fmt(tl!("Remove {name} from this vault"), &[("name", &name)]);
-                            x.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, &label));
+                            x.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, &label));
                             if x.hovered() {
                                 ui.painter().rect_filled(x_rect, CornerRadius::same(6), t.pressed);
                             }
@@ -571,7 +571,11 @@ pub(crate) fn section(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                         right -= 38.0;
                         if let Some(s) = stat {
                             let size = crate::panels::human_size(usize::try_from(s.size).unwrap_or(usize::MAX));
+                            #[cfg(not(target_arch = "wasm32"))]
                             let when = s.modified.map(crate::combine_ui::ago).unwrap_or_default();
+                            // Vaults list files on disk, which the web build has none of.
+                            #[cfg(target_arch = "wasm32")]
+                            let when = String::new();
                             let detail = if when.is_empty() { size } else { format!("{when}  ·  {size}") };
                             let d = ui.painter().text(
                                 egui::pos2(right, rect.center().y),
@@ -585,11 +589,18 @@ pub(crate) fn section(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                     }
                     let width = right - 16.0 - (rect.left() + 46.0);
                     let name_color = if missing { t.text_faint } else { t.text };
-                    widgets::row_text(ui, rect.min + vec2(46.0, 15.0), crate::bidi::visual(&name), theme::medium(13.5), name_color, width);
+                    widgets::row_text(
+                        ui,
+                        rect.min + vec2(46.0, 15.0),
+                        std::borrow::Cow::<str>::Borrowed(&name),
+                        theme::medium(13.5),
+                        name_color,
+                        width,
+                    );
                     widgets::row_text(
                         ui,
                         rect.min + vec2(46.0, 32.0),
-                        crate::bidi::visual(&crate::folders_ui::location(f)),
+                        std::borrow::Cow::<str>::Borrowed(&crate::folders_ui::location(f)),
                         theme::regular(11.0),
                         t.text_faint,
                         width,
@@ -612,7 +623,7 @@ pub(crate) fn section(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                         if !others.is_empty() {
                             ui.menu_button(tl!("Move to vault"), |ui| {
                                 for (id, name, _, _) in &others {
-                                    if ui.button(crate::bidi::visual(name)).clicked() {
+                                    if ui.button(std::borrow::Cow::<str>::Borrowed(name)).clicked() {
                                         act = Some(Act::Move(v.id, *id, f.clone()));
                                     }
                                 }
@@ -669,7 +680,7 @@ pub(crate) fn tools_panel_section(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
     let mut new = false;
     for v in &app.vaults.data.list {
         let (rect, resp) = ui.allocate_exact_size(vec2(ui.available_width(), 32.0), Sense::click());
-        resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, &v.name));
+        resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, &v.name));
         let press = theme::Press::track(ui, &resp);
         press.wash(ui, rect, 6, false);
         let body = rect.translate(press.offset());
@@ -679,7 +690,7 @@ pub(crate) fn tools_panel_section(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
         widgets::row_text(
             ui,
             body.left_center() + vec2(36.0, 0.0),
-            crate::bidi::visual(&v.name),
+            std::borrow::Cow::<str>::Borrowed(&v.name),
             theme::regular(13.5),
             t.text,
             c.left() - body.left() - 44.0,
@@ -689,7 +700,7 @@ pub(crate) fn tools_panel_section(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
         }
     }
     let (rect, resp) = ui.allocate_exact_size(vec2(ui.available_width(), 30.0), Sense::click());
-    resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, tl!("New vault…")));
+    resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, tl!("New vault…")));
     let press = theme::Press::track(ui, &resp);
     press.wash(ui, rect, 6, false);
     icons::paint(ui, Rect::from_min_size(rect.min + vec2(6.0, 6.0), vec2(18.0, 18.0)), "plus", 16.0, t.accent_text);
@@ -759,7 +770,7 @@ pub(crate) fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
                     for c in vaults::COLORS {
                         let (r, resp) = ui.allocate_exact_size(vec2(26.0, 26.0), Sense::click());
                         let hex = vaults::color_hex(c);
-                        resp.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::RadioButton, true, c == color, &hex));
+                        resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::RadioButton, true, c == color, &hex));
                         if c == color {
                             ui.painter().circle_stroke(r.center(), 12.5, Stroke::new(2.0, t.text));
                         }
@@ -775,7 +786,7 @@ pub(crate) fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
                     ui.spacing_mut().item_spacing = vec2(6.0, 6.0);
                     for i in vaults::ICONS {
                         let (r, resp) = ui.allocate_exact_size(vec2(36.0, 36.0), Sense::click());
-                        resp.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::RadioButton, true, i == icon, i));
+                        resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::RadioButton, true, i == icon, i));
                         let fill = if i == icon {
                             tint(color)
                         } else if resp.hovered() {
@@ -873,12 +884,12 @@ pub(crate) fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
             let resp = widgets::show_modal(ctx, "vault-add-document", |ui| {
                 ui.set_width(360.0);
                 ui.label(egui::RichText::new(tl!("Add to vault")).font(theme::semibold(16.0)));
-                ui.label(egui::RichText::new(crate::bidi::visual(&vaults::file_name(&path))).color(t.text_muted));
+                ui.label(egui::RichText::new(std::borrow::Cow::<str>::Borrowed(&vaults::file_name(&path))).color(t.text_muted));
                 ui.add_space(10.0);
                 egui::ScrollArea::vertical().max_height(320.0).show(ui, |ui| {
                     for v in &app.vaults.data.list {
                         let (rect, resp) = ui.allocate_exact_size(vec2(ui.available_width(), 38.0), Sense::click());
-                        resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, &v.name));
+                        resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, &v.name));
                         let press = theme::Press::track(ui, &resp);
                         press.wash(ui, rect, 8, false);
                         tile(ui, Rect::from_min_size(rect.min + vec2(6.0, 6.0), vec2(26.0, 26.0)), v.color, v.icon, 7);
@@ -893,7 +904,7 @@ pub(crate) fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
                         widgets::row_text(
                             ui,
                             rect.left_center() + vec2(42.0, 0.0),
-                            crate::bidi::visual(&v.name),
+                            std::borrow::Cow::<str>::Borrowed(&v.name),
                             theme::medium(13.5),
                             t.text,
                             c.left() - rect.left() - 52.0,

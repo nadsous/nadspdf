@@ -1,0 +1,138 @@
+# NadsPDF's own rows for es: strings only NadsPDF has (vaults, bubbles, extensions,
+# conversion, compression…) and wordings NadsPDF chose over the shared PdfCraft catalog.
+# Same format as pdfcraft.tsv (context <TAB> English source <TAB> translation). build.rs merges
+# this file over pdfcraft.tsv: a row here replaces pdfcraft.tsv's row with the same context and
+# source text.
+#
+# Clean room: every entry was written from the plain meaning of the English text in ordinary
+# computing vocabulary. No other product's localisation, string table or translated UI was
+# consulted or copied; add entries the same way.
+
+	Images, text and documents (converted to PDF)	Imágenes, texto y documentos (convertidos a PDF)
+	PDF, images, text and documents	PDF, imágenes, texto y documentos
+	NadsPDF tools	Herramientas NadsPDF
+	PdfCraft (upstream) on GitHub	PdfCraft (proyecto original) en GitHub
+	Combine with NadsPDF	Combinar con NadsPDF
+	Open with NadsPDF	Abrir con NadsPDF
+	Show NadsPDF in the File Explorer right-click menu	Mostrar NadsPDF en el menú contextual del Explorador de archivos
+	Added for all users when NadsPDF was installed.	Añadido para todos los usuarios al instalar NadsPDF.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	Convertir a PDF, Combinar y Abrir en documentos, imágenes y PDF. En Windows 11, en «Mostrar más opciones».
+	Couldn't change the File Explorer menu: {e}	No se pudo cambiar el menú del Explorador de archivos: {e}
+	Couldn't find {name}	No se encontró {name}
+	Give the vault a name	Ponle un nombre a la bóveda
+	You can have up to {n} vaults. Delete one first.	Puedes tener hasta {n} bóvedas. Elimina una primero.
+	That vault no longer exists	Esa bóveda ya no existe
+	Added {files} to {vault}	Añadido a {vault}: {files}
+	Already in {vault}	Ya está en {vault}
+	A vault holds up to {n} files	Una bóveda admite hasta {n} archivos
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	Las bóvedas guardan PDF y archivos que NadsPDF puede convertir, en este equipo
+	No files to open in this vault	No hay archivos que abrir en esta bóveda
+	Opening the first {n} files	Abriendo los primeros {n} archivos
+	Deleted the vault {vault}. Its files were not touched.	Bóveda {vault} eliminada. Sus archivos no se tocaron.
+	Moved {file} to {vault}	{file} movido a {vault}
+	Vaults need the desktop app	Las bóvedas necesitan la aplicación de escritorio
+	Locate {file}	Buscar {file}
+	Save this document to a file first, then add it to a vault	Guarda primero este documento en un archivo y luego añádelo a una bóveda
+	Vaults	Bóvedas
+	New vault	Nueva bóveda
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	Agrupa PDF de cualquier lugar de tu equipo en bóvedas con nombre, color e icono. Los archivos se quedan donde están.
+	Click to show its files. Drag to reorder, or drop files here.	Haz clic para ver sus archivos. Arrastra para reordenar o suelta archivos aquí.
+	Open all	Abrir todo
+	Edit vault…	Editar bóveda…
+	Move left	Mover a la izquierda
+	Move right	Mover a la derecha
+	Delete vault…	Eliminar bóveda…
+	New vault…	Nueva bóveda…
+	No files yet. Drop files here to add them.	Aún no hay archivos. Suelta archivos aquí para añadirlos.
+	Locate…	Buscar…
+	Remove {name} from this vault	Quitar {name} de esta bóveda
+	This file has moved or been deleted. Locate it, or remove it from the vault.	Este archivo se movió o se eliminó. Búscalo o quítalo de la bóveda.
+	Move to vault	Mover a bóveda
+	Remove from vault	Quitar de la bóveda
+	Show this vault on Home	Mostrar esta bóveda en Inicio
+	Vault: {name}	Bóveda: {name}
+	Vault	Bóveda
+	Edit vault	Editar bóveda
+	Vault name	Nombre de la bóveda
+	Create vault	Crear bóveda
+	Delete the vault {vault}?	¿Eliminar la bóveda {vault}?
+	Its files stay where they are on your computer. Only the vault is deleted.	Sus archivos se quedan donde están en tu equipo. Solo se elimina la bóveda.
+	Delete vault	Eliminar bóveda
+	Add to vault	Añadir a la bóveda
+	Already in it	Ya está aquí
+	Add document to vault…	Añadir documento a una bóveda…
+	Dark pages	Páginas oscuras
+	Rasterize pages (strong compression)…	Rasterizar páginas (compresión fuerte)…
+	Rasterize pages (strong compression)	Rasterizar páginas (compresión fuerte)
+	Rasterizing… page {d} of {t}	Rasterizando… página {d} de {t}
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	Cada página se convierte en una imagen: la compresión más fuerte, ideal para documentos escaneados. El texto deja de poder seleccionarse o buscarse, y no se conservan los vínculos, marcadores ni campos de formulario. El resultado se guarda como copia.
+	{dpi} dpi, JPEG quality {q}	{dpi} ppp, calidad JPEG {q}
+compression level	Light	Ligera
+compression level	Medium	Media
+compression level	Strong	Fuerte
+	Compress	Comprimir
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	Rasterizar no reduciría el tamaño de este archivo ({size}). No se guardó ninguna copia.
+	Add faint watermark	Añadir marca de agua tenue
+	Recognize text if available	Reconocer texto si está disponible
+	Prepare for Sending	Preparar para enviar
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	Numerar las páginas «n / total» abajo en el centro y luego reducir el archivo para enviarlo por correo.
+	Archive Scans	Archivar escaneos
+	Make scans searchable (when text recognition is available), then make them smaller.	Hacer que los escaneos se puedan buscar (si el reconocimiento de texto está instalado) y luego reducirlos.
+	Confidential	Confidencial
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	Una marca de agua diagonal tenue CONFIDENCIAL y números de página «n / total» en cada página.
+	{name} (copy)	{name} (copia)
+watermark text	CONFIDENTIAL	CONFIDENCIAL
+	Group name	Nombre del grupo
+	Rename Group	Cambiar nombre del grupo
+	Close Group	Cerrar grupo
+	Add Tab to New Group	Añadir pestaña a un grupo nuevo
+	Add Tab to Group	Añadir pestaña al grupo
+	Remove from Group	Quitar del grupo
+	Click to fold or unfold the group	Haz clic para contraer o expandir el grupo
+	Filter tools	Filtrar herramientas
+	No tool matches	Ninguna herramienta coincide
+	Essentials	Esenciales
+	Float as a bubble	Flotar como burbuja
+	Show this PDF in a small window over the others	Mostrar este PDF en una ventana pequeña sobre los demás
+	Put back as a tab	Volver a pestaña
+	Fold into a bubble	Plegar en burbuja
+	Click to open, drag onto the tabs to put it back	Haz clic para abrir, arrástrala a las pestañas para devolverla
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	Tienes la versión {c}. NadsPDF se cerrará, instalará la nueva versión en lugar de esta y se volverá a abrir. Se conservan tus ajustes.
+	You have version {c}.	Tienes la versión {c}.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	Esta copia de NadsPDF procede de Microsoft Store, que instala las nuevas versiones por sí misma.
+	Downloading the update…	Descargando la actualización…
+	Couldn't install the update: {e}	No se pudo instalar la actualización: {e}
+	Check for updates when NadsPDF starts (once a day)	Buscar actualizaciones al iniciar NadsPDF (una vez al día)
+	Open in New Window	Abrir en una ventana nueva
+	Or drag the tab out of the strip, to another screen for instance	O arrastra la pestaña fuera de la barra, a otra pantalla por ejemplo
+	Release to open in a new window	Suelta para abrir en una ventana nueva
+	Save this PDF before opening it in a new window.	Guarda este PDF antes de abrirlo en una ventana nueva.
+	Save your changes before opening this PDF in a new window.	Guarda los cambios antes de abrir este PDF en una ventana nueva.
+	Element	Elemento
+	Point at a line of the drawing to see its length. Click it to keep the measurement.	Señala una línea del dibujo para ver su longitud. Haz clic en ella para conservar la medida.
+	Actual size (no scale)	Tamaño real (sin escala)
+	This page	Esta página
+	Usual scales	Escalas habituales
+	Other unit	Otra unidad
+	Click both ends of a length you know, then type it on the right.	Haz clic en los dos extremos de una longitud conocida y escríbela a la derecha.
+	Whole document	Todo el documento
+	Total area	Área total
+	Total length	Longitud total
+	Know when you open or close a document (its name and number of pages)	Saber cuándo abre o cierra un documento (su nombre y número de páginas)
+	Read the text of the documents you open	Leer el texto de los documentos que abre
+	Know where the documents you open are saved	Saber dónde se guardan los documentos que abre
+	Show a message bar with buttons above a document	Mostrar una barra de mensajes con botones sobre un documento
+	Open web pages on the sites it lists	Abrir páginas web en los sitios que declara
+	Extensions	Extensiones
+	This extension can't be used: {e}	No se puede usar esta extensión: {e}
+	Extensions folder: {path}	Carpeta de extensiones: {path}
+	Turn off	Desactivar
+	Turn on…	Activar…
+	Stopped: {e}	Detenida: {e}
+	On at the next start	Activada en el próximo inicio
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} es un programa que se ejecuta en este equipo con sus permisos. Podrá:
+	• Nothing beyond running.	• Nada más que ejecutarse.
+	Only turn on extensions you trust.	Active solo extensiones de confianza.
+	Turn on	Activar
+	Couldn't save the extension settings: {e}	No se pudieron guardar los ajustes de las extensiones: {e}
+	Loading text recognition…	Cargando el reconocimiento de texto…

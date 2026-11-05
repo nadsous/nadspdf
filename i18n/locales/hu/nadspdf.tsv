@@ -1,0 +1,139 @@
+# NadsPDF's own rows for hu: strings only NadsPDF has (vaults, bubbles, extensions,
+# conversion, compression…) and wordings NadsPDF chose over the shared PdfCraft catalog.
+# Same format as pdfcraft.tsv (context <TAB> English source <TAB> translation). build.rs merges
+# this file over pdfcraft.tsv: a row here replaces pdfcraft.tsv's row with the same context and
+# source text.
+#
+# Clean room: every entry was written from the plain meaning of the English text in ordinary
+# computing vocabulary. No other product's localisation, string table or translated UI was
+# consulted or copied; add entries the same way.
+
+	Images, text and documents (converted to PDF)	Képek, szöveg és dokumentumok (PDF-be konvertálva)
+	PDF, images, text and documents	PDF, képek, szöveg és dokumentumok
+	NadsPDF tools	NadsPDF-eszközök
+	PdfCraft (upstream) on GitHub	PdfCraft (eredeti projekt) a GitHubon
+	Combine with NadsPDF	Egyesítés a NadsPDF-fel
+	Open with NadsPDF	Megnyitás a NadsPDF-fel
+	Show NadsPDF in the File Explorer right-click menu	A NadsPDF megjelenítése a Fájlkezelő helyi menüjében
+	Added for all users when NadsPDF was installed.	A NadsPDF telepítésekor minden felhasználó számára hozzáadva.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	Konvertálás PDF-be, Egyesítés és Megnyitás dokumentumokon, képeken és PDF-eken. Windows 11 alatt a „További lehetőségek megjelenítése” menüben.
+	Couldn't change the File Explorer menu: {e}	Nem sikerült módosítani a Fájlkezelő menüjét: {e}
+	Couldn't find {name}	{name} nem található
+@plural	{n} file|{n} files	{n} fájl|{n} fájl
+	Give the vault a name	Adjon nevet a széfnek
+	You can have up to {n} vaults. Delete one first.	Legfeljebb {n} széfje lehet. Előbb töröljön egyet.
+	That vault no longer exists	Ez a széf már nem létezik
+	Added {files} to {vault}	Hozzáadva ehhez: {vault}: {files}
+	Already in {vault}	Már benne van: {vault}
+	A vault holds up to {n} files	Egy széfben legfeljebb {n} fájl lehet
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	A széfek PDF-eket és a NadsPDF által átalakítható fájlokat tárolnak ezen a számítógépen
+	No files to open in this vault	Ebben a széfben nincs megnyitható fájl
+	Opening the first {n} files	Az első {n} fájl megnyitása
+	Deleted the vault {vault}. Its files were not touched.	A(z) {vault} széf törölve. A fájljai érintetlenek maradtak.
+	Moved {file} to {vault}	{file} áthelyezve ide: {vault}
+	Vaults need the desktop app	A széfekhez az asztali alkalmazás kell
+	Locate {file}	{file} megkeresése
+	Save this document to a file first, then add it to a vault	Előbb mentse fájlba a dokumentumot, aztán adja hozzá egy széfhez
+	Vaults	Széfek
+	New vault	Új széf
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	Csoportosítsa a számítógépen bárhol lévő PDF-eket elnevezett, színes, ikonos széfekbe. A fájlok a helyükön maradnak.
+	Click to show its files. Drag to reorder, or drop files here.	Kattintson a fájlok megjelenítéséhez. Húzza az átrendezéshez, vagy ejtsen ide fájlokat.
+	Open all	Összes megnyitása
+	Edit vault…	Széf szerkesztése…
+	Move left	Mozgatás balra
+	Move right	Mozgatás jobbra
+	Delete vault…	Széf törlése…
+	New vault…	Új széf…
+	No files yet. Drop files here to add them.	Még nincsenek fájlok. Ejtsen ide fájlokat a hozzáadásukhoz.
+	Locate…	Megkeresés…
+	Remove {name} from this vault	{name} eltávolítása ebből a széfből
+	This file has moved or been deleted. Locate it, or remove it from the vault.	Ezt a fájlt áthelyezték vagy törölték. Keresse meg, vagy távolítsa el a széfből.
+	Move to vault	Áthelyezés széfbe
+	Remove from vault	Eltávolítás a széfből
+	Show this vault on Home	A széf megjelenítése a Kezdőlapon
+	Vault: {name}	Széf: {name}
+	Vault	Széf
+	Edit vault	Széf szerkesztése
+	Vault name	Széf neve
+	Create vault	Széf létrehozása
+	Delete the vault {vault}?	Törli a(z) {vault} széfet?
+	Its files stay where they are on your computer. Only the vault is deleted.	A fájlok a helyükön maradnak a számítógépen. Csak a széf törlődik.
+	Delete vault	Széf törlése
+	Add to vault	Hozzáadás széfhez
+	Already in it	Már benne van
+	Add document to vault…	Dokumentum hozzáadása széfhez…
+	Dark pages	Sötét oldalak
+	Rasterize pages (strong compression)…	Oldalak raszterizálása (erős tömörítés)…
+	Rasterize pages (strong compression)	Oldalak raszterizálása (erős tömörítés)
+	Rasterizing… page {d} of {t}	Raszterizálás… {d}. oldal / {t}
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	Minden oldal képpé válik: a legerősebb tömörítés, beolvasott dokumentumokhoz ideális. A szöveg többé nem jelölhető ki és nem kereshető, a hivatkozások, könyvjelzők és űrlapmezők pedig nem maradnak meg. Az eredmény másolatként mentődik.
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi, JPEG-minőség {q}
+compression level	Light	Enyhe
+compression level	Medium	Közepes
+compression level	Strong	Erős
+	Compress	Tömörítés
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	A raszterizálás nem tenné kisebbé ezt a fájlt ({size}). Nem készült másolat.
+	Add faint watermark	Halvány vízjel hozzáadása
+	Recognize text if available	Szövegfelismerés, ha elérhető
+	Prepare for Sending	Előkészítés küldésre
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	Oldalszámozás „n / összes” formában lent középen, majd a fájl kicsinyítése e-mailes küldéshez.
+	Archive Scans	Beolvasások archiválása
+	Make scans searchable (when text recognition is available), then make them smaller.	A beolvasások kereshetővé tétele (ha a szövegfelismerés telepítve van), majd kicsinyítésük.
+	Confidential	Bizalmas
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	Halvány átlós BIZALMAS vízjel és „n / összes” oldalszámok minden oldalon.
+	{name} (copy)	{name} (másolat)
+watermark text	CONFIDENTIAL	BIZALMAS
+	Group name	Csoport neve
+	Rename Group	Csoport átnevezése
+	Close Group	Csoport bezárása
+	Add Tab to New Group	Lap hozzáadása új csoporthoz
+	Add Tab to Group	Lap hozzáadása csoporthoz
+	Remove from Group	Eltávolítás a csoportból
+	Click to fold or unfold the group	Kattintson a csoport összecsukásához vagy kibontásához
+	Filter tools	Eszközök szűrése
+	No tool matches	Nincs egyező eszköz
+	Essentials	Alapok
+	Float as a bubble	Lebegő buborék
+	Show this PDF in a small window over the others	A PDF megjelenítése kis ablakban a többi fölött
+	Put back as a tab	Visszahelyezés lapként
+	Fold into a bubble	Buborékká csukás
+	Click to open, drag onto the tabs to put it back	Kattintson a megnyitáshoz, húzza a lapokra a visszahelyezéshez
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	Az Ön verziója: {c}. A NadsPDF bezárul, a jelenlegi helyére telepíti az új verziót, majd újra megnyílik. A beállítások megmaradnak.
+	You have version {c}.	Az Ön verziója: {c}.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	A NadsPDF ezen példánya a Microsoft Store-ból származik, amely maga telepíti az új verziókat.
+	Downloading the update…	A frissítés letöltése…
+	Couldn't install the update: {e}	Nem sikerült telepíteni a frissítést: {e}
+	Check for updates when NadsPDF starts (once a day)	Frissítések keresése a NadsPDF indításakor (naponta egyszer)
+	Open in New Window	Megnyitás új ablakban
+	Or drag the tab out of the strip, to another screen for instance	Vagy húzza ki a lapot a sávból, például egy másik képernyőre
+	Release to open in a new window	Engedje el az új ablakban való megnyitáshoz
+	Save this PDF before opening it in a new window.	Mentse a PDF-et, mielőtt új ablakban nyitja meg.
+	Save your changes before opening this PDF in a new window.	Mentse a módosításokat, mielőtt új ablakban nyitja meg ezt a PDF-et.
+	Element	Elem
+	Point at a line of the drawing to see its length. Click it to keep the measurement.	Mutasson a rajz egy vonalára a hosszának megtekintéséhez. Kattintson rá a mérés megtartásához.
+	Actual size (no scale)	Valódi méret (lépték nélkül)
+	This page	Ez az oldal
+	Usual scales	Szokásos léptékek
+	Other unit	Más mértékegység
+	Click both ends of a length you know, then type it on the right.	Kattintson egy ismert hossz két végére, majd írja be jobb oldalt.
+	Whole document	Teljes dokumentum
+	Total area	Teljes terület
+	Total length	Teljes hossz
+	Know when you open or close a document (its name and number of pages)	Tudni, mikor nyit meg vagy zár be egy dokumentumot (a nevét és oldalszámát)
+	Read the text of the documents you open	Olvasni a megnyitott dokumentumok szövegét
+	Know where the documents you open are saved	Tudni, hová vannak mentve a megnyitott dokumentumok
+	Show a message bar with buttons above a document	Gombokkal ellátott üzenetsávot megjeleníteni egy dokumentum fölött
+	Open web pages on the sites it lists	Weboldalakat megnyitni az általa megadott webhelyeken
+	Extensions	Bővítmények
+	This extension can't be used: {e}	Ez a bővítmény nem használható: {e}
+	Extensions folder: {path}	Bővítmények mappája: {path}
+	Turn off	Kikapcsolás
+	Turn on…	Bekapcsolás…
+	Stopped: {e}	Leállt: {e}
+	On at the next start	A következő indításkor bekapcsol
+	{name} is a program that runs on this computer, with your rights. It will be able to:	A(z) {name} egy program, amely ezen a számítógépen fut az Ön jogosultságaival. Képes lesz:
+	• Nothing beyond running.	• Semmire a futáson kívül.
+	Only turn on extensions you trust.	Csak megbízható bővítményeket kapcsoljon be.
+	Turn on	Bekapcsolás
+	Couldn't save the extension settings: {e}	Nem sikerült menteni a bővítmények beállításait: {e}
+	Loading text recognition…	Szövegfelismerés betöltése…

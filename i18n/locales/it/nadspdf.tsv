@@ -1,0 +1,139 @@
+# NadsPDF's own rows for it: strings only NadsPDF has (vaults, bubbles, extensions,
+# conversion, compression…) and wordings NadsPDF chose over the shared PdfCraft catalog.
+# Same format as pdfcraft.tsv (context <TAB> English source <TAB> translation). build.rs merges
+# this file over pdfcraft.tsv: a row here replaces pdfcraft.tsv's row with the same context and
+# source text.
+#
+# Clean room: every entry was written from the plain meaning of the English text in ordinary
+# computing vocabulary. No other product's localisation, string table or translated UI was
+# consulted or copied; add entries the same way.
+
+	Images, text and documents (converted to PDF)	Immagini, testo e documenti (convertiti in PDF)
+	PDF, images, text and documents	PDF, immagini, testo e documenti
+	NadsPDF tools	Strumenti NadsPDF
+	PdfCraft (upstream) on GitHub	PdfCraft (progetto originale) su GitHub
+	Combine with NadsPDF	Combina con NadsPDF
+	Open with NadsPDF	Apri con NadsPDF
+	Show NadsPDF in the File Explorer right-click menu	Mostra NadsPDF nel menu contestuale di Esplora file
+	Added for all users when NadsPDF was installed.	Aggiunto per tutti gli utenti durante l’installazione di NadsPDF.
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	Converti in PDF, Combina e Apri su documenti, immagini e PDF. In Windows 11, sotto «Mostra altre opzioni».
+	Couldn't change the File Explorer menu: {e}	Impossibile modificare il menu di Esplora file: {e}
+	Couldn't find {name}	{name} non trovato
+@plural	{n} file|{n} files	{n} file|{n} file
+	Give the vault a name	Dai un nome alla cassaforte
+	You can have up to {n} vaults. Delete one first.	Puoi avere fino a {n} casseforti. Eliminane prima una.
+	That vault no longer exists	Questa cassaforte non esiste più
+	Added {files} to {vault}	Aggiunti a {vault}: {files}
+	Already in {vault}	Già in {vault}
+	A vault holds up to {n} files	Una cassaforte contiene al massimo {n} file
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	Le casseforti contengono PDF e file che NadsPDF può convertire, su questo computer
+	No files to open in this vault	Nessun file da aprire in questa cassaforte
+	Opening the first {n} files	Apertura dei primi {n} file
+	Deleted the vault {vault}. Its files were not touched.	Cassaforte {vault} eliminata. I suoi file non sono stati toccati.
+	Moved {file} to {vault}	{file} spostato in {vault}
+	Vaults need the desktop app	Le casseforti richiedono l'app desktop
+	Locate {file}	Trova {file}
+	Save this document to a file first, then add it to a vault	Salva prima questo documento in un file, poi aggiungilo a una cassaforte
+	Vaults	Casseforti
+	New vault	Nuova cassaforte
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	Raggruppa i PDF sparsi sul computer in casseforti con nome, colore e icona. I file restano dove sono.
+	Click to show its files. Drag to reorder, or drop files here.	Fai clic per vederne i file. Trascina per riordinare o rilascia qui dei file.
+	Open all	Apri tutto
+	Edit vault…	Modifica cassaforte…
+	Move left	Sposta a sinistra
+	Move right	Sposta a destra
+	Delete vault…	Elimina cassaforte…
+	New vault…	Nuova cassaforte…
+	No files yet. Drop files here to add them.	Ancora nessun file. Rilascia qui dei file per aggiungerli.
+	Locate…	Trova…
+	Remove {name} from this vault	Rimuovi {name} da questa cassaforte
+	This file has moved or been deleted. Locate it, or remove it from the vault.	Questo file è stato spostato o eliminato. Trovalo o rimuovilo dalla cassaforte.
+	Move to vault	Sposta in cassaforte
+	Remove from vault	Rimuovi dalla cassaforte
+	Show this vault on Home	Mostra questa cassaforte nella Home
+	Vault: {name}	Cassaforte: {name}
+	Vault	Cassaforte
+	Edit vault	Modifica cassaforte
+	Vault name	Nome della cassaforte
+	Create vault	Crea cassaforte
+	Delete the vault {vault}?	Eliminare la cassaforte {vault}?
+	Its files stay where they are on your computer. Only the vault is deleted.	I suoi file restano dove sono sul computer. Viene eliminata solo la cassaforte.
+	Delete vault	Elimina cassaforte
+	Add to vault	Aggiungi alla cassaforte
+	Already in it	Già presente
+	Add document to vault…	Aggiungi documento a una cassaforte…
+	Dark pages	Pagine scure
+	Rasterize pages (strong compression)…	Rasterizza pagine (compressione forte)…
+	Rasterize pages (strong compression)	Rasterizza pagine (compressione forte)
+	Rasterizing… page {d} of {t}	Rasterizzazione… pagina {d} di {t}
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	Ogni pagina diventa un’immagine: la compressione più forte, ideale per le scansioni. Il testo non è più selezionabile né ricercabile, e collegamenti, segnalibri e campi modulo non vengono mantenuti. Il risultato viene salvato come copia.
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi, qualità JPEG {q}
+compression level	Light	Leggera
+compression level	Medium	Media
+compression level	Strong	Forte
+	Compress	Comprimi
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	La rasterizzazione non ridurrebbe questo file ({size}). Nessuna copia è stata salvata.
+	Add faint watermark	Aggiungi filigrana leggera
+	Recognize text if available	Riconosci testo se disponibile
+	Prepare for Sending	Prepara per l’invio
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	Numera le pagine «n / totale» in basso al centro, poi riduci il file per inviarlo via e-mail.
+	Archive Scans	Archivia scansioni
+	Make scans searchable (when text recognition is available), then make them smaller.	Rendi ricercabili le scansioni (se il riconoscimento del testo è installato), poi riducile.
+	Confidential	Riservato
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	Una filigrana diagonale leggera RISERVATO e numeri di pagina «n / totale» su ogni pagina.
+	{name} (copy)	{name} (copia)
+watermark text	CONFIDENTIAL	RISERVATO
+	Group name	Nome del gruppo
+	Rename Group	Rinomina gruppo
+	Close Group	Chiudi gruppo
+	Add Tab to New Group	Aggiungi scheda a un nuovo gruppo
+	Add Tab to Group	Aggiungi scheda al gruppo
+	Remove from Group	Rimuovi dal gruppo
+	Click to fold or unfold the group	Fai clic per comprimere o espandere il gruppo
+	Filter tools	Filtra strumenti
+	No tool matches	Nessuno strumento corrisponde
+	Essentials	Essenziali
+	Float as a bubble	Mostra come bolla
+	Show this PDF in a small window over the others	Mostra questo PDF in una piccola finestra sopra gli altri
+	Put back as a tab	Rimetti come scheda
+	Fold into a bubble	Riduci a bolla
+	Click to open, drag onto the tabs to put it back	Fai clic per aprire, trascina sulle schede per rimetterla
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	Hai la versione {c}. NadsPDF si chiuderà, installerà la nuova versione al posto di questa e si riaprirà. Le impostazioni vengono mantenute.
+	You have version {c}.	Hai la versione {c}.
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	Questa copia di NadsPDF proviene da Microsoft Store, che installa da sé le nuove versioni.
+	Downloading the update…	Download dell'aggiornamento…
+	Couldn't install the update: {e}	Impossibile installare l'aggiornamento: {e}
+	Check for updates when NadsPDF starts (once a day)	Cerca aggiornamenti all'avvio di NadsPDF (una volta al giorno)
+	Open in New Window	Apri in una nuova finestra
+	Or drag the tab out of the strip, to another screen for instance	Oppure trascina la scheda fuori dalla barra, ad esempio su un altro schermo
+	Release to open in a new window	Rilascia per aprire in una nuova finestra
+	Save this PDF before opening it in a new window.	Salva questo PDF prima di aprirlo in una nuova finestra.
+	Save your changes before opening this PDF in a new window.	Salva le modifiche prima di aprire questo PDF in una nuova finestra.
+	Element	Elemento
+	Point at a line of the drawing to see its length. Click it to keep the measurement.	Punta una linea del disegno per vederne la lunghezza. Fai clic per conservare la misura.
+	Actual size (no scale)	Dimensioni reali (senza scala)
+	This page	Questa pagina
+	Usual scales	Scale comuni
+	Other unit	Altra unità
+	Click both ends of a length you know, then type it on the right.	Fai clic sui due estremi di una lunghezza nota, poi digitala a destra.
+	Whole document	Intero documento
+	Total area	Area totale
+	Total length	Lunghezza totale
+	Know when you open or close a document (its name and number of pages)	Sapere quando apri o chiudi un documento (nome e numero di pagine)
+	Read the text of the documents you open	Leggere il testo dei documenti che apri
+	Know where the documents you open are saved	Sapere dove sono salvati i documenti che apri
+	Show a message bar with buttons above a document	Mostrare una barra dei messaggi con pulsanti sopra un documento
+	Open web pages on the sites it lists	Aprire pagine web sui siti che dichiara
+	Extensions	Estensioni
+	This extension can't be used: {e}	Impossibile usare questa estensione: {e}
+	Extensions folder: {path}	Cartella delle estensioni: {path}
+	Turn off	Disattiva
+	Turn on…	Attiva…
+	Stopped: {e}	Arrestata: {e}
+	On at the next start	Attiva al prossimo avvio
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} è un programma che viene eseguito su questo computer con i tuoi diritti. Potrà:
+	• Nothing beyond running.	• Nient'altro che essere eseguito.
+	Only turn on extensions you trust.	Attiva solo estensioni di cui ti fidi.
+	Turn on	Attiva
+	Couldn't save the extension settings: {e}	Impossibile salvare le impostazioni delle estensioni: {e}
+	Loading text recognition…	Caricamento del riconoscimento del testo…

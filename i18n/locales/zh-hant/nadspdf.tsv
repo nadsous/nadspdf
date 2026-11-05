@@ -1,0 +1,139 @@
+# NadsPDF's own rows for zh-hant: strings only NadsPDF has (vaults, bubbles, extensions,
+# conversion, compression…) and wordings NadsPDF chose over the shared PdfCraft catalog.
+# Same format as pdfcraft.tsv (context <TAB> English source <TAB> translation). build.rs merges
+# this file over pdfcraft.tsv: a row here replaces pdfcraft.tsv's row with the same context and
+# source text.
+#
+# Clean room: every entry was written from the plain meaning of the English text in ordinary
+# computing vocabulary. No other product's localisation, string table or translated UI was
+# consulted or copied; add entries the same way.
+
+	Images, text and documents (converted to PDF)	影像、文字和文件（轉換為 PDF）
+	PDF, images, text and documents	PDF、影像、文字和文件
+	NadsPDF tools	NadsPDF 工具
+	PdfCraft (upstream) on GitHub	GitHub 上的 PdfCraft（上游專案）
+	Combine with NadsPDF	使用 NadsPDF 合併
+	Open with NadsPDF	使用 NadsPDF 開啟
+	Show NadsPDF in the File Explorer right-click menu	在檔案總管的右鍵選單中顯示 NadsPDF
+	Added for all users when NadsPDF was installed.	安裝 NadsPDF 時已為所有使用者新增。
+	Convert to PDF, Combine and Open on documents, images and PDFs. On Windows 11, under Show more options.	在文件、影像和 PDF 上提供「轉換為 PDF」「合併」和「開啟」。在 Windows 11 中位於「顯示更多選項」下。
+	Couldn't change the File Explorer menu: {e}	無法變更檔案總管選單：{e}
+	Couldn't find {name}	找不到 {name}
+@plural	{n} file|{n} files	{n} 個檔案
+	Give the vault a name	請為保險庫命名
+	You can have up to {n} vaults. Delete one first.	最多可以有 {n} 個保險庫。請先刪除一個。
+	That vault no longer exists	該保險庫已不存在
+	Added {files} to {vault}	已新增到 {vault}：{files}
+	Already in {vault}	已在 {vault} 中
+	A vault holds up to {n} files	一個保險庫最多容納 {n} 個檔案
+	Vaults hold PDFs and files NadsPDF can convert, on this computer	保險庫存放這台電腦上的 PDF 以及 NadsPDF 可以轉換的檔案
+	No files to open in this vault	此保險庫中沒有可開啟的檔案
+	Opening the first {n} files	正在開啟前 {n} 個檔案
+	Deleted the vault {vault}. Its files were not touched.	已刪除保險庫 {vault}。其中的檔案未受影響。
+	Moved {file} to {vault}	已將 {file} 移到 {vault}
+	Vaults need the desktop app	保險庫需要桌面版應用程式
+	Locate {file}	尋找 {file}
+	Save this document to a file first, then add it to a vault	請先將此文件儲存為檔案，再新增到保險庫
+	Vaults	保險庫
+	New vault	新增保險庫
+	Group PDFs from anywhere on your computer into named vaults with a colour and an icon. Files stay where they are.	把電腦上各處的 PDF 歸入有名稱、顏色和圖示的保險庫。檔案仍留在原處。
+	Click to show its files. Drag to reorder, or drop files here.	按一下顯示其檔案。拖曳可重新排序，也可將檔案拖放到這裡。
+	Open all	全部開啟
+	Edit vault…	編輯保險庫…
+	Move left	左移
+	Move right	右移
+	Delete vault…	刪除保險庫…
+	New vault…	新增保險庫…
+	No files yet. Drop files here to add them.	還沒有檔案。將檔案拖放到這裡即可新增。
+	Locate…	尋找…
+	Remove {name} from this vault	從此保險庫移除 {name}
+	This file has moved or been deleted. Locate it, or remove it from the vault.	此檔案已被移動或刪除。請找到它，或將其從保險庫移除。
+	Move to vault	移到保險庫
+	Remove from vault	從保險庫移除
+	Show this vault on Home	在首頁顯示此保險庫
+	Vault: {name}	保險庫：{name}
+	Vault	保險庫
+	Edit vault	編輯保險庫
+	Vault name	保險庫名稱
+	Create vault	建立保險庫
+	Delete the vault {vault}?	要刪除保險庫 {vault} 嗎？
+	Its files stay where they are on your computer. Only the vault is deleted.	檔案仍留在電腦上的原處。只會刪除保險庫。
+	Delete vault	刪除保險庫
+	Add to vault	新增到保險庫
+	Already in it	已在其中
+	Add document to vault…	將文件新增到保險庫…
+	Dark pages	深色頁面
+	Rasterize pages (strong compression)…	將頁面點陣化（強力壓縮）…
+	Rasterize pages (strong compression)	將頁面點陣化（強力壓縮）
+	Rasterizing… page {d} of {t}	正在點陣化… 第 {d} 頁，共 {t} 頁
+	Every page becomes a picture: the strongest compression, best for scans. Text is no longer selectable or searchable, and links, bookmarks and form fields are not kept. The result is saved as a copy.	每一頁都會變成圖片：壓縮最強，最適合掃描文件。文字將無法再選取或搜尋，連結、書籤和表單欄位也不會保留。結果另存為副本。
+	{dpi} dpi, JPEG quality {q}	{dpi} dpi，JPEG 品質 {q}
+compression level	Light	輕度
+compression level	Medium	中度
+compression level	Strong	強力
+	Compress	壓縮
+	Rasterizing wouldn't make this file smaller ({size}). No copy was saved.	點陣化不會讓此檔案變小（{size}）。未儲存副本。
+	Add faint watermark	加入淡色浮水印
+	Recognize text if available	如可用則辨識文字
+	Prepare for Sending	準備傳送
+	Number the pages "n / total" at the bottom centre, then make the file smaller to send by email.	在底部置中以「n / 總數」編號頁面，然後縮小檔案以便透過電子郵件傳送。
+	Archive Scans	封存掃描文件
+	Make scans searchable (when text recognition is available), then make them smaller.	讓掃描文件可搜尋（如已安裝文字辨識），然後將其縮小。
+	Confidential	機密
+	A faint diagonal CONFIDENTIAL watermark and "n / total" page numbers on every page.	每頁加上淡色對角「機密」浮水印和「n / 總數」頁碼。
+	{name} (copy)	{name}（副本）
+watermark text	CONFIDENTIAL	機密
+	Group name	群組名稱
+	Rename Group	重新命名群組
+	Close Group	關閉群組
+	Add Tab to New Group	將分頁加入新群組
+	Add Tab to Group	將分頁加入群組
+	Remove from Group	從群組中移除
+	Click to fold or unfold the group	按一下以摺疊或展開群組
+	Filter tools	篩選工具
+	No tool matches	沒有符合的工具
+	Essentials	常用
+	Float as a bubble	浮動為泡泡
+	Show this PDF in a small window over the others	在其他文件上方的小視窗中顯示此 PDF
+	Put back as a tab	放回為分頁
+	Fold into a bubble	收合為泡泡
+	Click to open, drag onto the tabs to put it back	按一下以開啟，拖到分頁列即可放回
+	You have version {c}. NadsPDF will close, install the new version in place of this one and open again. Your settings are kept.	你的版本是 {c}。NadsPDF 將會關閉，安裝新版本取代目前版本，然後重新開啟。你的設定會保留。
+	You have version {c}.	你的版本是 {c}。
+	This copy of NadsPDF comes from the Microsoft Store, which installs new versions by itself.	此 NadsPDF 來自 Microsoft Store，新版本由 Store 自動安裝。
+	Downloading the update…	正在下載更新…
+	Couldn't install the update: {e}	無法安裝更新：{e}
+	Check for updates when NadsPDF starts (once a day)	啟動 NadsPDF 時檢查更新（每天一次）
+	Open in New Window	在新視窗中開啟
+	Or drag the tab out of the strip, to another screen for instance	或將分頁拖出分頁列，例如拖到另一個螢幕
+	Release to open in a new window	放開即可在新視窗中開啟
+	Save this PDF before opening it in a new window.	請先儲存此 PDF，再在新視窗中開啟。
+	Save your changes before opening this PDF in a new window.	請先儲存變更，再在新視窗中開啟此 PDF。
+	Element	元素
+	Point at a line of the drawing to see its length. Click it to keep the measurement.	將指標指向圖面中的線條即可查看其長度。按一下即可保留該測量。
+	Actual size (no scale)	實際大小（無比例）
+	This page	此頁
+	Usual scales	常用比例
+	Other unit	其他單位
+	Click both ends of a length you know, then type it on the right.	按一下已知長度的兩端，然後在右側輸入該長度。
+	Whole document	整份文件
+	Total area	總面積
+	Total length	總長度
+	Know when you open or close a document (its name and number of pages)	得知您何時開啟或關閉文件（文件名稱和頁數）
+	Read the text of the documents you open	讀取您開啟的文件的文字
+	Know where the documents you open are saved	得知您開啟的文件儲存在何處
+	Show a message bar with buttons above a document	在文件上方顯示帶按鈕的訊息列
+	Open web pages on the sites it lists	在其列出的網站上開啟網頁
+	Extensions	擴充功能
+	This extension can't be used: {e}	無法使用此擴充功能：{e}
+	Extensions folder: {path}	擴充功能資料夾：{path}
+	Turn off	關閉
+	Turn on…	啟用…
+	Stopped: {e}	已停止：{e}
+	On at the next start	下次啟動時啟用
+	{name} is a program that runs on this computer, with your rights. It will be able to:	{name} 是在此電腦上以您的權限執行的程式。它將能夠：
+	• Nothing beyond running.	• 僅執行，無其他權限。
+	Only turn on extensions you trust.	請只啟用您信任的擴充功能。
+	Turn on	啟用
+	Couldn't save the extension settings: {e}	無法儲存擴充功能設定：{e}
+	Loading text recognition…	正在載入文字辨識…

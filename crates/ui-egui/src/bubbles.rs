@@ -132,7 +132,7 @@ pub fn show(app: &mut PdfCraftApp, ctx: &egui::Context, strip: Rect) {
         let Some(index) = app.views.iter().position(|v| v.id == b.doc) else { continue };
         let name = app.session.get(b.doc).map(|d| d.display_name()).unwrap_or_default();
         if b.open {
-            let area = egui::Area::new(egui::Id::new(("bubble", b.doc.0))).order(egui::Order::Foreground).fixed_pos(b.pos);
+            let area = egui::Area::new(egui::Id::unique(("bubble", b.doc.0))).order(egui::Order::Foreground).fixed_pos(b.pos);
             let mut moved = Vec2::ZERO;
             let mut resized = Vec2::ZERO;
             let shown = area.show(ctx, |ui| {
@@ -145,7 +145,7 @@ pub fn show(app: &mut PdfCraftApp, ctx: &egui::Context, strip: Rect) {
                     let (rect, _) = ui.allocate_exact_size(b.size, Sense::hover());
                     let header = Rect::from_min_size(rect.min, vec2(rect.width(), HEADER));
                     // The header moves the bubble; dropped on the tab strip, it docks.
-                    let grip = ui.interact(header, ui.id().with("grip"), Sense::click_and_drag());
+                    let grip = ui.interact(header, ui.scope_id().with("grip"), Sense::click_and_drag());
                     if grip.dragged() {
                         moved = grip.drag_delta();
                     }
@@ -190,7 +190,7 @@ pub fn show(app: &mut PdfCraftApp, ctx: &egui::Context, strip: Rect) {
                     });
                     // Resize from the bottom-right corner.
                     let corner = Rect::from_min_size(rect.max - vec2(16.0, 16.0), vec2(16.0, 16.0));
-                    let handle = ui.interact(corner, ui.id().with("resize"), Sense::drag());
+                    let handle = ui.interact(corner, ui.scope_id().with("resize"), Sense::drag());
                     if handle.dragged() {
                         resized = handle.drag_delta();
                     }
@@ -213,12 +213,13 @@ pub fn show(app: &mut PdfCraftApp, ctx: &egui::Context, strip: Rect) {
                 live.pos.y = live.pos.y.clamp(screen.top(), screen.bottom() - HEADER);
             }
         } else {
-            let area =
-                egui::Area::new(egui::Id::new(("bubble-head", b.doc.0))).order(egui::Order::Foreground).fixed_pos(b.head - Vec2::splat(HEAD / 2.0));
+            let area = egui::Area::new(egui::Id::unique(("bubble-head", b.doc.0)))
+                .order(egui::Order::Foreground)
+                .fixed_pos(b.head - Vec2::splat(HEAD / 2.0));
             let mut moved = Vec2::ZERO;
             let shown = area.show(ctx, |ui| {
                 let (rect, resp) = ui.allocate_exact_size(Vec2::splat(HEAD), Sense::click_and_drag());
-                resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, &name));
+                resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, &name));
                 let c = rect.center();
                 ui.painter().circle_filled(c + vec2(0.0, 4.0), HEAD / 2.0, Color32::from_black_alpha(90));
                 ui.painter().circle_filled(c, HEAD / 2.0, t.card);
@@ -253,7 +254,7 @@ pub fn show(app: &mut PdfCraftApp, ctx: &egui::Context, strip: Rect) {
     }
     // Over the tab strip: show where the bubble will land.
     if dragging_over_strip {
-        let painter = ctx.layer_painter(egui::LayerId::new(egui::Order::Foreground, egui::Id::new("bubble-dock-hint")));
+        let painter = ctx.layer_painter(egui::LayerId::new(egui::Order::Foreground, egui::Id::unique("bubble-dock-hint")));
         painter.rect_stroke(strip.shrink(2.0), CornerRadius::same(8), Stroke::new(2.0, t.accent), egui::StrokeKind::Inside);
     }
     // A click anywhere outside the open bubbles folds them.
