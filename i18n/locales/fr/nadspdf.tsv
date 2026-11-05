@@ -246,3 +246,8 @@ watermark text	CONFIDENTIAL	CONFIDENTIEL
 	Create the document “{title}”	Créer le document « {title} »
 	{n} actions carried out, {m} couldn't be (the text or field wasn't found)	{n} actions effectuées, {m} impossibles (texte ou champ introuvable)
 	Write the report from this document	Rédige le rapport à partir de ce document
+
+# NadsPDF 2026-11: no upstream name in the interface.
+	NadsPDF on GitHub	NadsPDF sur GitHub
+	Text recognition isn't installed: its model files are missing. Reinstall NadsPDF, or set NADSPDF_MODELS to the folder that holds them.	La reconnaissance de texte n'est pas installée : ses fichiers de modèles sont absents. Réinstallez NadsPDF, ou définissez NADSPDF_MODELS sur le dossier qui les contient.
+	the text recognition models are not installed (reinstall NadsPDF, or set NADSPDF_MODELS to the folder that holds them)	les modèles de reconnaissance de texte ne sont pas installés (réinstallez NadsPDF, ou définissez NADSPDF_MODELS sur le dossier qui les contient)

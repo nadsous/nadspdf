@@ -30,7 +30,7 @@ pub const LANGUAGES: &[(&str, &str)] = &[("en", "English")];
 pub enum OcrError {
     /// Shown to end users (release packages ship the models; a source build fetches them with
     /// `cargo xtask models`). The UI catalogs key this exact text.
-    #[error("the text recognition models are not installed (reinstall NadsPDF, or set PDFCRAFT_MODELS to the folder that holds them)")]
+    #[error("the text recognition models are not installed (reinstall NadsPDF, or set NADSPDF_MODELS to the folder that holds them)")]
     NoModels,
     #[error("loading {0}: {1}")]
     Load(String, String),
@@ -66,8 +66,11 @@ impl Models {
     /// The directories [`Models::find`] looks in, in order.
     pub fn search_dirs() -> Vec<PathBuf> {
         let mut dirs = Vec::new();
-        if let Some(d) = std::env::var_os("PDFCRAFT_MODELS") {
-            dirs.push(PathBuf::from(d));
+        // NADSPDF_MODELS, or the name earlier versions read.
+        for var in ["NADSPDF_MODELS", "PDFCRAFT_MODELS"] {
+            if let Some(d) = std::env::var_os(var) {
+                dirs.push(PathBuf::from(d));
+            }
         }
         if let Some(exe) = std::env::current_exe().ok().and_then(|e| e.parent().map(Path::to_path_buf)) {
             dirs.extend(Self::dirs_beside_exe(&exe));
@@ -435,7 +438,7 @@ mod tests {
     #[test]
     fn missing_models_message_is_for_end_users() {
         let message = OcrError::NoModels.to_string();
-        assert!(!message.contains("cargo") && message.contains("PDFCRAFT_MODELS"), "{message}");
+        assert!(!message.contains("cargo") && message.contains("NADSPDF_MODELS") && !message.contains("PDFCRAFT"), "{message}");
     }
 
     /// End to end on rendered text, when the models are installed (`cargo xtask models`).

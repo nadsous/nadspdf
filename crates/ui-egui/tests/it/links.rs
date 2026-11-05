@@ -27,7 +27,7 @@ fn the_top_bar_shows_the_nads_mark() {
 #[test]
 fn home_screen_links_to_no_personal_site() {
     let h = harness(|_| {});
-    assert!(h.query_by_label("PdfCraft (upstream) on GitHub").is_none());
+    assert!(h.query_by_label("NadsPDF on GitHub").is_none());
     assert!(links::LINKS.iter().all(|l| !l.url.contains("nads.site")));
 }
 
@@ -40,7 +40,7 @@ fn about_dialog_shows_the_brand_and_links() {
         app.dialog = Some(Dialog::About);
     });
     assert!(h.query_all_by_label("NadsPDF").count() >= 1, "the logo (alt text)");
-    h.get_by_label("PdfCraft (upstream) on GitHub").click();
+    h.get_by_label("NadsPDF on GitHub").click();
     h.run_steps(2);
     assert_eq!(h.state().last_opened_url.as_deref(), Some(links::GITHUB));
 }

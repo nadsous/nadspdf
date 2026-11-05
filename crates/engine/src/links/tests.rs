@@ -111,8 +111,8 @@ fn remote_document_paths_to_other_computers_and_devices_are_refused() {
 }
 
 #[test]
-fn urls_point_to_upstream() {
-    assert_eq!(super::GITHUB, format!("https://github.com/storytold/{}", super::APP));
+fn urls_point_to_the_nadspdf_repository() {
+    assert_eq!(super::GITHUB, "https://github.com/nadsous/nadspdf");
     for l in super::LINKS {
         assert!(l.url.starts_with("https://"), "{}", l.url);
         assert!(crate::commands::command(l.command).is_some(), "{} is a registered command", l.command);

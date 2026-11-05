@@ -1589,9 +1589,7 @@ fn dialog_about(ui: &mut egui::Ui, req: &mut Pending) -> bool {
                 .small(),
             );
             ui.add_space(12.0);
-            ui.label(
-                egui::RichText::new("NadsPDF, a fork of PdfCraft (github.com/storytold/pdfcraft, MIT OR Apache-2.0).").color(t.text_muted).small(),
-            );
+            ui.label(egui::RichText::new("NadsPDF · MIT OR Apache-2.0").color(t.text_muted).small());
             if let Some(cmd) = widgets::community_links(ui) {
                 req.link_command = Some(cmd);
             }

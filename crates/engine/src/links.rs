@@ -1,4 +1,4 @@
-//! Where NadsPDF's upstream project lives on the web. One table, so the Help menu, the
+//! Where NadsPDF lives on the web. One table, so the Help menu, the
 //! About dialog, the home screen, the CLI and the README agree.
 
 use icu_properties::props::Script;
@@ -7,8 +7,8 @@ use std::path::{Path, PathBuf};
 /// The app's name in URLs.
 pub const APP: &str = "pdfcraft";
 
-/// The upstream project NadsPDF is forked from.
-pub const GITHUB: &str = "https://github.com/storytold/pdfcraft";
+/// NadsPDF's repository: its source, releases and issues.
+pub const GITHUB: &str = "https://github.com/nadsous/nadspdf";
 
 /// A link and the registry command that opens it.
 #[derive(Clone, Copy, Debug)]
@@ -20,8 +20,8 @@ pub struct Link {
     pub icon: &'static str,
 }
 
-/// In the order they are shown. Only the upstream credit: the app links to no personal site.
-pub const LINKS: &[Link] = &[Link { command: "help.github", label: "PdfCraft (upstream) on GitHub", url: GITHUB, icon: "code-xml" }];
+/// In the order they are shown. The app links to no personal site.
+pub const LINKS: &[Link] = &[Link { command: "help.github", label: "NadsPDF on GitHub", url: GITHUB, icon: "code-xml" }];
 
 pub fn for_command(id: &str) -> Option<&'static Link> {
     LINKS.iter().find(|l| l.command == id)
