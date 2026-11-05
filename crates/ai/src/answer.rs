@@ -7,6 +7,8 @@ use serde_json::Value;
 const MAX_ROWS: usize = 20_000;
 const MAX_COLUMNS: usize = 100;
 const MAX_CELL: usize = 4_000;
+/// The longest document [`Action::NewDocument`] carries, in characters.
+const MAX_DOCUMENT: usize = 100_000;
 const MAX_ACTIONS: usize = 50;
 
 /// One table cell.
@@ -45,11 +47,40 @@ pub struct Table {
 /// One action Selim proposes.
 #[derive(Clone, Debug, PartialEq)]
 pub enum Action {
-    Highlight { text: String },
-    Redact { text: String },
-    Bookmark { title: String, page: usize },
-    GoToPage { page: usize },
-    ExtractPages { pages: String },
+    Highlight {
+        text: String,
+    },
+    Redact {
+        text: String,
+    },
+    Bookmark {
+        title: String,
+        page: usize,
+    },
+    GoToPage {
+        page: usize,
+    },
+    ExtractPages {
+        pages: String,
+    },
+    /// Rewrite text in place: every line holding `find` (on `page`, or on every page) gets
+    /// `replace` instead, in the line's own font and position.
+    ReplaceText {
+        find: String,
+        replace: String,
+        page: Option<usize>,
+    },
+    /// Fill in the form field named `name` (a check box takes "true" or "false").
+    FillField {
+        name: String,
+        value: String,
+    },
+    /// A new document, opened in a tab of its own: `content` is Markdown (headings, lists, bold,
+    /// tables).
+    NewDocument {
+        title: String,
+        content: String,
+    },
 }
 
 /// The answer split for display: the text without its JSON block, and what the block held.
@@ -62,6 +93,36 @@ pub struct Parsed {
     pub skipped: usize,
 }
 
+/// `json` with the line breaks and tabs inside its strings written as `\n`, `\t` (carriage
+/// returns dropped); outside strings they are whitespace and stay.
+fn escape_raw_controls(json: &str) -> String {
+    let mut out = String::with_capacity(json.len());
+    let (mut in_string, mut escaped) = (false, false);
+    for c in json.chars() {
+        if in_string {
+            match c {
+                _ if escaped => escaped = false,
+                '\\' => escaped = true,
+                '"' => in_string = false,
+                '\n' => {
+                    out.push_str("\\n");
+                    continue;
+                }
+                '\t' => {
+                    out.push_str("\\t");
+                    continue;
+                }
+                '\r' => continue,
+                _ => {}
+            }
+        } else if c == '"' {
+            in_string = true;
+        }
+        out.push(c);
+    }
+    out
+}
+
 /// The first ```json block of `text` (or a bare ``` block holding JSON), and `text` without it.
 fn json_block(text: &str) -> Option<(Value, String)> {
     let start = text.find("```")?;
@@ -70,7 +131,10 @@ fn json_block(text: &str) -> Option<(Value, String)> {
     let body = after.get(body_start..)?;
     let end = body.find("```")?;
     let json = body.get(..end)?;
-    let value: Value = serde_json::from_str(json.trim()).ok()?;
+    let json = json.trim();
+    // Models writing long text into a string (a report) often break its lines for real, which
+    // strict JSON refuses: those are read as the escapes they stand for.
+    let value: Value = serde_json::from_str(json).ok().or_else(|| serde_json::from_str(&escape_raw_controls(json)).ok())?;
     let rest_start = start + 3 + body_start + end + 3;
     let without = format!(
         "{}{}",
@@ -129,6 +193,20 @@ fn actions(v: &Value) -> (Vec<Action>, usize) {
             Some("bookmark") => text_of(&a["title"]).zip(page_of(&a["page"])).map(|(title, page)| Action::Bookmark { title, page }),
             Some("go_to_page") => page_of(&a["page"]).map(|page| Action::GoToPage { page }),
             Some("extract_pages") => text_of(&a["pages"]).map(|pages| Action::ExtractPages { pages }),
+            // The replacement may be empty (to delete words) but must be a string.
+            Some("replace_text") => text_of(&a["find"]).zip(a["replace"].as_str()).map(|(find, replace)| Action::ReplaceText {
+                find,
+                replace: replace.trim().chars().take(MAX_CELL).collect(),
+                page: page_of(&a["page"]),
+            }),
+            Some("fill_field") => text_of(&a["name"])
+                .zip(a["value"].as_str().map(str::to_string).or_else(|| a["value"].as_bool().map(|b| b.to_string())))
+                .map(|(name, value)| Action::FillField { name, value: value.trim().chars().take(MAX_CELL).collect() }),
+            Some("new_document") => a["content"]
+                .as_str()
+                .map(|c| c.trim().chars().take(MAX_DOCUMENT).collect::<String>())
+                .filter(|c| !c.is_empty())
+                .map(|content| Action::NewDocument { title: text_of(&a["title"]).unwrap_or_else(|| "Document".into()), content }),
             _ => None,
         };
         match action {
@@ -176,5 +254,52 @@ mod tests {
         assert_eq!(parse("Rien à extraire.").text, "Rien à extraire.");
         let p = parse("```json\n{broken\n```");
         assert!(p.table.is_none() && p.actions.is_empty());
+    }
+
+    #[test]
+    fn rewriting_filling_and_new_documents_are_read() {
+        let answer = "Voici.\n```json\n{\"actions\":[\
+{\"action\":\"replace_text\",\"find\":\"Date : 01/01\",\"replace\":\"Date : 05/11\",\"page\":1},\
+{\"action\":\"replace_text\",\"find\":\"brouillon\",\"replace\":\"\"},\
+{\"action\":\"replace_text\",\"find\":\"x\"},\
+{\"action\":\"fill_field\",\"name\":\"Client\",\"value\":\"Dupont\"},\
+{\"action\":\"fill_field\",\"name\":\"Conforme\",\"value\":true},\
+{\"action\":\"new_document\",\"title\":\"Rapport\",\"content\":\"# Rapport\\n- point\"},\
+{\"action\":\"new_document\",\"content\":\"  \"}]}\n```";
+        let p = parse(answer);
+        assert_eq!(
+            p.actions,
+            vec![
+                Action::ReplaceText { find: "Date : 01/01".into(), replace: "Date : 05/11".into(), page: Some(1) },
+                Action::ReplaceText { find: "brouillon".into(), replace: String::new(), page: None },
+                Action::FillField { name: "Client".into(), value: "Dupont".into() },
+                Action::FillField { name: "Conforme".into(), value: "true".into() },
+                Action::NewDocument { title: "Rapport".into(), content: "# Rapport\n- point".into() },
+            ]
+        );
+        assert_eq!(p.skipped, 2, "a replacement without its new text and an empty document are left out");
+    }
+
+    #[test]
+    fn real_line_breaks_inside_a_string_are_read() {
+        let answer = "Rapport.
+```json
+{\"actions\":[{\"action\":\"new_document\",\"title\":\"R\",\"content\":\"# Titre
+
+- a	b
+- \\\"c\\\"\"}]}
+```";
+        let p = parse(answer);
+        assert_eq!(
+            p.actions,
+            vec![Action::NewDocument {
+                title: "R".into(),
+                content: "# Titre
+
+- a	b
+- \"c\""
+                    .into()
+            }]
+        );
     }
 }

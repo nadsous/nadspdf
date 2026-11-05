@@ -33,6 +33,8 @@ pub trait KeyStore: Send + Sync {
 
 /// Pages read from a document at most (a longer one sends from its first 1 000).
 const MAX_PAGES_READ: usize = 1000;
+/// The most lines one replacement rewrites on a page.
+const MAX_LINES_REWRITTEN: usize = 500;
 /// Earlier exchanges sent with a question, so follow-ups make sense.
 const HISTORY_TURNS: usize = 6;
 
@@ -213,6 +215,7 @@ impl PdfCraftApp {
         let bytes = doc.bytes.clone();
         let password = doc.password.clone();
         let count = doc.info.pages.len();
+        let fields = form_fields_text(&doc.form);
         let chat = self.assistant.chats.entry(id).or_default();
         // Earlier answered exchanges, oldest first, alternating user / assistant.
         let mut history: Vec<Message> = Vec::new();
@@ -250,7 +253,7 @@ impl PdfCraftApp {
                     .collect();
                 let context = pdfcraft_ai::context::build(&pages, &question, settings.max_context_chars);
                 let mut messages = history;
-                messages.push(Message { role: Role::User, content: format!("{}\n\n{question}", context.text) });
+                messages.push(Message { role: Role::User, content: format!("{}{fields}\n\n{question}", context.text) });
                 let request = Request { system: who.system(), messages, max_tokens: settings.max_output_tokens };
                 let reply = send(settings.provider, &settings.model, &key, &request)?;
                 Ok((reply, pdfcraft_ai::context::describe(&context.pages)))
@@ -315,6 +318,10 @@ impl PdfCraftApp {
         let Some(t) = self.assistant.chats.get(&id).and_then(|c| c.get(turn)).cloned() else { return };
         let Some(parsed) = &t.parsed else { return };
         let mut done = 0usize;
+        let mut failed = 0usize;
+        // New documents open last: opening one makes it the active tab, and the other actions
+        // are for the document the question was about.
+        let mut documents: Vec<(&String, &String)> = Vec::new();
         for (action, keep) in parsed.actions.iter().zip(&t.chosen) {
             if !keep {
                 continue;
@@ -351,12 +358,89 @@ impl PdfCraftApp {
                     self.open_extract_dialog();
                     self.extract_draft.pages = pages.clone();
                 }
+                Action::ReplaceText { find, replace, page } => {
+                    if self.assistant_replace_text(find, replace, *page) == 0 {
+                        failed += 1;
+                    }
+                }
+                Action::FillField { name, value } => {
+                    if !self.assistant_fill_field(name, value) {
+                        failed += 1;
+                    }
+                }
+                Action::NewDocument { title, content } => documents.push((title, content)),
+            }
+        }
+        for (title, content) in documents {
+            let html = pdfcraft_ai::report::to_html(title, content);
+            let created =
+                self.session.create_from_document(&format!("{title}.html"), html.as_bytes()).map(|(bytes, _)| bytes).map_err(|e| e.to_string());
+            if let Err(e) = self.open_created_bytes(&format!("{}.pdf", file_stem(title)), created) {
+                failed += 1;
+                self.notify_fmt("Couldn't create a PDF: {e}", &[("e", &e)]);
             }
         }
         if let Some(t) = self.assistant.chats.get_mut(&id).and_then(|c| c.get_mut(turn)) {
             t.applied = true;
         }
-        self.notify_fmt("{n} actions carried out", &[("n", &done.to_string())]);
+        let done = done.saturating_sub(failed);
+        if failed > 0 {
+            self.notify_fmt(
+                "{n} actions carried out, {m} couldn't be (the text or field wasn't found)",
+                &[("n", &done.to_string()), ("m", &failed.to_string())],
+            );
+        } else {
+            self.notify_fmt("{n} actions carried out", &[("n", &done.to_string())]);
+        }
+    }
+
+    /// Rewrite every line holding `find` on `page` (1-based; every page when `None`) with
+    /// `replace` in its place, one undo step per line. Returns how many lines changed.
+    fn assistant_replace_text(&mut self, find: &str, replace: &str, page: Option<usize>) -> usize {
+        let Some((_, id)) = self.active_ids() else { return 0 };
+        let count = self.session.get(id).map_or(0, |d| d.info.pages.len());
+        let pages: Vec<usize> = match page {
+            Some(p) if (1..=count).contains(&p) => vec![p - 1],
+            Some(_) => Vec::new(),
+            None => (0..count).collect(),
+        };
+        let mut changed = 0usize;
+        for page in pages {
+            // Lines already rewritten, so a replacement that still holds `find` isn't redone.
+            let mut rewritten = std::collections::HashSet::new();
+            for _ in 0..MAX_LINES_REWRITTEN {
+                let Some(doc) = self.session.get(id) else { break };
+                let lines = doc.text_lines(page);
+                let Some((line, text)) = lines
+                    .iter()
+                    .enumerate()
+                    .find(|(i, l)| !rewritten.contains(i) && l.text.contains(find))
+                    .map(|(i, l)| (i, l.text.replace(find, replace)))
+                else {
+                    break;
+                };
+                rewritten.insert(line);
+                if self.apply_edit(pdfcraft_engine::Edit::EditTextLine { page, line, text }) {
+                    changed = changed.saturating_add(1);
+                }
+            }
+        }
+        changed
+    }
+
+    /// Fill in the form field `name` with `value` (a check box takes true/false, yes/no, oui/non).
+    fn assistant_fill_field(&mut self, name: &str, value: &str) -> bool {
+        use pdfcraft_engine::{FieldValue, FormFieldKind};
+        let Some((_, id)) = self.active_ids() else { return false };
+        let Some(kind) = self.session.get(id).and_then(|d| d.form.iter().find(|f| f.name == name).map(|f| f.kind)) else { return false };
+        let value = match kind {
+            FormFieldKind::Text => FieldValue::Text(value.to_string()),
+            FormFieldKind::CheckBox => FieldValue::Check(matches!(value.trim().to_lowercase().as_str(), "true" | "yes" | "oui" | "1" | "on" | "x")),
+            FormFieldKind::Radio => FieldValue::Radio(Some(value.to_string())),
+            FormFieldKind::Combo | FormFieldKind::List => FieldValue::Choice(vec![value.to_string()]),
+            FormFieldKind::PushButton | FormFieldKind::Signature => return false,
+        };
+        self.apply_edit(pdfcraft_engine::Edit::SetFieldValue { name: name.to_string(), value })
     }
 
     /// Highlight every place `text` appears in the active document (one undo step).
@@ -741,6 +825,19 @@ fn conversation(app: &mut PdfCraftApp, ui: &mut egui::Ui, t: &Tokens) {
                                             ),
                                             Action::GoToPage { page } => crate::i18n::fmt(tl!("Go to page {page}"), &[("page", &page.to_string())]),
                                             Action::ExtractPages { pages } => crate::i18n::fmt(tl!("Extract pages {pages}"), &[("pages", pages)]),
+                                            Action::ReplaceText { find, replace, page: Some(page) } => crate::i18n::fmt(
+                                                tl!("Replace “{find}” with “{replace}” on page {page}"),
+                                                &[("find", find), ("replace", replace), ("page", &page.to_string())],
+                                            ),
+                                            Action::ReplaceText { find, replace, page: None } => {
+                                                crate::i18n::fmt(tl!("Replace “{find}” with “{replace}”"), &[("find", find), ("replace", replace)])
+                                            }
+                                            Action::FillField { name, value } => {
+                                                crate::i18n::fmt(tl!("Fill in “{name}”: {value}"), &[("name", name), ("value", value)])
+                                            }
+                                            Action::NewDocument { title, .. } => {
+                                                crate::i18n::fmt(tl!("Create the document “{title}”"), &[("title", title)])
+                                            }
                                         };
                                         if ui.add_enabled(!turn.applied, widgets::checkbox(&mut on, label)).changed() {
                                             toggles.push((i, k));
@@ -831,4 +928,59 @@ fn conversation(app: &mut PdfCraftApp, ui: &mut egui::Ui, t: &Tokens) {
     }
     let last = turns.iter().rev().find(|t| t.who.is_some());
     usage_lines(app, ui, t, last);
+}
+
+/// The most form fields listed for the assistant.
+const MAX_FIELDS_SENT: usize = 300;
+
+/// The document's form fields for the assistant, between <fields> and </fields> (empty without
+/// a form): one line each, `name (kind) = value`, with a choice field's options.
+fn form_fields_text(form: &[pdfcraft_engine::FormField]) -> String {
+    use pdfcraft_engine::FormFieldKind as FieldKind;
+    let lines: Vec<String> = form
+        .iter()
+        .filter(|f| !matches!(f.kind, FieldKind::PushButton | FieldKind::Signature))
+        .take(MAX_FIELDS_SENT)
+        .map(|f| {
+            let kind = match f.kind {
+                FieldKind::Text => "text",
+                FieldKind::CheckBox => "check box",
+                FieldKind::Radio => "radio",
+                FieldKind::Combo | FieldKind::List => "choice",
+                FieldKind::PushButton | FieldKind::Signature => "",
+            };
+            let mut line = format!("{} ({kind}) = {}", f.name, f.value.join(", "));
+            if !f.options.is_empty() {
+                let options: Vec<&str> = f.options.iter().take(50).map(|(export, _)| export.as_str()).collect();
+                line.push_str(&format!(" [options: {}]", options.join(" | ")));
+            }
+            line
+        })
+        .collect();
+    if lines.is_empty() {
+        String::new()
+    } else {
+        format!(
+            "
+
+<fields>
+{}
+</fields>",
+            lines.join(
+                "
+"
+            )
+        )
+    }
+}
+
+/// A file name for a document titled `title`: the characters file systems refuse become `-`.
+fn file_stem(title: &str) -> String {
+    let stem: String = title
+        .chars()
+        .map(|c| if c.is_control() || matches!(c, '/' | '\\' | ':' | '*' | '?' | '"' | '<' | '>' | '|') { '-' } else { c })
+        .take(80)
+        .collect();
+    let stem = stem.trim().trim_matches('.').to_string();
+    if stem.is_empty() { "Document".into() } else { stem }
 }

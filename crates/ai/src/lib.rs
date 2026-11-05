@@ -9,6 +9,7 @@
 //! - [`assistants`]: the five assistants and their working prompts.
 //! - [`context`]: which pages of a document are sent, within a size budget.
 //! - [`answer`]: what an assistant's answer holds: a table (Süleyman) or actions (Selim).
+//! - [`report`]: a document an assistant writes, from its Markdown to HTML for the converter.
 //! - [`Usage`] and [`Ledger`]: tokens and cost per request and per month, for the user to see.
 //! - `net::send` (feature `net`): one HTTPS request to the provider.
 
@@ -21,6 +22,7 @@ mod ledger;
 #[cfg(feature = "net")]
 pub mod net;
 mod provider;
+pub mod report;
 
 pub use ledger::{Ledger, MonthTotal, month_of};
 pub use provider::{Message, Provider, Reply, Request, Role, Settings, Usage, body, error_message, parse_reply};

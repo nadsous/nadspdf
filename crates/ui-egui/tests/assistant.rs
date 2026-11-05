@@ -137,3 +137,58 @@ fn the_assistant_answers_with_a_table_and_carries_out_confirmed_actions() {
     assert_eq!(h.state().session.get(id).unwrap().info.annotations.len(), before + 1, "one highlight");
     h.get_by_label("Done. Undo takes it back.");
 }
+
+#[test]
+fn selim_rewrites_the_text_and_writes_a_report_in_a_new_tab() {
+    let answer = "Je corrige le numéro et je rédige le rapport.\n```json\n{\"actions\":[\
+{\"action\":\"replace_text\",\"find\":\"F-12\",\"replace\":\"F-13\",\"page\":1},\
+{\"action\":\"replace_text\",\"find\":\"introuvable\",\"replace\":\"x\"},\
+{\"action\":\"new_document\",\"title\":\"Rapport d'intervention\",\"content\":\"# Rapport d'intervention\n\nFacture **F-13**\n\n- Disjoncteur remplacé\n- Mesure : [à compléter]\"}]}\n```"
+        .to_string();
+    let keys = Arc::new(Keys::default());
+    keys.set(Provider::Anthropic, "sk-test-123").unwrap();
+    let k = keys.clone();
+    let mut h = Harness::builder().with_size(egui::vec2(1500.0, 1000.0)).build_eframe(move |_cc| {
+        let mut app = PdfCraftApp::new();
+        app.set_option("language", "en").unwrap();
+        app.open_bytes("facture.pdf", None, fixture()).unwrap();
+        app.ai_keys = Some(k.clone());
+        let answer = answer.clone();
+        app.ai_send = Some(Arc::new(move |_provider, _model: &str, _key: &str, _request: &Request| {
+            Ok(Reply {
+                text: answer.clone(),
+                usage: Usage { input_tokens: 900, output_tokens: 300, cost_usd: None },
+                model: "test-model".into(),
+                truncated: false,
+            })
+        }));
+        app
+    });
+    h.run_steps(6);
+    h.state_mut().toggle_assistant();
+    h.state_mut().assistant.settings.enabled = true;
+    h.state_mut().assistant.who = pdfcraft_ai::assistants::Assistant::Selim;
+    h.run_steps(4);
+    h.state_mut().ask_assistant("Corrige le numéro et fais le rapport pour l'électricité");
+    wait(&mut h);
+    let id = h.state().views[0].id;
+    let chat = h.state().assistant.chats.values().next().cloned().unwrap_or_default();
+    let parsed = chat.last().and_then(|t| t.parsed.clone()).unwrap_or_default();
+    assert_eq!(parsed.actions.len(), 3, "error {:?}, skipped {}, text {:?}", h.state().assistant.error, parsed.skipped, chat.last().map(|t| &t.text));
+    // Nothing changes before the user confirms.
+    let text = |h: &Harness<'static, PdfCraftApp>, id| {
+        h.state().session.get(id).unwrap().text_lines(0).iter().map(|l| l.text.clone()).collect::<Vec<_>>().join("\n")
+    };
+    assert!(text(&h, id).contains("F-12"));
+    h.get_by_label("Replace “F-12” with “F-13” on page 1");
+    h.get_by_label("Create the document “Rapport d'intervention”");
+    h.get_by_label("Carry out the ticked actions").click();
+    h.run_steps(6);
+    assert!(text(&h, id).contains("Facture F-13 Total 1250 EUR"), "{}", text(&h, id));
+    assert_eq!(h.state().views.len(), 2, "the report opens in a tab of its own");
+    let report = h.state().views[1].id;
+    let report_text = text(&h, report);
+    assert!(report_text.contains("Rapport d'intervention") && report_text.contains("[à compléter]"), "{report_text}");
+    // The replacement that found nothing is reported, not silently counted as done.
+    h.get_by_label("2 actions carried out, 1 couldn't be (the text or field wasn't found)");
+}

@@ -238,3 +238,11 @@ watermark text	CONFIDENTIAL	CONFIDENTIEL
 	Check that the totals add up	Vérifie que les totaux sont justes
 	Find inconsistencies in this document	Trouve les incohérences de ce document
 	Solve the exercises step by step	Résous les exercices étape par étape
+
+# NadsPDF 2026-11: Selim rewrites text, fills forms and writes documents.
+	Replace “{find}” with “{replace}” on page {page}	Remplacer « {find} » par « {replace} » (page {page})
+	Replace “{find}” with “{replace}”	Remplacer « {find} » par « {replace} »
+	Fill in “{name}”: {value}	Remplir « {name} » : {value}
+	Create the document “{title}”	Créer le document « {title} »
+	{n} actions carried out, {m} couldn't be (the text or field wasn't found)	{n} actions effectuées, {m} impossibles (texte ou champ introuvable)
+	Write the report from this document	Rédige le rapport à partir de ce document
