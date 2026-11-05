@@ -1092,6 +1092,9 @@ fn preferences_menu_and_shortcut_allow_switching_interface_languages() {
             n.role() == egui::accesskit::Role::MenuItem && n.label().is_some_and(|l| l.starts_with(text))
         }
     };
+    // NadsPDF folds the menu bar under the nads mark ("メニュー" in Japanese).
+    h.get_by(menu_row("メニュー")).click();
+    h.run_steps(2);
     h.get_by(menu_row("編集")).click();
     h.run_steps(2);
     h.get_by(menu_row("環境設定")).click();

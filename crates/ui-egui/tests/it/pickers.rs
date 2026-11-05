@@ -835,7 +835,7 @@ fn the_open_password_can_be_typed_through_an_input_method_however_the_file_is_op
         let path = file.to_string_lossy().into_owned();
         let arg = path.clone();
         // Tall enough for Home's Open file card below NadsPDF's tools and vaults.
-        let mut h = Harness::builder().with_size(egui::vec2(1200.0, 1100.0)).build_eframe(move |_cc| {
+        let mut h = Harness::builder().with_size(egui::vec2(1200.0, 1700.0)).build_eframe(move |_cc| {
             let mut app = PdfCraftApp::new();
             app.set_option("language", "en").unwrap();
             // As `main` opens the files named on the command line.
