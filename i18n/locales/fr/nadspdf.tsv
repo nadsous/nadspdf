@@ -274,3 +274,37 @@ watermark text	CONFIDENTIAL	CONFIDENTIEL
 	Its monster	Son monstre
 	Every vault has a pixel monster of its own, as unique as a QR code, so you know it at a glance.	Chaque coffre a son propre monstre en pixels, unique comme un QR code, pour le reconnaître d’un coup d’œil.
 	Another monster	Un autre monstre
+
+# NadsPDF 2026-11: the vault page (binders, status, tags, notes).
+	All tags	Toutes les étiquettes
+	All vaults	Tous les coffres
+	Binder	Classeur
+	Binder name	Nom du classeur
+	Binders	Classeurs
+	Cards	Cartes
+	Click to open it. Drag to reorder, or drop files here.	Cliquez pour l’ouvrir. Glissez pour réordonner, ou déposez des fichiers ici.
+	Create binder	Créer le classeur
+	Delete binder	Supprimer le classeur
+	Give the binder a name (a vault holds up to 50 binders)	Donnez un nom au classeur (un coffre en contient 50 au plus)
+	In progress	En cours
+	In this vault	Dans ce coffre
+	Largest	Les plus lourds
+	New binder	Nouveau classeur
+	New binder…	Nouveau classeur…
+	No file matches. Change the search or the filters.	Aucun fichier ne correspond. Changez la recherche ou les filtres.
+	No status	Sans statut
+	Not in a binder	Hors classeur
+	Note…	Note…
+	Open this vault. Drop a file here to move it there.	Ouvrir ce coffre. Déposez un fichier ici pour l’y déplacer.
+	Other vaults	Autres coffres
+	Quotes and invoices for the renovation	Devis et factures de la rénovation
+	Recently added	Ajoutés récemment
+	Recently changed	Modifiés récemment
+	Remove this tag	Retirer cette étiquette
+	Rename binder	Renommer le classeur
+	Rename binder…	Renommer le classeur…
+	Search this vault	Rechercher dans ce coffre
+	Tags…	Étiquettes…
+	To do	À faire
+	What it is for (optional)	À quoi il sert (facultatif)
+	What to remember about this file	Ce qu’il faut retenir de ce fichier

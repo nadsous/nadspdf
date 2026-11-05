@@ -160,6 +160,12 @@ pub fn show(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
     let t = Tokens::get(ui.ctx());
     egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
         egui::Frame::NONE.inner_margin(egui::Margin { left: 36, right: 36, top: 28, bottom: 28 }).show(ui, |ui| {
+            // An open vault has the whole page.
+            #[cfg(not(target_arch = "wasm32"))]
+            if app.vaults.selected.is_some_and(|id| app.vaults.data.get(id).is_some()) {
+                crate::vaults_ui::page_view(app, ui);
+                return;
+            }
             // Osman greets you over a field of living pixels (`home_pixels`).
             crate::home_pixels::hero(ui, &t);
             ui.add_space(10.0);

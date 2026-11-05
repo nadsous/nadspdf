@@ -189,3 +189,57 @@ fn vaults_survive_a_restart_and_bad_settings_are_ignored() {
     assert_eq!(b.vaults.data.list.len(), 1);
     assert!(b.vaults.data.list[0].files.is_empty());
 }
+
+#[test]
+fn a_vault_page_files_by_binder_status_tag_and_search() {
+    let dir = TempFolder::new("page");
+    let (quote, invoice, plan) = (dir.file("devis.pdf"), dir.file("facture.pdf"), dir.file("plan.pdf"));
+    let files = format!("{quote}|{invoice}|{plan}");
+    let mut h = harness(move |app| app.set_option("vault", &format!("Chantier={files}")).unwrap());
+    h.run_steps(3);
+    let id = h.state().vaults.data.list[0].id;
+    {
+        let data = &mut h.state_mut().vaults.data;
+        let binder = data.add_folder(id, "Devis").unwrap();
+        assert!(data.set_folder(id, &quote, Some(binder)));
+        assert!(data.set_status(id, &invoice, pdfcraft_ui_egui::vaults::Status::Done));
+        assert!(data.add_tag(id, &plan, "Plans"));
+        assert!(data.set_note(id, &plan, "Version du 3 mars"));
+    }
+    h.run_steps(3);
+    let shown = |h: &Harness<'static, PdfCraftApp>| {
+        ["devis.pdf", "facture.pdf", "plan.pdf"].into_iter().filter(|n| h.query_by_label(n).is_some()).collect::<Vec<_>>()
+    };
+    // The page shows the vault's monster header, its binders and every file.
+    assert!(h.get_all_by_label("Chantier").count() >= 1);
+    assert_eq!(shown(&h), ["devis.pdf", "facture.pdf", "plan.pdf"]);
+    // A status filter.
+    h.get_by_label("Done").click();
+    h.run_steps(2);
+    assert_eq!(shown(&h), ["facture.pdf"]);
+    h.get_by_label("All").click();
+    h.run_steps(2);
+    // A binder.
+    h.get_by_label("Devis").click();
+    h.run_steps(2);
+    assert_eq!(shown(&h), ["devis.pdf"]);
+    h.get_by_label("Not in a binder").click();
+    h.run_steps(2);
+    assert_eq!(shown(&h), ["facture.pdf", "plan.pdf"]);
+    h.get_by_label("All files").click();
+    h.run_steps(2);
+    // Search reads names, tags and notes.
+    h.get_by_role_and_label(Role::TextInput, "Search this vault").click();
+    h.run_steps(2);
+    h.get_by_role_and_label(Role::TextInput, "Search this vault").type_text("mars");
+    h.run_steps(2);
+    assert_eq!(h.state().vaults.page.query, "mars");
+    assert_eq!(shown(&h), ["plan.pdf"], "found by its note");
+    // Back to Home, where the vault is a card with its monster.
+    h.get_by_label("All vaults").click();
+    h.run_steps(2);
+    assert_eq!(h.state().vaults.selected, None);
+    for f in [&quote, &invoice, &plan] {
+        assert!(std::path::Path::new(f).exists(), "filing never touches the files");
+    }
+}

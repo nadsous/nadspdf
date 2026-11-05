@@ -12,8 +12,10 @@ use egui::{Align2, Color32, CornerRadius, Rect, Sense, Stroke, vec2};
 
 use crate::PdfCraftApp;
 use crate::theme::{self, Tokens};
-use crate::vaults::{self, Added, FileStat, VaultError, Vaults};
+use crate::vaults::{self, Added, FileStat, Status, VaultError, Vaults};
 use crate::{icons, widgets};
+
+mod page;
 
 /// "Open all" opens at most this many files at once.
 pub const MAX_OPEN_ALL: usize = 30;
@@ -35,11 +37,17 @@ struct DragFile {
 #[derive(Clone, Debug, PartialEq)]
 pub enum VaultDialog {
     /// Create (`id` None) or edit a vault; `then_add` joins a new vault once it is created.
-    Edit { id: Option<u64>, name: String, color: [u8; 3], icon: &'static str, seed: u64, then_add: Vec<String> },
+    Edit { id: Option<u64>, name: String, description: String, color: [u8; 3], icon: &'static str, seed: u64, then_add: Vec<String> },
     /// Confirm deleting a vault.
     Delete(u64),
     /// Choose the vault a document joins.
     AddDocument(String),
+    /// A file's tags, and the tag being typed.
+    Tags { id: u64, path: String, draft: String },
+    /// A file's note.
+    Note { id: u64, path: String, text: String },
+    /// Name a new binder (`binder` None) or rename one.
+    Binder { id: u64, binder: Option<u64>, name: String },
 }
 
 type Scan = Arc<Mutex<Option<Vec<(String, FileStat)>>>>;
@@ -60,6 +68,8 @@ pub struct VaultState {
     /// showed them (`pass`): files dropped from the system land there.
     targets: Vec<(u64, Rect)>,
     targets_pass: u64,
+    /// The open vault's page: filters, sort, view and first-page pictures.
+    pub page: page::PageState,
 }
 
 impl VaultState {
@@ -98,7 +108,8 @@ impl PdfCraftApp {
         let n = self.vaults.data.list.len();
         let color = vaults::COLORS.get(n % vaults::COLORS.len()).copied().unwrap_or(vaults::COLORS[0]);
         let seed = crate::vault_monster::new_seed(n as u64);
-        self.vaults.dialog = Some(VaultDialog::Edit { id: None, name: String::new(), color, icon: "folder", seed, then_add });
+        self.vaults.dialog =
+            Some(VaultDialog::Edit { id: None, name: String::new(), description: String::new(), color, icon: "folder", seed, then_add });
     }
 
     /// Create a vault and show it on Home; `None`, after telling the user, when it can't be.
@@ -323,7 +334,17 @@ impl PdfCraftApp {
 
 /// What the user did in the vault section, applied after drawing.
 enum Act {
+    /// Open the vault's page, or close it when it is the one open.
     Select(u64),
+    /// Open the vault's page.
+    Show(u64),
+    SetStatus(u64, String, Status),
+    SetFolder(u64, String, Option<u64>),
+    Tags(u64, String),
+    Note(u64, String),
+    /// Name a new binder, or rename one.
+    BinderDialog(u64, Option<u64>),
+    DeleteBinder(u64, u64),
     New,
     Edit(u64),
     Delete(u64),
@@ -395,40 +416,62 @@ pub(crate) fn section(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
     }
 
     ui.horizontal_wrapped(|ui| {
-        ui.spacing_mut().item_spacing = vec2(10.0, 10.0);
+        ui.spacing_mut().item_spacing = vec2(12.0, 12.0);
         let count = app.vaults.data.list.len();
         for (index, v) in app.vaults.data.list.iter().enumerate() {
-            let selected = app.vaults.selected == Some(v.id);
-            let (rect, resp) = ui.allocate_exact_size(vec2(200.0, 60.0), Sense::click_and_drag());
+            let (rect, resp) = ui.allocate_exact_size(vec2(248.0, 96.0), Sense::click_and_drag());
             targets.push((v.id, rect));
-            resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::Button, true, selected, &v.name));
+            resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, &v.name));
             resp.dnd_set_drag_payload(DragVault(v.id));
             let press = theme::Press::track(ui, &resp);
             let drop_hover = resp.dnd_hover_payload::<DragFile>().is_some_and(|d| d.from != v.id)
                 || resp.dnd_hover_payload::<DragVault>().is_some_and(|d| d.0 != v.id)
                 || (files_hovering && pointer.is_some_and(|p| rect.contains(p)));
+            crate::home::card_lift(ui, &t, rect, press);
             let fill = press.fill(t.card, t.hover, t.pressed);
-            let stroke = if selected || drop_hover {
+            let stroke = if drop_hover {
                 Stroke::new(1.5, color32(v.color))
             } else if press.hover > 0.05 {
                 Stroke::new(1.0, color32(v.color).gamma_multiply(0.6))
             } else {
                 Stroke::new(1.0, t.border)
             };
-            ui.painter().rect(rect, CornerRadius::same(12), fill, stroke, egui::StrokeKind::Inside);
+            ui.painter().rect(rect, CornerRadius::same(14), fill, stroke, egui::StrokeKind::Inside);
             let body = rect.translate(press.offset());
-            tile(ui, Rect::from_min_size(body.min + vec2(12.0, 12.0), vec2(36.0, 36.0)), v.color, v.seed, 9);
-            let w = body.width() - 70.0;
-            widgets::row_text(ui, body.min + vec2(58.0, 22.0), std::borrow::Cow::<str>::Borrowed(&v.name), theme::semibold(13.5), t.text, w);
-            widgets::row_text(ui, body.min + vec2(58.0, 40.0), count_label(v.files.len()), theme::regular(11.5), t.text_muted, w);
+            tile(ui, Rect::from_min_size(body.min + vec2(12.0, 12.0), vec2(72.0, 72.0)), v.color, v.seed, 14);
+            let w = body.width() - 106.0;
+            widgets::row_text(ui, body.min + vec2(96.0, 26.0), std::borrow::Cow::<str>::Borrowed(&v.name), theme::semibold(15.0), t.text, w);
+            widgets::row_text(ui, body.min + vec2(96.0, 47.0), count_label(v.files.len()), theme::regular(12.0), t.text_muted, w);
+            // How far along: a thin bar of done, in progress and to do.
+            let (todo, doing, done) = v.files.iter().fold((0usize, 0usize, 0usize), |(a, b, c), f| match v.meta_of(f).status {
+                Status::Todo => (a + 1, b, c),
+                Status::Doing => (a, b + 1, c),
+                Status::Done => (a, b, c + 1),
+                Status::None => (a, b, c),
+            });
+            let bar = Rect::from_min_size(body.min + vec2(96.0, 66.0), vec2(w.min(130.0), 6.0));
+            ui.painter().rect_filled(bar, CornerRadius::same(3), t.hover);
+            let total = v.files.len().max(1) as f32;
+            let mut x = bar.left();
+            for (n, c) in [
+                (done, Color32::from_rgb(0x16, 0xA3, 0x4A)),
+                (doing, Color32::from_rgb(0x25, 0x63, 0xEB)),
+                (todo, Color32::from_rgb(0xD9, 0x77, 0x06)),
+            ] {
+                let width = bar.width() * n as f32 / total;
+                if width > 0.0 {
+                    ui.painter().rect_filled(Rect::from_min_size(egui::pos2(x, bar.top()), vec2(width, bar.height())), CornerRadius::same(3), c);
+                    x += width;
+                }
+            }
             if let Some(d) = resp.dnd_release_payload::<DragFile>() {
                 act = Some(Act::Move(d.from, v.id, d.path.clone()));
             } else if let Some(d) = resp.dnd_release_payload::<DragVault>() {
                 act = Some(Act::Reorder(d.0, index));
             }
-            let resp = theme::hand(resp).on_hover_text(tl!("Click to show its files. Drag to reorder, or drop files here."));
+            let resp = theme::hand(resp).on_hover_text(tl!("Click to open it. Drag to reorder, or drop files here."));
             if resp.clicked() {
-                act = Some(Act::Select(v.id));
+                act = Some(Act::Show(v.id));
             }
             resp.context_menu(|ui| {
                 if ui.button(tl!("Open all")).clicked() {
@@ -454,200 +497,88 @@ pub(crate) fn section(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
             });
         }
         // New vault card.
-        let (rect, resp) = ui.allocate_exact_size(vec2(150.0, 60.0), Sense::click());
+        let (rect, resp) = ui.allocate_exact_size(vec2(170.0, 96.0), Sense::click());
         resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, tl!("New vault…")));
         let press = theme::Press::track(ui, &resp);
         ui.painter().rect(
             rect,
-            CornerRadius::same(12),
+            CornerRadius::same(14),
             press.fill(t.pasteboard, t.hover, t.pressed),
             Stroke::new(1.0, t.border),
             egui::StrokeKind::Inside,
         );
         let body = rect.translate(press.offset());
-        icons::paint(ui, Rect::from_center_size(body.left_center() + vec2(26.0, 0.0), vec2(20.0, 20.0)), "plus", 18.0, t.accent);
-        widgets::row_text(ui, body.left_center() + vec2(44.0, 0.0), tl!("New vault"), theme::medium(13.0), t.text, body.width() - 52.0);
+        icons::paint(ui, Rect::from_center_size(body.center() - vec2(0.0, 12.0), vec2(22.0, 22.0)), "plus", 20.0, t.accent);
+        ui.painter().text(body.center() + vec2(0.0, 16.0), Align2::CENTER_CENTER, tl!("New vault"), theme::medium(13.0), t.text);
         if theme::hand(resp).clicked() {
             act = Some(Act::New);
         }
     });
 
-    if let Some(v) = app.vaults.selected.and_then(|id| app.vaults.data.get(id)).cloned() {
-        ui.add_space(12.0);
-        let others: Vec<(u64, String, [u8; 3], &'static str)> =
-            app.vaults.data.list.iter().filter(|o| o.id != v.id).map(|o| (o.id, o.name.clone(), o.color, o.icon)).collect();
-        let frame = egui::Frame::NONE
-            .fill(t.card)
-            .stroke(Stroke::new(1.0, t.border))
-            .corner_radius(CornerRadius::same(12))
-            .inner_margin(egui::Margin::same(16))
-            .show(ui, |ui| {
-                ui.set_width(ui.available_width());
-                ui.horizontal(|ui| {
-                    let (r, _) = ui.allocate_exact_size(vec2(40.0, 40.0), Sense::hover());
-                    tile(ui, r, v.color, v.seed, 10);
-                    ui.add_space(4.0);
-                    ui.vertical(|ui| {
-                        ui.label(egui::RichText::new(std::borrow::Cow::<str>::Borrowed(&v.name)).font(theme::semibold(16.0)));
-                        ui.label(egui::RichText::new(count_label(v.files.len())).color(t.text_muted).font(theme::regular(12.0)));
-                    });
-                    ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                        if widgets::ghost_button(ui, "trash-2", tl!("Delete")).on_hover_text(tl!("Delete vault…")).clicked() {
-                            act = Some(Act::Delete(v.id));
-                        }
-                        if widgets::ghost_button(ui, "pencil", tl!("Edit vault")).clicked() {
-                            act = Some(Act::Edit(v.id));
-                        }
-                        if !v.files.is_empty() && widgets::ghost_button(ui, "files", tl!("Open all")).clicked() {
-                            act = Some(Act::OpenAll(v.id));
-                        }
-                        if widgets::ghost_button(ui, "file-plus", tl!("Add files…")).clicked() {
-                            act = Some(Act::AddFiles(v.id));
-                        }
-                    });
-                });
-                ui.add_space(8.0);
-                if v.files.is_empty() {
-                    ui.add_space(6.0);
-                    ui.label(egui::RichText::new(tl!("No files yet. Drop files here to add them.")).color(t.text_muted));
-                    ui.add_space(6.0);
-                }
-                for f in &v.files {
-                    let stat = app.vaults.stat(f);
-                    let missing = stat.is_some_and(|s| !s.exists);
-                    let name = vaults::file_name(f);
-                    let (rect, resp) = ui.allocate_exact_size(vec2(ui.available_width(), 46.0), Sense::click_and_drag());
-                    resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, !missing, &name));
-                    if !missing {
-                        resp.dnd_set_drag_payload(DragFile { from: v.id, path: f.clone() });
-                    }
-                    let hovered = ui.rect_contains_pointer(rect);
-                    if hovered {
-                        ui.painter().rect_filled(rect, CornerRadius::same(8), t.hover);
-                    }
-                    let icon_color = if missing { t.text_faint } else { color32(v.color) };
-                    icons::paint(ui, Rect::from_min_size(rect.min + vec2(10.0, 11.0), vec2(24.0, 24.0)), "file-text", 21.0, icon_color);
-                    // The right side: missing-file actions, or the date and size and a remove button.
-                    let mut right = rect.right() - 10.0;
-                    if missing {
-                        let font = theme::medium(12.0);
-                        for (label, strong, is_locate) in [(tl!("Remove"), false, false), (tl!("Locate…"), true, true)] {
-                            let w = text_w(ui, label, &font) + 20.0;
-                            let r = Rect::from_min_max(egui::pos2(right - w, rect.center().y - 13.0), egui::pos2(right, rect.center().y + 13.0));
-                            let id = ui.scope_id().with(("vault-file", label, f));
-                            if row_button(ui, &t, r, id, label, strong).clicked() {
-                                act = Some(if is_locate { Act::Locate(v.id, f.clone()) } else { Act::Remove(v.id, f.clone()) });
-                            }
-                            right = r.left() - 8.0;
-                        }
-                        let tag = ui.painter().text(
-                            egui::pos2(right, rect.center().y),
-                            Align2::RIGHT_CENTER,
-                            tl!("Missing"),
-                            theme::medium(12.0),
-                            t.accent_text,
-                        );
-                        right = tag.left();
-                    } else {
-                        if hovered {
-                            let x_rect = Rect::from_center_size(egui::pos2(right - 14.0, rect.center().y), vec2(28.0, 28.0));
-                            let x = ui.interact(x_rect, ui.scope_id().with(("vault-remove", f)), Sense::click());
-                            let label = crate::i18n::fmt(tl!("Remove {name} from this vault"), &[("name", &name)]);
-                            x.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, &label));
-                            if x.hovered() {
-                                ui.painter().rect_filled(x_rect, CornerRadius::same(6), t.pressed);
-                            }
-                            icons::paint(ui, x_rect.shrink(6.0), "x", 16.0, t.icon);
-                            if x.on_hover_text(tl!("Remove from vault")).clicked() {
-                                act = Some(Act::Remove(v.id, f.clone()));
-                            }
-                        }
-                        right -= 38.0;
-                        if let Some(s) = stat {
-                            let size = crate::panels::human_size(usize::try_from(s.size).unwrap_or(usize::MAX));
-                            #[cfg(not(target_arch = "wasm32"))]
-                            let when = s.modified.map(crate::combine_ui::ago).unwrap_or_default();
-                            // Vaults list files on disk, which the web build has none of.
-                            #[cfg(target_arch = "wasm32")]
-                            let when = String::new();
-                            let detail = if when.is_empty() { size } else { format!("{when}  ·  {size}") };
-                            let d = ui.painter().text(
-                                egui::pos2(right, rect.center().y),
-                                Align2::RIGHT_CENTER,
-                                detail,
-                                theme::regular(12.0),
-                                t.text_muted,
-                            );
-                            right = d.left();
-                        }
-                    }
-                    let width = right - 16.0 - (rect.left() + 46.0);
-                    let name_color = if missing { t.text_faint } else { t.text };
-                    widgets::row_text(
-                        ui,
-                        rect.min + vec2(46.0, 15.0),
-                        std::borrow::Cow::<str>::Borrowed(&name),
-                        theme::medium(13.5),
-                        name_color,
-                        width,
-                    );
-                    widgets::row_text(
-                        ui,
-                        rect.min + vec2(46.0, 32.0),
-                        std::borrow::Cow::<str>::Borrowed(&crate::folders_ui::location(f)),
-                        theme::regular(11.0),
-                        t.text_faint,
-                        width,
-                    );
-                    let resp = if missing {
-                        resp.on_hover_text(tl!("This file has moved or been deleted. Locate it, or remove it from the vault."))
-                    } else {
-                        theme::hand(resp).on_hover_text(f)
-                    };
-                    if resp.clicked() && !missing {
-                        act = Some(Act::Open(f.clone()));
-                    }
-                    resp.context_menu(|ui| {
-                        if !missing && ui.button(tl!("Open")).clicked() {
-                            act = Some(Act::Open(f.clone()));
-                        }
-                        if missing && ui.button(tl!("Locate…")).clicked() {
-                            act = Some(Act::Locate(v.id, f.clone()));
-                        }
-                        if !others.is_empty() {
-                            ui.menu_button(tl!("Move to vault"), |ui| {
-                                for (id, name, _, _) in &others {
-                                    if ui.button(std::borrow::Cow::<str>::Borrowed(name)).clicked() {
-                                        act = Some(Act::Move(v.id, *id, f.clone()));
-                                    }
-                                }
-                            });
-                        }
-                        if ui.button(tl!("Remove from vault")).clicked() {
-                            act = Some(Act::Remove(v.id, f.clone()));
-                        }
-                    });
-                }
-            });
-        targets.insert(0, (v.id, frame.response.rect));
-        if files_hovering && pointer.is_some_and(|p| frame.response.rect.contains(p)) {
-            ui.painter().rect_stroke(frame.response.rect, CornerRadius::same(12), Stroke::new(1.5, color32(v.color)), egui::StrokeKind::Inside);
-        }
-    }
     app.vaults.targets = targets;
     app.vaults.targets_pass = pass;
 
-    let Some(act) = act else { return };
+    if let Some(act) = act {
+        apply(app, act);
+    }
+}
+
+/// The open vault's page, in place of Home (desktop).
+pub(crate) fn page_view(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
+    app.refresh_vault_stats(ui.input(|i| i.time));
+    let Some(v) = app.vaults.selected.and_then(|id| app.vaults.data.get(id)).cloned() else {
+        app.vaults.selected = None;
+        return;
+    };
+    let mut act = None;
+    let mut targets = Vec::new();
+    page::show(app, ui, &v, &mut act, &mut targets);
+    app.vaults.targets = targets;
+    app.vaults.targets_pass = ui.ctx().cumulative_pass_nr();
+    if let Some(act) = act {
+        apply(app, act);
+    }
+}
+
+/// Carry out what the user did in a vault view.
+fn apply(app: &mut PdfCraftApp, act: Act) {
     match act {
         Act::Select(id) => {
             app.vaults.selected = if app.vaults.selected == Some(id) { None } else { Some(id) };
             app.vaults.stale = true;
         }
+        Act::Show(id) => app.show_vault(id),
+        Act::SetStatus(id, path, status) => {
+            app.vaults.data.set_status(id, &path, status);
+        }
+        Act::SetFolder(id, path, folder) => {
+            app.vaults.data.set_folder(id, &path, folder);
+        }
+        Act::Tags(id, path) => app.vaults.dialog = Some(VaultDialog::Tags { id, path, draft: String::new() }),
+        Act::Note(id, path) => {
+            let text = app.vaults.data.get(id).map(|v| v.meta_of(&path).note).unwrap_or_default();
+            app.vaults.dialog = Some(VaultDialog::Note { id, path, text });
+        }
+        Act::BinderDialog(id, binder) => {
+            let name = binder.and_then(|b| app.vaults.data.get(id).and_then(|v| v.folder(b)).map(|f| f.name.clone())).unwrap_or_default();
+            app.vaults.dialog = Some(VaultDialog::Binder { id, binder, name });
+        }
+        Act::DeleteBinder(id, binder) => {
+            app.vaults.data.delete_folder(id, binder);
+            app.vaults.page.binder = page::Binder::All;
+        }
         Act::New => app.new_vault_dialog(Vec::new()),
         Act::Edit(id) => {
             if let Some(v) = app.vaults.data.get(id) {
-                app.vaults.dialog =
-                    Some(VaultDialog::Edit { id: Some(id), name: v.name.clone(), color: v.color, icon: v.icon, seed: v.seed, then_add: Vec::new() });
+                app.vaults.dialog = Some(VaultDialog::Edit {
+                    id: Some(id),
+                    name: v.name.clone(),
+                    description: v.description.clone(),
+                    color: v.color,
+                    icon: v.icon,
+                    seed: v.seed,
+                    then_add: Vec::new(),
+                });
             }
         }
         Act::Delete(id) => app.vaults.dialog = Some(VaultDialog::Delete(id)),
@@ -727,8 +658,12 @@ pub(crate) fn palette_hits(app: &PdfCraftApp, mut score: impl FnMut(&str) -> Opt
 pub(crate) fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
     let Some(dialog) = app.vaults.dialog.clone() else { return };
     let t = Tokens::get(ctx);
+    if matches!(dialog, VaultDialog::Tags { .. } | VaultDialog::Note { .. } | VaultDialog::Binder { .. }) {
+        page::dialog(app, ctx, dialog);
+        return;
+    }
     match dialog {
-        VaultDialog::Edit { id, mut name, mut color, icon, mut seed, then_add } => {
+        VaultDialog::Edit { id, mut name, mut description, mut color, icon, mut seed, then_add } => {
             let mut done: Option<bool> = None;
             let title = if id.is_some() { tl!("Edit vault") } else { tl!("New vault") };
             let resp = widgets::show_modal(ctx, "vault-edit", |ui| {
@@ -757,6 +692,15 @@ pub(crate) fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
                         }
                     });
                 });
+                ui.add_space(10.0);
+                let label = ui.label(egui::RichText::new(tl!("What it is for (optional)")).color(t.text_muted).font(theme::regular(12.0)));
+                ui.add(
+                    widgets::line(&mut description)
+                        .hint_text(tl!("Quotes and invoices for the renovation"))
+                        .desired_width(f32::INFINITY)
+                        .char_limit(vaults::MAX_DESCRIPTION_CHARS),
+                )
+                .labelled_by(label.id);
                 ui.add_space(12.0);
                 ui.label(egui::RichText::new(tl!("Colour")).color(t.text_muted));
                 ui.horizontal_wrapped(|ui| {
@@ -804,7 +748,13 @@ pub(crate) fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
             match done {
                 Some(true) => {
                     let ok = match id {
-                        Some(id) => match app.vaults.data.update(id, &name, color, icon).and_then(|()| app.vaults.data.set_seed(id, seed)) {
+                        Some(id) => match app
+                            .vaults
+                            .data
+                            .update(id, &name, color, icon)
+                            .and_then(|()| app.vaults.data.set_seed(id, seed))
+                            .and_then(|()| app.vaults.data.set_description(id, &description))
+                        {
                             Ok(()) => true,
                             Err(e) => {
                                 app.vault_error(e);
@@ -814,6 +764,7 @@ pub(crate) fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
                         None => match app.create_vault(&name, color, icon) {
                             Some(new) => {
                                 let _ = app.vaults.data.set_seed(new, seed);
+                                let _ = app.vaults.data.set_description(new, &description);
                                 if !then_add.is_empty() {
                                     app.add_to_vault(new, &then_add);
                                 }
@@ -822,10 +773,10 @@ pub(crate) fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
                             None => false,
                         },
                     };
-                    app.vaults.dialog = if ok { None } else { Some(VaultDialog::Edit { id, name, color, icon, seed, then_add }) };
+                    app.vaults.dialog = if ok { None } else { Some(VaultDialog::Edit { id, name, description, color, icon, seed, then_add }) };
                 }
                 Some(false) => app.vaults.dialog = None,
-                None => app.vaults.dialog = Some(VaultDialog::Edit { id, name, color, icon, seed, then_add }),
+                None => app.vaults.dialog = Some(VaultDialog::Edit { id, name, description, color, icon, seed, then_add }),
             }
         }
         VaultDialog::Delete(id) => {
@@ -923,5 +874,6 @@ pub(crate) fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
                 None => {}
             }
         }
+        VaultDialog::Tags { .. } | VaultDialog::Note { .. } | VaultDialog::Binder { .. } => {}
     }
 }

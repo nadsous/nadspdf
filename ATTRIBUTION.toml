@@ -3560,7 +3560,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs"
-sha256 = "0822100d55bd2928dabb36a98fe28625ff2afa8459b7b14c7d5f8aab86563884"
+sha256 = "e762bea3f735a99fc94e7358b96b9356959bb4a076be6bbf9388241d50ccbe0c"
 
 [[asset]]
 path = "i18n/locales/fr/pdfcraft.tsv"
