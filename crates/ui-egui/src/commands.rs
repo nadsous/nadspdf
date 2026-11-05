@@ -339,6 +339,7 @@ impl PdfCraftApp {
             }
             "view.next_tab" => self.step_tab(true),
             "view.dark_pages" => self.toggle_dark_pages(),
+            "assistant.toggle" => self.toggle_assistant(),
             "view.group_tab" => return Some(self.group_active_tab()),
             "view.previous_tab" => self.step_tab(false),
             "view.theme" => {

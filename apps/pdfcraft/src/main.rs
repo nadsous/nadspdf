@@ -38,10 +38,12 @@ use std::rc::Rc;
 
 use pdfcraft_ui_egui::PdfCraftApp;
 
+mod ai_keys;
 #[cfg(target_os = "macos")]
 mod apple_events;
 mod compositor_gpu;
 mod decorations;
+mod favicon;
 mod logging;
 #[cfg(target_os = "windows")]
 mod motion;
@@ -509,6 +511,13 @@ fn app_creator<'a>(
             let _ = pdfcraft_platform::pdf_preview::ensure();
         }
         app.update_source = Some(std::sync::Arc::new(updates::latest_release));
+        // Used only when the user turns on Preferences ▸ Show websites' icons.
+        app.favicon_fetch = Some(std::sync::Arc::new(favicon::fetch));
+        // The Assistant: the user's own key, kept in the system's credential store.
+        app.ai_send = Some(std::sync::Arc::new(|provider, model: &str, key: &str, request: &pdfcraft_ai::Request| {
+            pdfcraft_ai::net::send(provider, model, key, request)
+        }));
+        app.ai_keys = Some(std::sync::Arc::new(ai_keys::SystemKeys));
         // The MSI's copy installs new versions itself; the Store's is updated by the Store.
         app.updates_from_store = updates::running_from_store();
         app.open_in_new_window = Some(std::sync::Arc::new(open_in_new_window));

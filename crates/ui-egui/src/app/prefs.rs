@@ -158,6 +158,8 @@ impl PdfCraftApp {
         v["dark_pages"] = self.view_defaults.dark.pages.into();
         v["dark_thumbnails"] = self.view_defaults.dark.thumbnails.into();
         v["raster_level"] = self.raster_level.id().into();
+        v["link_favicons"] = self.link_favicons.into();
+        v["assistant"] = self.assistant.persist();
         v["updates"] = self.updates.persist();
         v.to_string()
     }
@@ -208,6 +210,10 @@ impl PdfCraftApp {
         self.restore_comment_prefs(&v);
         self.restore_signature_prefs(&v);
         self.vaults.restore(&v["vaults"]);
+        self.assistant.restore(&v["assistant"]);
+        if let Some(on) = v["link_favicons"].as_bool() {
+            self.link_favicons = on;
+        }
         self.updates.restore(&v["updates"]);
         self.restore_view_extras(&v);
     }

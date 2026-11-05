@@ -551,6 +551,7 @@ pub(crate) fn preferences_body(ui: &mut egui::Ui, app: &mut PdfCraftApp, t: &Tok
         preference_card(ui, t, title7, Some("app-window"), &mut ctx, |ui, _ctx| {
             #[cfg(windows)]
             crate::explorer_menu::preferences_row(ui, app, t);
+            ctx_checkbox_link_icons(ui, app, t);
             crate::extensions_ui::preferences_section(ui, app, t);
         });
         ui.add_space(12.0);
@@ -994,6 +995,19 @@ fn reading_colours_section(ui: &mut egui::Ui, app: &mut PdfCraftApp, t: &Tokens,
         }
     });
     ctx.label_secondary(ui, tl!("Colours are remapped while rendering; the document itself never changes."), t);
+}
+
+/// NadsPDF: whether the link bubble shows websites' own icons (asked from each site).
+#[cfg(not(target_arch = "wasm32"))]
+fn ctx_checkbox_link_icons(ui: &mut egui::Ui, app: &mut PdfCraftApp, t: &Tokens) {
+    ui.add(crate::widgets::checkbox(&mut app.link_favicons, tl!("Show websites' icons in link bubbles")));
+    ui.label(
+        egui::RichText::new(tl!(
+            "NadsPDF then asks each website for its icon when you point at one of its links, which tells that website the link was looked at. Off: a coloured initial stands in, and nothing is sent."
+        ))
+        .small()
+        .color(t.text_muted),
+    );
 }
 
 #[cfg(test)]

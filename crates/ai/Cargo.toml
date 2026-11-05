@@ -1,0 +1,20 @@
+[package]
+name = "pdfcraft-ai"
+description = "NadsPDF's AI assistants with the user's own API key: providers, working prompts, replies and usage"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+# HTTPS to the provider, only in the desktop app (feature `net`); the interface has no network code.
+ureq = { version = "3.4", default-features = false, features = ["rustls-no-provider", "_ring"], optional = true }
+rustls-native-certs = { version = "0.8", optional = true }
+
+[features]
+default = []
+net = ["dep:ureq", "dep:rustls-native-certs"]

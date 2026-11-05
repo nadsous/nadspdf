@@ -313,6 +313,11 @@ impl PdfCraftApp {
             update_source: None,
             update_installer: None,
             updates_from_store: false,
+            favicon_fetch: None,
+            link_favicons: false,
+            assistant: Default::default(),
+            ai_send: None,
+            ai_keys: None,
         }
     }
 
@@ -638,6 +643,7 @@ impl eframe::App for PdfCraftApp {
             }
         }
         self.poll_updates();
+        self.poll_assistant();
         self.poll_print();
         #[cfg(not(target_arch = "wasm32"))]
         extensions_ui::pump(self);
@@ -727,6 +733,8 @@ impl eframe::App for PdfCraftApp {
             }
             return;
         }
+        // The link bubble may ask websites for their icons only with the preference on.
+        link_bubble::publish(&ctx, if self.link_favicons { self.favicon_fetch.clone() } else { None });
         // nads.site's base: the near-black socle the rounded panels float on.
         let base = theme::Tokens::get(&ctx).titlebar;
         ui.painter().rect_filled(ctx.content_rect(), 0.0, base);
@@ -742,6 +750,8 @@ impl eframe::App for PdfCraftApp {
             self.all_tools_full = false;
         }
         side_panels::show(self, ui);
+        // NadsPDF's Assistant, beside the document.
+        assistant_ui::panel(self, ui);
         let t = theme::Tokens::get(&ctx);
         // The page area floats on the base as a rounded panel (nads.site's look).
         let right = if self.active.is_some() { 6 } else { 8 };

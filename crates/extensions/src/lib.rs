@@ -25,5 +25,5 @@ pub mod manifest;
 pub mod protocol;
 
 pub use approvals::Approvals;
-pub use discovery::{Entry, Installed, discover};
+pub use discovery::{Entry, Installed, discover, import};
 pub use manifest::{Manifest, Permission};

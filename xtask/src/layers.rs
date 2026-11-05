@@ -80,6 +80,7 @@ pub const TABLE: &[(&str, Class)] = &[
     // L7 platform + frontends
     ("platform", Class::Layer(7)),
     ("extensions", Class::Layer(7)),
+    ("ai", Class::Layer(7)),
     ("ui-common", Class::Layer(7)),
     ("ui-egui", Class::Layer(7)),
     ("automation", Class::Layer(7)),
@@ -108,6 +109,7 @@ pub const SIDEWAYS: &[(&str, &str)] = &[
     ("ui-egui", "ui-common"),
     ("ui-egui", "platform"),
     ("ui-egui", "extensions"),
+    ("ui-egui", "ai"),
     ("automation", "platform"),
 ];
 

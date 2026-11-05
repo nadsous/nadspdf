@@ -56,12 +56,18 @@ pub mod theme;
 mod widgets;
 
 // NadsPDF's own modules, kept apart from upstream's files so merges from PdfCraft stay small.
+pub mod assistant_ui;
 pub mod bubbles;
 mod dark_pages;
 pub mod explorer_menu;
+#[cfg(not(target_arch = "wasm32"))]
+mod extensions_home;
 pub mod extensions_ui;
+mod home_pixels;
+pub mod link_bubble;
 mod lite;
 mod nads_menu;
+mod raster_icon;
 pub mod tab_groups;
 pub mod tear_off;
 pub mod vaults;
@@ -712,6 +718,17 @@ pub struct PdfCraftApp {
     pub update_installer: Option<updates::UpdateInstaller>,
     /// This copy comes from the Microsoft Store, which updates it: NadsPDF doesn't check.
     pub updates_from_store: bool,
+    /// Asks a website for its icon, for the link bubble (the desktop app sets it).
+    pub favicon_fetch: Option<link_bubble::FaviconFetch>,
+    /// Preferences ▸ Show websites' icons in link bubbles: off by default, as asking a website
+    /// for its icon tells it the link was looked at.
+    pub link_favicons: bool,
+    /// The Assistant panel: settings, usage, conversations.
+    pub assistant: assistant_ui::AssistantState,
+    /// Sends an assistant's request (the desktop app sets it; the interface has no network code).
+    pub ai_send: Option<assistant_ui::AiSend>,
+    /// Where the providers' keys are kept (the system's credential store; set by the desktop app).
+    pub ai_keys: Option<std::sync::Arc<dyn assistant_ui::KeyStore>>,
 }
 
 /// Asked for the text recognition models when Recognize Text opens without them: the web build

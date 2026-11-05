@@ -3239,6 +3239,15 @@ fn track_scroll<T>(ui: &egui::Ui, view: &mut DocView, out: &egui::containers::sc
 /// text editor was finished.
 fn frame_overlays(ui: &mut egui::Ui, view: &mut DocView, env: &PageEnv<'_>, primary_down: bool, hover_text: Option<(Pos2, String)>) -> bool {
     let PageEnv { added, author, avail, can_modify, doc, form, info, prefs, t, today, tool, units, unobstructed, .. } = *env;
+    // NadsPDF: a web or email link gets the link bubble (its site, icon and address).
+    let hover_text = match hover_text {
+        Some((pos, text)) if crate::link_bubble::show(ui.ctx(), pos, &text) => None,
+        Some(other) => Some(other),
+        None => {
+            crate::link_bubble::hide(ui.ctx());
+            None
+        }
+    };
     if let Some((pos, text)) = hover_text {
         // Click-through, as a tooltip is: the pages lose the pointer under anything that isn't.
         let tip = egui::Area::new(egui::Id::unique("canvas-hover")).order(egui::Order::Tooltip).interactable(false);

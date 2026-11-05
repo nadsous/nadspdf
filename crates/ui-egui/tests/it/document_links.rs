@@ -760,3 +760,40 @@ fn highlighted_link_can_be_requested_again_after_cancel() {
         assert_eq!(h.state().last_opened_url, None);
     }
 }
+
+/// NadsPDF: pointing at a web link shows its bubble (the site and the address). The site is
+/// asked for its icon only once Show websites' icons is on, and only once per site.
+#[test]
+fn a_web_link_shows_its_bubble_and_asks_for_the_icon_only_when_allowed() {
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    let mut h = harness();
+    let asked = std::sync::Arc::new(AtomicUsize::new(0));
+    let hosts = std::sync::Arc::new(std::sync::Mutex::new(Vec::<String>::new()));
+    let (a, s) = (asked.clone(), hosts.clone());
+    h.state_mut().favicon_fetch = Some(std::sync::Arc::new(move |host: &str| {
+        a.fetch_add(1, Ordering::SeqCst);
+        s.lock().unwrap().push(host.to_string());
+        Err("offline in tests".into())
+    }));
+    let r = h.state().views[0].page_screen_rect(0).expect("page 1 on screen");
+    let on_link = egui::pos2(r.min.x + r.width() * 0.5, r.min.y + r.height() * (1.0 - 325.0 / 400.0));
+    h.hover_at(on_link);
+    h.run_steps(4);
+    h.get_by_label("example.org");
+    h.get_by_label(LINK_URL);
+    h.get_by_label("Click to open in your browser");
+    assert_eq!(asked.load(Ordering::SeqCst), 0, "off by default: no website is asked");
+    // Turned on: asked once for this site, however long the pointer stays.
+    h.state_mut().link_favicons = true;
+    for _ in 0..6 {
+        h.hover_at(on_link);
+        h.run_steps(2);
+        std::thread::sleep(std::time::Duration::from_millis(20));
+    }
+    assert_eq!(asked.load(Ordering::SeqCst), 1, "{:?}", hosts.lock().unwrap());
+    assert_eq!(hosts.lock().unwrap().as_slice(), ["example.org"]);
+    // Away from the link, the bubble goes.
+    h.hover_at(egui::pos2(r.min.x + 5.0, r.max.y - 5.0));
+    h.run_steps(3);
+    assert!(h.query_by_label("Click to open in your browser").is_none());
+}

@@ -9,6 +9,10 @@ license.workspace = true
 workspace = true
 
 [dependencies]
+# NadsPDF's Assistant with the user's own key: requests to the provider (src/ai_keys.rs keeps the
+# keys in the system's credential store).
+pdfcraft-ai = { workspace = true, features = ["net"] }
+keyring = { version = "3", default-features = false, features = ["windows-native", "apple-native"] }
 # NadsPDF's Help ▸ Check for updates (src/updates.rs): one HTTPS request to GitHub, over rustls with
 # the OS's trusted roots. No bundled root list (webpki-roots and webpki-root-certs are CDLA-licensed).
 ureq = { version = "3.4", default-features = false, features = ["rustls-no-provider", "_ring"] }

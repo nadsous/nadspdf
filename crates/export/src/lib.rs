@@ -22,6 +22,9 @@ mod as_markdown;
 mod as_rtf;
 mod layout;
 mod word_layout;
+mod xlsx;
+
+pub use xlsx::{XlsxCell, xlsx};
 
 pub use word_layout::{Layout, LayoutRun, Para, family};
 

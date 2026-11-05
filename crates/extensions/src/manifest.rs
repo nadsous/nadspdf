@@ -69,6 +69,10 @@ pub struct Manifest {
     /// Origins `shell.open_url` may open (`https://erp.example.com`). Required with `open_url`.
     #[serde(default)]
     pub open_url: Vec<String>,
+    /// A PNG picture of the extension, relative to its folder (`icon.png`), shown in its card
+    /// (at most [`crate::discovery::MAX_ICON_BYTES`]). Optional.
+    #[serde(default)]
+    pub icon: Option<String>,
 }
 
 impl Manifest {
@@ -102,6 +106,12 @@ impl Manifest {
         check_text("version", &self.version, 1, MAX_VERSION)?;
         check_text("description", &self.description, 0, MAX_DESCRIPTION)?;
         check_executable(&self.executable)?;
+        if let Some(icon) = &self.icon {
+            check_relative("icon", icon)?;
+            if !icon.to_ascii_lowercase().ends_with(".png") {
+                return Err("icon must be a .png file".into());
+            }
+        }
         let wants_urls = self.permissions.contains(&Permission::OpenUrl);
         if wants_urls && self.open_url.is_empty() {
             return Err("the open_url permission needs at least one origin in \"open_url\"".into());
@@ -146,6 +156,11 @@ fn check_text(field: &str, value: &str, min: usize, max: usize) -> Result<(), St
 
 /// A relative path made of plain components: no root, drive, `..` or `.`.
 fn check_executable(path: &str) -> Result<(), String> {
+    check_relative("executable", path)
+}
+
+/// `path` names a file inside the extension folder: relative, no `..`, no drive or root.
+fn check_relative(what: &str, path: &str) -> Result<(), String> {
     let bad = path.is_empty()
         || path.len() > 255
         || path.starts_with(['/', '\\'])
@@ -153,7 +168,7 @@ fn check_executable(path: &str) -> Result<(), String> {
         || path.chars().any(char::is_control)
         || path.split(['/', '\\']).any(|c| c.is_empty() || c == "." || c == "..");
     if bad {
-        return Err("executable must be a relative path inside the extension folder (no '..', no drive or root)".into());
+        return Err(format!("{what} must be a relative path inside the extension folder (no '..', no drive or root)"));
     }
     Ok(())
 }

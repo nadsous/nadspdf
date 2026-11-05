@@ -73,6 +73,7 @@ it.
 | `executable` | Relative path inside the folder; no `..`, root or drive. Symlinks are resolved and must stay inside the folder. |
 | `permissions` | Any of the permissions below. |
 | `open_url` | Origins `shell.open_url` may open: `https://host[:port]` (`http` only for `localhost` and `127.0.0.1`), no path. Required with, and only with, `open_url`. |
+| `icon` | Optional. A PNG picture of the extension, relative to its folder (`icon.png`), at most 256 KiB, shown on its card on Home and in Preferences. Without it (or if it can't be read) the card shows a pixel pattern of its own. |
 
 Unknown fields and unknown permissions are refused, so a typo can't silently drop a restriction.
 
@@ -156,3 +157,11 @@ document isn't open, isn't saved…).
 - 2026-10-15: protocol 1 — manifest, approvals bound to a fingerprint, document events,
   `doc.text`, `doc.file`, message bars, `shell.open_url` on listed origins;
   `pdfcraft-cli extensions list|check`.
+
+## Installing
+
+Home ▸ Extensions ▸ **Import an extension…** picks a folder holding `manifest.json` and its program.
+NadsPDF checks it as it would at start, then copies it into the extensions folder as `<id>/`
+(replacing an earlier copy of the same extension; symbolic links are not followed, and the copy
+stops past 4 000 files, 2 GiB or 16 nested folders). An imported extension is off until you turn
+it on. **Open the extensions folder** shows the folder itself.

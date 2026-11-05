@@ -186,3 +186,60 @@ fn an_extension_that_is_not_approved_does_not_start() {
     assert!(h.state().extensions.shown_banners().is_empty());
     assert!(!h.state().extensions.is_running("com.example.demo"));
 }
+
+/// NadsPDF's Home lists the installed extensions, each with its card, and imports a new one
+/// from a folder: copied into the extensions folder, shown, and still off until turned on.
+#[test]
+fn home_lists_the_extensions_and_imports_a_new_one() {
+    if is_child() {
+        return;
+    }
+    let installed = install("home", false);
+    // A second extension, elsewhere (as downloaded), with its own picture.
+    let downloads = installed.root.join("Downloads").join("stamp-tool");
+    std::fs::create_dir_all(&downloads).unwrap();
+    std::fs::write(downloads.join("tool.exe"), b"program").unwrap();
+    let mut png = Vec::new();
+    image::RgbaImage::from_pixel(8, 8, image::Rgba([217, 45, 38, 255]))
+        .write_to(&mut std::io::Cursor::new(&mut png), image::ImageFormat::Png)
+        .unwrap();
+    std::fs::write(downloads.join("icon.png"), &png).unwrap();
+    let manifest =
+        json!({ "protocol": 1, "id": "com.example.stamps", "name": "Stamp Tool", "version": "2.1", "executable": "tool.exe", "icon": "icon.png" });
+    std::fs::write(downloads.join("manifest.json"), manifest.to_string()).unwrap();
+
+    let (folder, approvals) = (installed.folder.clone(), installed.approvals.clone());
+    let mut h = Harness::builder().with_size(egui::vec2(1400.0, 2200.0)).build_eframe(move |cc| {
+        let mut app = PdfCraftApp::new();
+        app.set_option("language", "en").unwrap();
+        app.enable_extensions(&cc.egui_ctx, folder, approvals);
+        app
+    });
+    let wait = |h: &mut Harness<'static, PdfCraftApp>, n: usize| {
+        let start = Instant::now();
+        while h.state().extensions.entries().len() < n && start.elapsed() < Duration::from_secs(10) {
+            h.run_steps(1);
+            std::thread::sleep(Duration::from_millis(20));
+        }
+        h.run_steps(4);
+    };
+    wait(&mut h, 1);
+    h.get_by_label("Import an extension…");
+    h.get_by_label("Demo ERP");
+    h.state_mut().import_extension(&downloads);
+    wait(&mut h, 2);
+    h.get_by_label("Stamp Tool");
+    let copied = installed.folder.join("com.example.stamps");
+    assert!(copied.join("manifest.json").is_file() && copied.join("icon.png").is_file(), "copied under its id");
+    let stamps = h.state().extensions.entries().iter().find_map(|e| match e {
+        pdfcraft_extensions::Entry::Ok(i) if i.manifest.id == "com.example.stamps" => Some(i.clone()),
+        _ => None,
+    });
+    assert!(stamps.is_some_and(|s| s.icon.is_some()), "its picture is read");
+    assert!(!h.state().extensions.is_running("com.example.stamps"), "imported, not turned on");
+    // Not an extension: refused, nothing added.
+    h.state_mut().import_extension(&installed.root);
+    h.run_steps(2);
+    assert!(h.state().toast.as_ref().is_some_and(|(m, _)| m.contains("Couldn't import")), "{:?}", h.state().toast);
+    assert_eq!(h.state().extensions.entries().len(), 2);
+}

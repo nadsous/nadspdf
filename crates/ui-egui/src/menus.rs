@@ -179,7 +179,7 @@ const DISPLAY: &[&str] = &[
 const THEMES: &[&str] = &["view.theme.system", "view.theme.light", "view.theme.dark", SEP, "view.dark_pages"];
 const PANES: &[&str] = &["view.side_panel", "view.tools_pane"];
 const PANE_COMMANDS: &[&str] = &["comment.list", "form.fields", "ui.dock.reset"];
-const MODES: &[&str] = &["view.full_screen", "view.read_mode"];
+const MODES: &[&str] = &["view.full_screen", "view.read_mode", SEP, "assistant.toggle"];
 const PAGES: &[&str] = &[
     "page.organize",
     SEP,

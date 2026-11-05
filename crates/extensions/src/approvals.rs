@@ -85,6 +85,7 @@ mod tests {
             manifest: Manifest::parse(text.as_bytes()).unwrap(),
             executable: "x/a.exe".into(),
             fingerprint: fingerprint.into(),
+            icon: None,
         }
     }
 

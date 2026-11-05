@@ -41,27 +41,35 @@ fn quick_tools(app: &mut PdfCraftApp, ui: &mut egui::Ui, t: &Tokens) {
     ui.add_space(10.0);
     ui.horizontal_wrapped(|ui| {
         ui.spacing_mut().item_spacing = vec2(12.0, 12.0);
-        for (label, blurb, icon, action) in QUICK_TOOLS {
+        for (index, (label, blurb, icon, action)) in QUICK_TOOLS.into_iter().enumerate() {
+            // Each card comes in once, after the one before (`home_pixels::entrance`): its colours
+            // fade in and it rises into place. (A child `Ui` per card would take the row's whole
+            // width in this wrapping layout, so the fade is in the colours.)
+            let (alpha, rise) = crate::home_pixels::entrance(ui.ctx(), index + 1);
+            let fade = |c: egui::Color32| c.gamma_multiply(alpha);
             let (rect, resp) = ui.allocate_exact_size(vec2(206.0, 64.0), Sense::click());
             resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, tl!(label)));
             let press = theme::Press::track(ui, &resp);
-            card_lift(ui, t, rect, press);
-            let fill = press.fill(t.card, t.hover, t.pressed);
-            let stroke = Stroke::new(1.0, if press.hover > 0.05 { t.accent.gamma_multiply(0.55) } else { t.border });
-            ui.painter().rect(rect, CornerRadius::same(12), fill, stroke, egui::StrokeKind::Inside);
-            let body = rect.translate(press.offset());
+            if alpha >= 1.0 {
+                card_lift(ui, t, rect, press);
+            }
+            let fill = fade(press.fill(t.card, t.hover, t.pressed));
+            let stroke = Stroke::new(1.0, fade(if press.hover > 0.05 { t.accent.gamma_multiply(0.55) } else { t.border }));
+            let shown = rect.translate(vec2(0.0, rise));
+            ui.painter().rect(shown, CornerRadius::same(12), fill, stroke, egui::StrokeKind::Inside);
+            let body = shown.translate(press.offset());
             let tile = Rect::from_min_size(body.min + vec2(12.0, 14.0), vec2(36.0, 36.0));
-            ui.painter().rect_filled(tile, CornerRadius::same(9), t.accent_soft);
-            icons::paint(ui, tile.shrink(8.0), icon, 19.0, t.accent);
+            ui.painter().rect_filled(tile, CornerRadius::same(9), fade(t.accent_soft));
+            icons::paint(ui, tile.shrink(8.0), icon, 19.0, fade(t.accent));
             let text_w = body.width() - 70.0;
-            let mut title = egui::text::LayoutJob::simple_singleline(tl!(label).to_owned(), theme::semibold(13.0), t.text);
+            let mut title = egui::text::LayoutJob::simple_singleline(tl!(label).to_owned(), theme::semibold(13.0), fade(t.text));
             title.wrap = egui::text::TextWrapping { max_width: text_w, max_rows: 1, break_anywhere: true, ..Default::default() };
             let title = ui.fonts_mut(|f| f.layout_job(title));
-            ui.painter().galley(body.min + vec2(58.0, 15.0), title, t.text);
-            let mut sub = egui::text::LayoutJob::simple_singleline(tl!(blurb).to_owned(), theme::regular(11.5), t.text_muted);
+            ui.painter().galley(body.min + vec2(58.0, 15.0), title, fade(t.text));
+            let mut sub = egui::text::LayoutJob::simple_singleline(tl!(blurb).to_owned(), theme::regular(11.5), fade(t.text_muted));
             sub.wrap = egui::text::TextWrapping { max_width: text_w, max_rows: 1, break_anywhere: true, ..Default::default() };
             let sub = ui.fonts_mut(|f| f.layout_job(sub));
-            ui.painter().galley(body.min + vec2(58.0, 35.0), sub, t.text_muted);
+            ui.painter().galley(body.min + vec2(58.0, 35.0), sub, fade(t.text_muted));
             if theme::hand(resp.on_hover_text(tl!(blurb))).clicked() {
                 match action {
                     // Commands that need a document (watermark…) ask for one first, then run.
@@ -138,14 +146,9 @@ pub fn show(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
     let t = Tokens::get(ui.ctx());
     egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
         egui::Frame::NONE.inner_margin(egui::Margin { left: 36, right: 36, top: 28, bottom: 28 }).show(ui, |ui| {
-            ui.label(egui::RichText::new(tl!("Welcome to NadsPDF")).font(theme::semibold(24.0)));
-            ui.label(
-                egui::RichText::new(tl!("An open-source PDF workbench — local, private, and scriptable."))
-                    .color(t.text_muted)
-                    .font(theme::regular(14.0)),
-            );
-            ui.add_space(14.0);
-            ui.add_space(4.0);
+            // Osman greets you over a field of living pixels (`home_pixels`).
+            crate::home_pixels::hero(ui, &t);
+            ui.add_space(10.0);
             // The NadsPDF tools row is all conversion and editing, which the simplified interface leaves out.
             if !app.lite {
                 quick_tools(app, ui, &t);
@@ -154,6 +157,11 @@ pub fn show(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
             #[cfg(not(target_arch = "wasm32"))]
             if !app.lite {
                 crate::vaults_ui::section(app, ui);
+                ui.add_space(26.0);
+            }
+            #[cfg(not(target_arch = "wasm32"))]
+            if !app.lite && app.extensions.enabled() {
+                crate::extensions_home::section(app, ui);
                 ui.add_space(26.0);
             }
 

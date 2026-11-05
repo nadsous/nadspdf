@@ -50,6 +50,12 @@ impl PdfCraftApp {
                 _ => return Err("vault-dialog must be new or none".into()),
             },
             ("dark-pages" | "dark-thumbnails", _) => self.set_dark_option(key, value)?,
+            // NadsPDF's Assistant panel (screenshots, the control channel).
+            ("assistant", _) => match value {
+                "open" => self.assistant.open = true,
+                "closed" => self.assistant.open = false,
+                _ => return Err("assistant must be open or closed".into()),
+            },
             ("hotbar-side", _) => self.hotbar.place(value)?,
             ("language", _) => {
                 let language = i18n::normalize_pref(value).ok_or_else(|| {

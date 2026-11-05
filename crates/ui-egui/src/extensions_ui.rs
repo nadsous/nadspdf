@@ -558,7 +558,12 @@ pub fn preferences_section(ui: &mut egui::Ui, app: &mut PdfCraftApp, t: &Tokens)
         egui::Frame::new().fill(t.hover).corner_radius(egui::CornerRadius::same(6)).inner_margin(egui::Margin::same(10)).show(ui, |ui| {
             ui.set_width(ui.available_width());
             match entry {
-                Entry::Ok(ext) => extension_row(ui, app, t, ext),
+                Entry::Ok(ext) => {
+                    ui.horizontal_top(|ui| {
+                        crate::extensions_home::picture(ui, ext, t);
+                        ui.vertical(|ui| extension_row(ui, app, t, ext));
+                    });
+                }
                 Entry::Broken { dir, error } => {
                     let folder = dir.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default();
                     ui.label(egui::RichText::new(folder).strong());
@@ -583,7 +588,7 @@ pub fn preferences_section(ui: &mut egui::Ui, app: &mut PdfCraftApp, t: &Tokens)
 pub fn preferences_section(_ui: &mut egui::Ui, _app: &mut PdfCraftApp, _t: &Tokens) {}
 
 #[cfg(not(target_arch = "wasm32"))]
-fn extension_row(ui: &mut egui::Ui, app: &mut PdfCraftApp, t: &Tokens, ext: &Installed) {
+pub(crate) fn extension_row(ui: &mut egui::Ui, app: &mut PdfCraftApp, t: &Tokens, ext: &Installed) {
     let id = ext.manifest.id.clone();
     let approved = app.extensions.approvals.is_approved(ext);
     let running = app.extensions.native.as_ref().is_some_and(|n| n.host.is_running(&id));

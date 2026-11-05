@@ -775,6 +775,10 @@ pub fn mode_bar(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                     if icons::button(ui, "save", widgets::PILL_HEIGHT, false, &tip).clicked() {
                         app.run_command("file.save");
                     }
+                    // NadsPDF's Assistant (the user's own AI key).
+                    if icons::button(ui, "message-square-text", widgets::PILL_HEIGHT, app.assistant.open, tl!("Assistant")).clicked() {
+                        app.toggle_assistant();
+                    }
                     let tip = crate::commands::command_tip(ui.ctx(), tl!("Document properties ({key})"), "file.properties");
                     if icons::button(ui, "info", widgets::PILL_HEIGHT, false, &tip).clicked() {
                         app.dialog = Some(Dialog::Properties(PropsTab::Description));

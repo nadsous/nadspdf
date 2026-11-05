@@ -153,3 +153,88 @@ watermark text	CONFIDENTIAL	CONFIDENTIEL
 	Turn on	Activer
 	Couldn't save the extension settings: {e}	Impossible d'enregistrer les réglages des extensions : {e}
 	Loading text recognition…	Chargement de la reconnaissance de texte…
+
+# NadsPDF 2026-11: Home extensions, link bubble, and strings upstream has not translated yet.
+	Add to “{group}”	Ajouter à « {group} »
+	An extension is a folder with a manifest.json and its program. Import one to add it here.	Une extension est un dossier qui contient un manifest.json et son programme. Importez-en une pour l’ajouter ici.
+	Click to open in your browser	Cliquez pour l’ouvrir dans votre navigateur
+	Click to write an email	Cliquez pour écrire un e-mail
+	Couldn't import this extension: {e}	Impossible d’importer cette extension : {e}
+	Couldn't open the extensions folder: {e}	Impossible d’ouvrir le dossier des extensions : {e}
+	Dock navigation rail on Left	Placer le rail de navigation à gauche
+	Dock navigation rail on Right	Placer le rail de navigation à droite
+	Extensions are not available in this copy of NadsPDF.	Les extensions ne sont pas disponibles dans cette copie de NadsPDF.
+	General & Interface	Général et interface
+	Import an extension	Importer une extension
+	Import an extension…	Importer une extension…
+	Integration and extensions	Intégration et extensions
+	Invert middle-button drag	Inverser le glisser au bouton du milieu
+	NadsPDF then asks each website for its icon when you point at one of its links, which tells that website the link was looked at. Off: a coloured initial stands in, and nothing is sent.	NadsPDF demande alors son icône à chaque site quand vous pointez l’un de ses liens, ce qui lui indique que le lien a été regardé. Désactivé : une initiale de couleur la remplace, et rien n’est envoyé.
+	Navigation rail side	Côté du rail de navigation
+	No extension installed	Aucune extension installée
+	Open the extensions folder	Ouvrir le dossier des extensions
+	Panning or auto-scrolling with the middle (wheel) button moves the page the other way.	Déplacer ou faire défiler avec le bouton du milieu (la molette) fait bouger la page dans l’autre sens.
+	Programs that add to NadsPDF. An extension runs only once you turn it on, and only does what it asked for.	Des programmes qui enrichissent NadsPDF. Une extension ne fonctionne qu’une fois activée, et ne fait que ce qu’elle a demandé.
+	Search settings…	Rechercher dans les réglages…
+	Show websites' icons in link bubbles	Afficher l’icône des sites dans les bulles de liens
+	{name} is installed. Turn it on to use it.	{name} est installée. Activez-la pour l’utiliser.
+
+# NadsPDF 2026-11: the Assistant (your own API key).
+	 (+ {n} not priced)	 (+ {n} sans tarif)
+	API key	Clé d’API
+	API key: stored in this computer's credential store	Clé d’API : rangée dans le coffre-fort de cet ordinateur
+	Alert me past this monthly spend	M’alerter au-delà de cette dépense mensuelle
+	Ask about this document, or start with:	Posez une question sur ce document, ou commencez par :
+	Ask {name}…	Demander à {name}…
+	Assistant	Assistant
+	Assistant settings	Réglages de l’assistant
+	Bookmark “{title}” → page {page}	Signet « {title} » → page {page}
+	Carry out the ticked actions	Effectuer les actions cochées
+	Copy the model's prices from the provider's page (US dollars per million tokens) to see what each answer costs. Without them, only tokens are counted.	Recopiez les tarifs du modèle depuis la page du fournisseur (en dollars US par million de jetons) pour voir ce que coûte chaque réponse. Sans eux, seuls les jetons sont comptés.
+	Cost estimate	Estimation du coût
+	Done. Undo takes it back.	Fait. Annuler revient en arrière.
+	Extract pages {pages}	Extraire les pages {pages}
+	Get a key	Obtenir une clé
+	Go to page {page}	Aller à la page {page}
+	Highlight “{text}”	Surligner « {text} »
+	Input	Entrée
+	Output	Sortie
+	Mark “{text}” for redaction	Marquer « {text} » pour biffure
+	OpenRouter reports what each answer cost.	OpenRouter indique ce qu’a coûté chaque réponse.
+	Past your monthly alert.	Seuil d’alerte mensuel dépassé.
+	Remove the key	Supprimer la clé
+	Sent to {provider}: the relevant pages of this document ({pages} in all, up to about {tokens} tokens) and your question.	Envoyé à {provider} : les pages utiles de ce document ({pages} au total, jusqu’à environ {tokens} jetons) et votre question.
+	The answer stopped at its length limit.	La réponse s’est arrêtée à sa longueur maximale.
+	The assistant isn't available in this copy of NadsPDF.	L’assistant n’est pas disponible dans cette copie de NadsPDF.
+	The assistant works with a key from Anthropic, OpenRouter or Mistral. You pay the provider directly for what you use; NadsPDF takes nothing and sees nothing. The text of the pages you ask about goes from your computer straight to the provider.	L’assistant fonctionne avec une clé Anthropic, OpenRouter ou Mistral. Vous payez directement le fournisseur pour ce que vous utilisez ; NadsPDF ne prélève rien et ne voit rien. Le texte des pages concernées part de votre ordinateur directement chez le fournisseur.
+	The request stopped unexpectedly.	La requête s’est arrêtée de façon inattendue.
+	This answer: {in} tokens in, {out} out · {cost}	Cette réponse : {in} jetons envoyés, {out} reçus · {cost}
+	This month: {n} requests · {tokens} tokens · {cost}	Ce mois-ci : {n} requêtes · {tokens} jetons · {cost}
+	Turn the assistant on	Activer l’assistant
+	Use your own API key	Utilisez votre propre clé d’API
+	cost not estimated	coût non estimé
+	pages {p}	pages {p}
+	{name} is reading…	{name} lit le document…
+	{n} actions carried out	{n} actions effectuées
+	{n} rows in all	{n} lignes au total
+	Export to Excel…	Exporter vers Excel…
+	Your assistant	Votre assistant
+	Understand	Comprendre
+	Extract and filter	Extraire et filtrer
+	Act	Agir
+	Solve	Résoudre
+	What is this document about?	De quoi parle ce document ?
+	What should I look at first?	Que dois-je regarder en premier ?
+	Which assistant can help me with this?	Quel assistant peut m’aider pour ça ?
+	Summarise this document	Résume ce document
+	Explain it simply	Explique-le simplement
+	What are the key dates, amounts and obligations?	Quels sont les dates, montants et obligations clés ?
+	Make a table of every amount with its date	Fais un tableau de tous les montants avec leur date
+	List the line items of these invoices	Liste les lignes de ces factures
+	Extract every name, email and phone number	Extrais tous les noms, e-mails et numéros de téléphone
+	Highlight every deadline	Surligne toutes les échéances
+	Mark every personal data item for redaction	Marque toutes les données personnelles pour biffure
+	Add a bookmark for each section	Ajoute un signet pour chaque section
+	Check that the totals add up	Vérifie que les totaux sont justes
+	Find inconsistencies in this document	Trouve les incohérences de ce document
+	Solve the exercises step by step	Résous les exercices étape par étape

@@ -4,7 +4,7 @@
 
 Every asset PdfCraft includes, bundles or uses to build its published material, with its author, source and licence. The policy is in [AGENTS.md](AGENTS.md) §1. The machine-readable list, with the SHA-256 of every asset, is [ATTRIBUTION.toml](ATTRIBUTION.toml). Licence texts are kept beside the assets and summarised in [NOTICE](NOTICE).
 
-## In this repository (362)
+## In this repository (367)
 
 | Asset | Title | Author | Licence | Source | Used for |
 |---|---|---|---|---|---|
@@ -370,6 +370,11 @@ Every asset PdfCraft includes, bundles or uses to build its published material, 
 | `i18n/locales/zh-hant/common.tsv` | craft-i18n common.tsv catalog (zh-hant), rebranded for NadsPDF | ArtCraft Team and the craft-i18n contributors | MIT OR Apache-2.0 | https://github.com/storytold/craft-i18n at 575cfdef63227b14daf173b8cc87928bfdfa325e (PdfCraft renamed NadsPDF) | Interface translations embedded by crates/ui-egui/build.rs |
 | `i18n/locales/zh-hant/nadspdf.tsv` | NadsPDF interface translations (zh-hant) | NadsPDF contributors | MIT OR Apache-2.0 | Contributor-original: clean-room translations of NadsPDF's English UI labels | NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs |
 | `i18n/locales/zh-hant/pdfcraft.tsv` | craft-i18n pdfcraft.tsv catalog (zh-hant), rebranded for NadsPDF | ArtCraft Team and the craft-i18n contributors | MIT OR Apache-2.0 | https://github.com/storytold/craft-i18n at 575cfdef63227b14daf173b8cc87928bfdfa325e (PdfCraft renamed NadsPDF) | Interface translations embedded by crates/ui-egui/build.rs |
+| `assets/app-icon/assistants/osman.svg` | NadsPDF assistant avatar: Osman (pixel portrait of the NadsPDF author) | nads | LicenseRef-Nads-Trademark | nads brand; drawn from the author's photo (pixel art) | Home's welcome band (Osman) and the AI assistants' avatars |
+| `assets/app-icon/assistants/mehmed.svg` | NadsPDF assistant avatar: Mehmed (pixel portrait of the NadsPDF author) | nads | LicenseRef-Nads-Trademark | nads brand; drawn from the author's photo (pixel art) | Home's welcome band (Osman) and the AI assistants' avatars |
+| `assets/app-icon/assistants/suleyman.svg` | NadsPDF assistant avatar: Süleyman (pixel portrait of the NadsPDF author) | nads | LicenseRef-Nads-Trademark | nads brand; drawn from the author's photo (pixel art) | Home's welcome band (Osman) and the AI assistants' avatars |
+| `assets/app-icon/assistants/selim.svg` | NadsPDF assistant avatar: Selim (pixel portrait of the NadsPDF author) | nads | LicenseRef-Nads-Trademark | nads brand; drawn from the author's photo (pixel art) | Home's welcome band (Osman) and the AI assistants' avatars |
+| `assets/app-icon/assistants/mahmud.svg` | NadsPDF assistant avatar: Mahmud (pixel portrait of the NadsPDF author) | nads | LicenseRef-Nads-Trademark | nads brand; drawn from the author's photo (pixel art) | Home's welcome band (Osman) and the AI assistants' avatars |
 
 ## Compiled in through dependencies (6)
 

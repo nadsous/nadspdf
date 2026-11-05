@@ -7,7 +7,7 @@ use pdfcraft_platform::staging::{StagingName, staging_suffixes};
 use crate::PdfCraftApp;
 
 mod close;
-mod save;
+pub(crate) mod save;
 
 pub use close::CloseRequest;
 #[cfg(not(target_arch = "wasm32"))]

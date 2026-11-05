@@ -98,8 +98,8 @@ fn a_very_tall_window_does_not_leave_a_blank_gap_above_ok() {
     let mut h = harness(2600.0);
     h.run_steps(6);
     let ok = h.get_by_label("OK").rect();
-    // NadsPDF's last card: File Explorer and extensions.
-    let last = h.get_by_label_contains("Integration and extensions").rect();
+    // NadsPDF's last card ends with the note on websites' icons.
+    let last = h.get_by_label_contains("a coloured initial stands in").rect();
     assert!(on_screen(ok, 2600.0) && on_screen(last, 2600.0), "{last:?} {ok:?}");
     assert!(ok.min.y - last.max.y < 120.0, "a gap of {} pt between the last setting and OK", ok.min.y - last.max.y);
 }

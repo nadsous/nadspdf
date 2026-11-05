@@ -6,7 +6,8 @@ use egui_kittest::kittest::Queryable;
 use pdfcraft_ui_egui::{Dialog, LeftPanel, PdfCraftApp};
 
 fn harness(setup: impl FnOnce(&mut PdfCraftApp) + 'static) -> Harness<'static, PdfCraftApp> {
-    let mut h = Harness::builder().with_size(egui::vec2(1400.0, 1000.0)).build_eframe(move |_cc| {
+    // Tall enough for Home's pinned cards below NadsPDF's welcome band, tools and vaults.
+    let mut h = Harness::builder().with_size(egui::vec2(1400.0, 1200.0)).build_eframe(move |_cc| {
         let mut app = PdfCraftApp::new();
         app.set_option("language", "en").unwrap();
         app.run_inline = true;
