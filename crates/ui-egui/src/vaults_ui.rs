@@ -35,7 +35,7 @@ struct DragFile {
 #[derive(Clone, Debug, PartialEq)]
 pub enum VaultDialog {
     /// Create (`id` None) or edit a vault; `then_add` joins a new vault once it is created.
-    Edit { id: Option<u64>, name: String, color: [u8; 3], icon: &'static str, then_add: Vec<String> },
+    Edit { id: Option<u64>, name: String, color: [u8; 3], icon: &'static str, seed: u64, then_add: Vec<String> },
     /// Confirm deleting a vault.
     Delete(u64),
     /// Choose the vault a document joins.
@@ -87,11 +87,6 @@ fn color32(c: [u8; 3]) -> Color32 {
     Color32::from_rgb(c[0], c[1], c[2])
 }
 
-/// The vault's colour at about 20 % over the card, behind its icon.
-fn tint(c: [u8; 3]) -> Color32 {
-    Color32::from_rgba_unmultiplied(c[0], c[1], c[2], 52)
-}
-
 /// "{n} files" in the interface language.
 fn count_label(n: usize) -> String {
     crate::i18n::trn(crate::i18n::current(), n as u64, "{n} file", "{n} files")
@@ -102,7 +97,8 @@ impl PdfCraftApp {
     pub fn new_vault_dialog(&mut self, then_add: Vec<String>) {
         let n = self.vaults.data.list.len();
         let color = vaults::COLORS.get(n % vaults::COLORS.len()).copied().unwrap_or(vaults::COLORS[0]);
-        self.vaults.dialog = Some(VaultDialog::Edit { id: None, name: String::new(), color, icon: "folder", then_add });
+        let seed = crate::vault_monster::new_seed(n as u64);
+        self.vaults.dialog = Some(VaultDialog::Edit { id: None, name: String::new(), color, icon: "folder", seed, then_add });
     }
 
     /// Create a vault and show it on Home; `None`, after telling the user, when it can't be.
@@ -341,11 +337,9 @@ enum Act {
     Move(u64, u64, String),
 }
 
-/// A vault's tile: its colour at about 20 % with the icon in full colour.
-fn tile(ui: &egui::Ui, rect: Rect, color: [u8; 3], icon: &str, radius: u8) {
-    ui.painter().rect_filled(rect, CornerRadius::same(radius), tint(color));
-    let size = (rect.width() * 0.52).round();
-    icons::paint(ui, rect, icon, size, color32(color));
+/// A vault's tile: its pixel monster (`vault_monster`) on a soft tile of its colour.
+fn tile(ui: &egui::Ui, rect: Rect, color: [u8; 3], seed: u64, radius: u8) {
+    crate::vault_monster::paint(ui.painter(), rect, seed, color, radius);
 }
 
 /// A small text button painted inside a row.
@@ -423,7 +417,7 @@ pub(crate) fn section(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
             };
             ui.painter().rect(rect, CornerRadius::same(12), fill, stroke, egui::StrokeKind::Inside);
             let body = rect.translate(press.offset());
-            tile(ui, Rect::from_min_size(body.min + vec2(12.0, 12.0), vec2(36.0, 36.0)), v.color, v.icon, 9);
+            tile(ui, Rect::from_min_size(body.min + vec2(12.0, 12.0), vec2(36.0, 36.0)), v.color, v.seed, 9);
             let w = body.width() - 70.0;
             widgets::row_text(ui, body.min + vec2(58.0, 22.0), std::borrow::Cow::<str>::Borrowed(&v.name), theme::semibold(13.5), t.text, w);
             widgets::row_text(ui, body.min + vec2(58.0, 40.0), count_label(v.files.len()), theme::regular(11.5), t.text_muted, w);
@@ -491,7 +485,7 @@ pub(crate) fn section(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                 ui.set_width(ui.available_width());
                 ui.horizontal(|ui| {
                     let (r, _) = ui.allocate_exact_size(vec2(40.0, 40.0), Sense::hover());
-                    tile(ui, r, v.color, v.icon, 10);
+                    tile(ui, r, v.color, v.seed, 10);
                     ui.add_space(4.0);
                     ui.vertical(|ui| {
                         ui.label(egui::RichText::new(std::borrow::Cow::<str>::Borrowed(&v.name)).font(theme::semibold(16.0)));
@@ -653,7 +647,7 @@ pub(crate) fn section(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
         Act::Edit(id) => {
             if let Some(v) = app.vaults.data.get(id) {
                 app.vaults.dialog =
-                    Some(VaultDialog::Edit { id: Some(id), name: v.name.clone(), color: v.color, icon: v.icon, then_add: Vec::new() });
+                    Some(VaultDialog::Edit { id: Some(id), name: v.name.clone(), color: v.color, icon: v.icon, seed: v.seed, then_add: Vec::new() });
             }
         }
         Act::Delete(id) => app.vaults.dialog = Some(VaultDialog::Delete(id)),
@@ -684,7 +678,7 @@ pub(crate) fn tools_panel_section(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
         let press = theme::Press::track(ui, &resp);
         press.wash(ui, rect, 6, false);
         let body = rect.translate(press.offset());
-        tile(ui, Rect::from_min_size(body.min + vec2(4.0, 5.0), vec2(22.0, 22.0)), v.color, v.icon, 6);
+        tile(ui, Rect::from_min_size(body.min + vec2(4.0, 5.0), vec2(22.0, 22.0)), v.color, v.seed, 6);
         let count = v.files.len().to_string();
         let c = ui.painter().text(body.right_center() - vec2(8.0, 0.0), Align2::RIGHT_CENTER, count, theme::regular(11.5), t.text_faint);
         widgets::row_text(
@@ -734,7 +728,7 @@ pub(crate) fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
     let Some(dialog) = app.vaults.dialog.clone() else { return };
     let t = Tokens::get(ctx);
     match dialog {
-        VaultDialog::Edit { id, mut name, mut color, mut icon, then_add } => {
+        VaultDialog::Edit { id, mut name, mut color, icon, mut seed, then_add } => {
             let mut done: Option<bool> = None;
             let title = if id.is_some() { tl!("Edit vault") } else { tl!("New vault") };
             let resp = widgets::show_modal(ctx, "vault-edit", |ui| {
@@ -742,8 +736,8 @@ pub(crate) fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
                 ui.label(egui::RichText::new(title).font(theme::semibold(16.0)));
                 ui.add_space(10.0);
                 ui.horizontal(|ui| {
-                    let (r, _) = ui.allocate_exact_size(vec2(44.0, 44.0), Sense::hover());
-                    tile(ui, r, color, icon, 11);
+                    let (r, _) = ui.allocate_exact_size(vec2(56.0, 56.0), Sense::hover());
+                    tile(ui, r, color, seed, 12);
                     ui.add_space(6.0);
                     ui.vertical(|ui| {
                         let label = ui.label(egui::RichText::new(tl!("Vault name")).color(t.text_muted).font(theme::regular(12.0)));
@@ -781,26 +775,16 @@ pub(crate) fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
                     }
                 });
                 ui.add_space(10.0);
-                ui.label(egui::RichText::new(tl!("Icon")).color(t.text_muted));
-                ui.horizontal_wrapped(|ui| {
-                    ui.spacing_mut().item_spacing = vec2(6.0, 6.0);
-                    for i in vaults::ICONS {
-                        let (r, resp) = ui.allocate_exact_size(vec2(36.0, 36.0), Sense::click());
-                        resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::RadioButton, true, i == icon, i));
-                        let fill = if i == icon {
-                            tint(color)
-                        } else if resp.hovered() {
-                            t.hover
-                        } else {
-                            Color32::TRANSPARENT
-                        };
-                        ui.painter().rect_filled(r, CornerRadius::same(8), fill);
-                        icons::paint(ui, r, i, 18.0, if i == icon { color32(color) } else { t.icon });
-                        if theme::hand(resp).clicked() {
-                            icon = i;
-                        }
-                    }
-                });
+                ui.label(egui::RichText::new(tl!("Its monster")).color(t.text_muted));
+                ui.label(
+                    egui::RichText::new(tl!("Every vault has a pixel monster of its own, as unique as a QR code, so you know it at a glance."))
+                        .small()
+                        .color(t.text_faint),
+                );
+                ui.add_space(4.0);
+                if widgets::ghost_button(ui, "sparkles", tl!("Another monster")).clicked() {
+                    seed = crate::vault_monster::new_seed(seed);
+                }
                 ui.add_space(14.0);
                 ui.horizontal(|ui| {
                     ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
@@ -820,7 +804,7 @@ pub(crate) fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
             match done {
                 Some(true) => {
                     let ok = match id {
-                        Some(id) => match app.vaults.data.update(id, &name, color, icon) {
+                        Some(id) => match app.vaults.data.update(id, &name, color, icon).and_then(|()| app.vaults.data.set_seed(id, seed)) {
                             Ok(()) => true,
                             Err(e) => {
                                 app.vault_error(e);
@@ -829,6 +813,7 @@ pub(crate) fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
                         },
                         None => match app.create_vault(&name, color, icon) {
                             Some(new) => {
+                                let _ = app.vaults.data.set_seed(new, seed);
                                 if !then_add.is_empty() {
                                     app.add_to_vault(new, &then_add);
                                 }
@@ -837,10 +822,10 @@ pub(crate) fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
                             None => false,
                         },
                     };
-                    app.vaults.dialog = if ok { None } else { Some(VaultDialog::Edit { id, name, color, icon, then_add }) };
+                    app.vaults.dialog = if ok { None } else { Some(VaultDialog::Edit { id, name, color, icon, seed, then_add }) };
                 }
                 Some(false) => app.vaults.dialog = None,
-                None => app.vaults.dialog = Some(VaultDialog::Edit { id, name, color, icon, then_add }),
+                None => app.vaults.dialog = Some(VaultDialog::Edit { id, name, color, icon, seed, then_add }),
             }
         }
         VaultDialog::Delete(id) => {
@@ -892,7 +877,7 @@ pub(crate) fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
                         resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, &v.name));
                         let press = theme::Press::track(ui, &resp);
                         press.wash(ui, rect, 8, false);
-                        tile(ui, Rect::from_min_size(rect.min + vec2(6.0, 6.0), vec2(26.0, 26.0)), v.color, v.icon, 7);
+                        tile(ui, Rect::from_min_size(rect.min + vec2(6.0, 6.0), vec2(26.0, 26.0)), v.color, v.seed, 7);
                         let has = v.files.iter().any(|f| vaults::same_path(f, &path));
                         let c = ui.painter().text(
                             rect.right_center() - vec2(10.0, 0.0),

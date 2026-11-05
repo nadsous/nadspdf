@@ -3,10 +3,16 @@
 //! and creating, editing, emptying or deleting a vault never moves, copies or deletes one.
 //! A file may sit in several vaults.
 //!
+//! Each vault has a pixel monster of its own, drawn from its seed (`vault_monster`), a
+//! description, and a way to put its files in order: binders, a status (to do, in progress,
+//! done), tags and a note per file, and the day it joined. That is all kept beside the list of
+//! paths ([`Vault::meta`]), so a file's place in a vault never depends on where it is on disk.
+//!
 //! This module is the model: validation, editing and the settings format, with no egui. The Home
 //! view and its dialogs are in `vaults_ui.rs`. Settings are untrusted input, so [`Vaults::restore`]
 //! keeps only what it can validate and caps every count.
 
+use std::collections::BTreeMap;
 use std::time::SystemTime;
 
 /// At most this many vaults.
@@ -17,6 +23,13 @@ pub const MAX_FILES: usize = 2000;
 pub const MAX_NAME_CHARS: usize = 60;
 /// Longest file path accepted, from a picker, a drop or settings.
 const MAX_PATH_CHARS: usize = 4096;
+/// At most this many binders per vault, tags per file; the longest binder name, tag, note and
+/// description, in characters.
+pub const MAX_FOLDERS: usize = 50;
+pub const MAX_TAGS: usize = 12;
+pub const MAX_TAG_CHARS: usize = 30;
+pub const MAX_NOTE_CHARS: usize = 2000;
+pub const MAX_DESCRIPTION_CHARS: usize = 300;
 
 /// The colours a vault can take (sRGB). The first is the nads red.
 pub const COLORS: [[u8; 3]; 9] = [
@@ -60,6 +73,121 @@ pub struct Vault {
     pub icon: &'static str,
     /// Absolute paths, in the order they were added.
     pub files: Vec<String>,
+    /// Draws the vault's monster (`vault_monster`); saved, so it never changes by itself.
+    pub seed: u64,
+    /// A line on what the vault is for.
+    pub description: String,
+    /// The vault's binders, in the user's order.
+    pub folders: Vec<Folder>,
+    /// How each file is filed, by its path in [`Self::files`]. A file without an entry has the
+    /// defaults.
+    pub meta: BTreeMap<String, FileMeta>,
+    next_folder: u64,
+}
+
+/// A binder inside a vault.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Folder {
+    pub id: u64,
+    pub name: String,
+}
+
+/// Where a file stands.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum Status {
+    #[default]
+    None,
+    Todo,
+    Doing,
+    Done,
+}
+
+impl Status {
+    pub const ALL: [Status; 4] = [Status::None, Status::Todo, Status::Doing, Status::Done];
+
+    pub fn id(self) -> &'static str {
+        match self {
+            Status::None => "",
+            Status::Todo => "todo",
+            Status::Doing => "doing",
+            Status::Done => "done",
+        }
+    }
+
+    pub fn from_id(id: &str) -> Status {
+        Status::ALL.into_iter().find(|s| s.id() == id).unwrap_or_default()
+    }
+}
+
+/// How a file is filed in a vault.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct FileMeta {
+    /// Its binder (`None`: not in one).
+    pub folder: Option<u64>,
+    pub status: Status,
+    /// Short labels, lowercase-insensitive unique, in the order given.
+    pub tags: Vec<String>,
+    pub note: String,
+    /// When it joined the vault (seconds since 1970; 0 when unknown).
+    pub added: i64,
+}
+
+impl FileMeta {
+    fn is_default(&self) -> bool {
+        self.folder.is_none() && self.status == Status::None && self.tags.is_empty() && self.note.is_empty() && self.added == 0
+    }
+}
+
+/// Text cut to `max` characters with control characters dropped (line breaks kept when
+/// `lines`), trimmed.
+fn clean_text(text: &str, max: usize, lines: bool) -> String {
+    text.chars().filter(|c| !c.is_control() || (lines && *c == '\n')).take(max).collect::<String>().trim().to_string()
+}
+
+fn now_secs() -> i64 {
+    SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).map_or(0, |d| i64::try_from(d.as_secs()).unwrap_or(i64::MAX))
+}
+
+impl Vault {
+    /// How `path` is filed (the defaults when it has no entry).
+    pub fn meta_of(&self, path: &str) -> FileMeta {
+        self.meta.iter().find(|(p, _)| same_path(p, path)).map(|(_, m)| m.clone()).unwrap_or_default()
+    }
+
+    /// The binder `id`.
+    pub fn folder(&self, id: u64) -> Option<&Folder> {
+        self.folders.iter().find(|f| f.id == id)
+    }
+
+    /// Every tag used in the vault, sorted, each once.
+    pub fn tags(&self) -> Vec<String> {
+        let mut out: Vec<String> = Vec::new();
+        for m in self.meta.values() {
+            for t in &m.tags {
+                if !out.iter().any(|o| o.to_lowercase() == t.to_lowercase()) {
+                    out.push(t.clone());
+                }
+            }
+        }
+        out.sort_by_key(|t| t.to_lowercase());
+        out
+    }
+
+    /// The stored key of `path` in [`Self::files`].
+    fn key(&self, path: &str) -> Option<String> {
+        self.files.iter().find(|f| same_path(f, path)).cloned()
+    }
+
+    /// Change how `path` is filed, if it is in the vault; an entry back at the defaults is dropped.
+    fn edit_meta(&mut self, path: &str, edit: impl FnOnce(&mut FileMeta)) -> bool {
+        let Some(key) = self.key(path) else { return false };
+        let mut m = self.meta.remove(&key).unwrap_or_default();
+        edit(&mut m);
+        if !m.is_default() {
+            self.meta.insert(key, m);
+        }
+        true
+    }
 }
 
 /// Why a vault change was refused.
@@ -196,8 +324,116 @@ impl Vaults {
         }
         let id = self.next_id;
         self.next_id = self.next_id.saturating_add(1);
-        self.list.push(Vault { id, name, color, icon: icon_named(icon), files: Vec::new() });
+        let seed = crate::vault_monster::new_seed(id.wrapping_add(self.list.len() as u64));
+        self.list.push(Vault {
+            id,
+            name,
+            color,
+            icon: icon_named(icon),
+            files: Vec::new(),
+            seed,
+            description: String::new(),
+            folders: Vec::new(),
+            meta: BTreeMap::new(),
+            next_folder: 1,
+        });
         Ok(id)
+    }
+
+    /// Give the vault `id` the monster `seed` draws.
+    pub fn set_seed(&mut self, id: u64, seed: u64) -> Result<(), VaultError> {
+        self.get_mut(id)?.seed = seed;
+        Ok(())
+    }
+
+    /// Set the vault's description (cut to [`MAX_DESCRIPTION_CHARS`]).
+    pub fn set_description(&mut self, id: u64, text: &str) -> Result<(), VaultError> {
+        self.get_mut(id)?.description = clean_text(text, MAX_DESCRIPTION_CHARS, false);
+        Ok(())
+    }
+
+    /// Add a binder to the vault `id` and return its id; `None` when the name is empty, the
+    /// vault is missing or it has [`MAX_FOLDERS`].
+    pub fn add_folder(&mut self, id: u64, name: &str) -> Option<u64> {
+        let name = clean_name(name)?;
+        let v = self.get_mut(id).ok()?;
+        if v.folders.len() >= MAX_FOLDERS {
+            return None;
+        }
+        let folder = v.next_folder.max(1);
+        v.next_folder = folder.saturating_add(1);
+        v.folders.push(Folder { id: folder, name });
+        Some(folder)
+    }
+
+    /// Rename the binder `folder` of the vault `id`.
+    pub fn rename_folder(&mut self, id: u64, folder: u64, name: &str) -> bool {
+        let Some(name) = clean_name(name) else { return false };
+        let Ok(v) = self.get_mut(id) else { return false };
+        match v.folders.iter_mut().find(|f| f.id == folder) {
+            Some(f) => {
+                f.name = name;
+                true
+            }
+            None => false,
+        }
+    }
+
+    /// Remove the binder `folder`: its files stay in the vault, out of any binder.
+    pub fn delete_folder(&mut self, id: u64, folder: u64) -> bool {
+        let Ok(v) = self.get_mut(id) else { return false };
+        let before = v.folders.len();
+        v.folders.retain(|f| f.id != folder);
+        if v.folders.len() == before {
+            return false;
+        }
+        for m in v.meta.values_mut() {
+            if m.folder == Some(folder) {
+                m.folder = None;
+            }
+        }
+        v.meta.retain(|_, m| !m.is_default());
+        true
+    }
+
+    /// Put `path` in the binder `folder` (`None`: out of any). An unknown binder is refused.
+    pub fn set_folder(&mut self, id: u64, path: &str, folder: Option<u64>) -> bool {
+        let Ok(v) = self.get_mut(id) else { return false };
+        if folder.is_some_and(|f| v.folder(f).is_none()) {
+            return false;
+        }
+        v.edit_meta(path, |m| m.folder = folder)
+    }
+
+    pub fn set_status(&mut self, id: u64, path: &str, status: Status) -> bool {
+        self.get_mut(id).is_ok_and(|v| v.edit_meta(path, |m| m.status = status))
+    }
+
+    /// Set the note on `path` (cut to [`MAX_NOTE_CHARS`]; line breaks kept).
+    pub fn set_note(&mut self, id: u64, path: &str, note: &str) -> bool {
+        let note = clean_text(note, MAX_NOTE_CHARS, true);
+        self.get_mut(id).is_ok_and(|v| v.edit_meta(path, |m| m.note = note))
+    }
+
+    /// Tag `path` with `tag` (trimmed, at most [`MAX_TAG_CHARS`]; a tag it has, in any case, is
+    /// kept once; at most [`MAX_TAGS`] per file).
+    pub fn add_tag(&mut self, id: u64, path: &str, tag: &str) -> bool {
+        let tag = clean_text(tag, MAX_TAG_CHARS, false);
+        if tag.is_empty() {
+            return false;
+        }
+        self.get_mut(id).is_ok_and(|v| {
+            v.edit_meta(path, |m| {
+                if m.tags.len() < MAX_TAGS && !m.tags.iter().any(|t| t.to_lowercase() == tag.to_lowercase()) {
+                    m.tags.push(tag);
+                }
+            })
+        })
+    }
+
+    pub fn remove_tag(&mut self, id: u64, path: &str, tag: &str) -> bool {
+        let tag = tag.to_lowercase();
+        self.get_mut(id).is_ok_and(|v| v.edit_meta(path, |m| m.tags.retain(|t| t.to_lowercase() != tag)))
     }
 
     /// Change a vault's name, colour and icon.
@@ -246,6 +482,7 @@ impl Vaults {
             } else if v.files.len() >= MAX_FILES {
                 out.over_limit += 1;
             } else {
+                v.meta.insert(p.clone(), FileMeta { added: now_secs(), ..FileMeta::default() });
                 v.files.push(p);
                 out.added += 1;
             }
@@ -258,6 +495,7 @@ impl Vaults {
         let Ok(v) = self.get_mut(id) else { return false };
         let before = v.files.len();
         v.files.retain(|f| !same_path(f, path));
+        v.meta.retain(|f, _| !same_path(f, path));
         v.files.len() != before
     }
 
@@ -265,13 +503,22 @@ impl Vaults {
     pub fn relocate(&mut self, id: u64, old: &str, new: &str) -> bool {
         let Some(new) = clean_path(new) else { return false };
         let Ok(v) = self.get_mut(id) else { return false };
+        // How the file was filed follows it to its new place.
+        let kept = v.meta.iter().find(|(f, _)| same_path(f, old)).map(|(k, m)| (k.clone(), m.clone()));
         if v.files.iter().any(|f| same_path(f, &new)) {
             v.files.retain(|f| !same_path(f, old));
+            if let Some((key, _)) = kept {
+                v.meta.remove(&key);
+            }
             return true;
         }
         match v.files.iter_mut().find(|f| same_path(f, old)) {
             Some(f) => {
-                *f = new;
+                *f = new.clone();
+                if let Some((key, m)) = kept {
+                    v.meta.remove(&key);
+                    v.meta.insert(new, m);
+                }
                 true
             }
             None => false,
@@ -284,8 +531,22 @@ impl Vaults {
         if from == to || self.get(to).is_none() || !self.get(from).is_some_and(|v| v.files.iter().any(|f| same_path(f, path))) {
             return false;
         }
+        // Its status, tags and note go with it; binders belong to a vault, so it leaves its own.
+        let carried = self.get(from).map(|v| v.meta_of(path)).unwrap_or_default();
         match self.add_files(to, &[path]) {
-            Ok(a) if a.added == 1 || a.duplicates == 1 => self.remove_file(from, path),
+            Ok(a) if a.added == 1 || a.duplicates == 1 => {
+                if let Ok(v) = self.get_mut(to) {
+                    v.edit_meta(path, |m| {
+                        m.status = carried.status;
+                        m.tags = carried.tags;
+                        m.note = carried.note;
+                        if carried.added != 0 {
+                            m.added = carried.added;
+                        }
+                    });
+                }
+                self.remove_file(from, path)
+            }
             _ => false,
         }
     }
@@ -293,7 +554,38 @@ impl Vaults {
     /// The vaults as settings JSON.
     pub fn to_json(&self) -> serde_json::Value {
         serde_json::Value::Array(
-            self.list.iter().map(|v| serde_json::json!({ "name": v.name, "color": color_hex(v.color), "icon": v.icon, "files": v.files })).collect(),
+            self.list
+                .iter()
+                .map(|v| {
+                    let meta: serde_json::Map<String, serde_json::Value> = v
+                        .meta
+                        .iter()
+                        .map(|(path, m)| {
+                            (
+                                path.clone(),
+                                serde_json::json!({
+                                    "folder": m.folder,
+                                    "status": m.status.id(),
+                                    "tags": m.tags,
+                                    "note": m.note,
+                                    "added": m.added,
+                                }),
+                            )
+                        })
+                        .collect();
+                    serde_json::json!({
+                        "name": v.name,
+                        "color": color_hex(v.color),
+                        "icon": v.icon,
+                        "files": v.files,
+                        // As text: JSON numbers can't hold every 64-bit value.
+                        "seed": format!("{:016x}", v.seed),
+                        "description": v.description,
+                        "folders": v.folders.iter().map(|f| serde_json::json!({ "id": f.id, "name": f.name })).collect::<Vec<_>>(),
+                        "meta": meta,
+                    })
+                })
+                .collect(),
         )
     }
 
@@ -314,6 +606,49 @@ impl Vaults {
             if let Some(files) = item.get("files").and_then(serde_json::Value::as_array) {
                 let paths: Vec<&str> = files.iter().filter_map(serde_json::Value::as_str).take(MAX_FILES.saturating_mul(2)).collect();
                 let _ = out.add_files(id, &paths);
+            }
+            // A vault saved before it had a monster gets one from its name, the same every time.
+            let seed = item
+                .get("seed")
+                .and_then(serde_json::Value::as_str)
+                .and_then(|s| u64::from_str_radix(s, 16).ok())
+                .unwrap_or_else(|| crate::vault_monster::seed_from_name(name));
+            let _ = out.set_seed(id, seed);
+            let _ = out.set_description(id, item.get("description").and_then(serde_json::Value::as_str).unwrap_or_default());
+            let Ok(v) = out.get_mut(id) else { continue };
+            // Restored files were stamped as added now; the saved filing replaces that.
+            v.meta.clear();
+            for f in item.get("folders").and_then(serde_json::Value::as_array).into_iter().flatten().take(MAX_FOLDERS) {
+                let (Some(fid), Some(fname)) = (f.get("id").and_then(serde_json::Value::as_u64), f.get("name").and_then(serde_json::Value::as_str))
+                else {
+                    continue;
+                };
+                let Some(fname) = clean_name(fname) else { continue };
+                if fid > 0 && v.folder(fid).is_none() {
+                    v.folders.push(Folder { id: fid, name: fname });
+                    v.next_folder = v.next_folder.max(fid.saturating_add(1));
+                }
+            }
+            for (path, m) in item.get("meta").and_then(serde_json::Value::as_object).into_iter().flatten().take(MAX_FILES) {
+                let Some(key) = v.key(path) else { continue };
+                let folder = m.get("folder").and_then(serde_json::Value::as_u64).filter(|f| v.folder(*f).is_some());
+                let mut tags: Vec<String> = Vec::new();
+                for t in m.get("tags").and_then(serde_json::Value::as_array).into_iter().flatten().filter_map(serde_json::Value::as_str) {
+                    let t = clean_text(t, MAX_TAG_CHARS, false);
+                    if !t.is_empty() && tags.len() < MAX_TAGS && !tags.iter().any(|o| o.to_lowercase() == t.to_lowercase()) {
+                        tags.push(t);
+                    }
+                }
+                let meta = FileMeta {
+                    folder,
+                    status: Status::from_id(m.get("status").and_then(serde_json::Value::as_str).unwrap_or_default()),
+                    tags,
+                    note: clean_text(m.get("note").and_then(serde_json::Value::as_str).unwrap_or_default(), MAX_NOTE_CHARS, true),
+                    added: m.get("added").and_then(serde_json::Value::as_i64).unwrap_or(0).max(0),
+                };
+                if !meta.is_default() {
+                    v.meta.insert(key, meta);
+                }
             }
         }
         *self = out;
@@ -423,6 +758,83 @@ mod tests {
         assert_eq!(parse_color("#EF3E3"), None);
         assert_eq!(parse_color("#ÉF3E3"), None);
         assert_eq!(color_hex([0xEF, 0x3E, 0x36]), "#EF3E36");
+    }
+
+    #[test]
+    fn files_are_filed_in_binders_with_a_status_tags_and_a_note() {
+        let mut v = Vaults::default();
+        let a = v.create("Chantier", COLORS[0], "folder").unwrap();
+        let b = v.create("Archive", COLORS[1], "folder").unwrap();
+        let f = p("devis.pdf");
+        v.add_files(a, &[f.as_str()]).unwrap();
+        assert!(v.get(a).unwrap().meta_of(&f).added > 0, "the day it joined is kept");
+        let binder = v.add_folder(a, " Devis ").unwrap();
+        assert_eq!(v.add_folder(a, "  "), None);
+        assert!(v.set_folder(a, &f, Some(binder)));
+        assert!(!v.set_folder(a, &f, Some(999)), "an unknown binder is refused");
+        assert!(v.set_status(a, &f, Status::Doing));
+        assert!(v.add_tag(a, &f, "Urgent") && v.add_tag(a, &f, "urgent ") && v.add_tag(a, &f, "Client"));
+        assert!(!v.add_tag(a, &f, "   "));
+        assert!(v.set_note(a, &f, "Rappeler\nM. Martin\u{7}"));
+        let m = v.get(a).unwrap().meta_of(&f);
+        assert_eq!(
+            (m.folder, m.status, m.tags.clone(), m.note.as_str()),
+            (Some(binder), Status::Doing, vec!["Urgent".into(), "Client".into()], "Rappeler\nM. Martin")
+        );
+        assert_eq!(v.get(a).unwrap().tags(), ["Client", "Urgent"]);
+        assert!(!v.set_status(a, &p("not-in-it.pdf"), Status::Done), "only the vault's files");
+        // A binder deleted: its files stay, out of any binder.
+        assert!(v.delete_folder(a, binder));
+        assert_eq!(v.get(a).unwrap().meta_of(&f).folder, None);
+        // Moved to another vault: status, tags and note follow it.
+        assert!(v.move_file(a, b, &f));
+        let moved = v.get(b).unwrap().meta_of(&f);
+        assert_eq!((moved.status, moved.tags.len(), moved.note.as_str()), (Status::Doing, 2, "Rappeler\nM. Martin"));
+        assert!(v.get(a).unwrap().meta.is_empty());
+        // Found elsewhere: its filing follows.
+        let there = p("chantier/devis.pdf");
+        assert!(v.relocate(b, &f, &there));
+        assert_eq!(v.get(b).unwrap().meta_of(&there).status, Status::Doing);
+        assert!(v.remove_file(b, &there));
+        assert!(v.get(b).unwrap().meta.is_empty());
+        for _ in 0..MAX_TAGS + 3 {
+            let _ = v.add_tag(b, &there, "x");
+        }
+    }
+
+    #[test]
+    fn the_monster_binders_and_filing_survive_a_restart() {
+        let mut v = Vaults::default();
+        let a = v.create("Impôts", COLORS[2], "lock").unwrap();
+        let f = p("avis.pdf");
+        v.add_files(a, &[f.as_str()]).unwrap();
+        v.set_seed(a, u64::MAX - 5).unwrap();
+        v.set_description(a, "Tout pour la déclaration").unwrap();
+        let binder = v.add_folder(a, "2026").unwrap();
+        v.set_folder(a, &f, Some(binder));
+        v.set_status(a, &f, Status::Done);
+        v.add_tag(a, &f, "fisc");
+        let mut back = Vaults::default();
+        back.restore(&v.to_json());
+        let r = &back.list[0];
+        assert_eq!((r.seed, r.description.as_str(), r.folders.len()), (u64::MAX - 5, "Tout pour la déclaration", 1));
+        assert_eq!(r.meta_of(&f), v.get(a).unwrap().meta_of(&f));
+        // A vault from before monsters: the same monster at every start, from its name.
+        let old = serde_json::json!([{ "name": "Ancien", "files": [p("x.pdf")] }]);
+        let (mut one, mut two) = (Vaults::default(), Vaults::default());
+        one.restore(&old);
+        two.restore(&old);
+        assert_eq!(one.list[0].seed, two.list[0].seed);
+        // Garbage filing is dropped, never trusted.
+        let mut meta = serde_json::Map::new();
+        meta.insert(p("y.pdf"), serde_json::json!({"folder": 3, "status": "nope", "tags": [1, "", "ok"], "added": -9}));
+        meta.insert(p("not-there.pdf"), serde_json::json!({"status": "done"}));
+        let bad = serde_json::json!([{ "name": "B", "files": [p("y.pdf")], "seed": "zz", "folders": [{"id": 0, "name": "x"}, {"id": 3}, 5], "meta": meta }]);
+        back.restore(&bad);
+        let r = &back.list[0];
+        assert!(r.folders.is_empty());
+        assert_eq!(r.meta_of(&p("y.pdf")), FileMeta { tags: vec!["ok".into()], ..FileMeta::default() });
+        assert_eq!(r.meta.len(), 1);
     }
 
     #[test]

@@ -70,6 +70,7 @@ mod nads_menu;
 mod raster_icon;
 pub mod tab_groups;
 pub mod tear_off;
+pub mod vault_monster;
 pub mod vaults;
 pub mod vaults_ui;
 
