@@ -9,76 +9,90 @@ use crate::{PdfCraftApp, icons, panels::human_size, widgets};
 
 pub mod folders_ui;
 
-const RECOMMENDED: [&str; 5] = ["organize", "comment", "form", "edit", "protect"];
+/// What the NadsPDF tools row leaves out: reviewing, forms, protecting, redacting, comparing.
+const RECOMMENDED: [&str; 5] = ["comment", "form", "protect", "redact", "compare"];
 
 /// The simplified interface's tools ([`PdfCraftApp::lite`]).
 const RECOMMENDED_LITE: [&str; 4] = ["edit", "fill_sign", "comment", "scan"];
 
-/// What a NadsPDF quick tool does when clicked: run a registry command, or open a tool panel.
-#[derive(Clone, Copy)]
-enum Quick {
-    Command(&'static str),
-    Tool(&'static str),
-}
-
-/// The old NadsPDF toolbox, one click each: (label, blurb, icon, action).
-const QUICK_TOOLS: [(&str, &str, &str, Quick); 10] = [
-    ("Convert to PDF", "Word, Excel, CSV, text, HTML, images", "file-input", Quick::Command("create.multiple")),
-    ("Compress", "Make PDFs lighter", "minimize-2", Quick::Tool("compress")),
-    ("Merge", "Combine several PDFs", "files", Quick::Command("page.combine")),
-    ("Split & organize", "Extract, delete, rotate pages", "scissors", Quick::Tool("organize")),
-    ("Edit text", "Change the words of a PDF", "pen-line", Quick::Tool("edit")),
-    ("PDF to images", "Export pages as PNG or JPEG", "image", Quick::Tool("export")),
-    ("Images to PDF", "PNG and JPEG into one PDF", "image-plus", Quick::Command("create.images")),
-    ("Watermark", "Stamp CONFIDENTIAL across pages", "stamp", Quick::Command("edit.watermark")),
-    ("Page numbers", "Number pages like 1 / 10", "hash", Quick::Command("edit.header_footer")),
-    ("Pipelines", "Chain steps over many files", "list-checks", Quick::Tool("actions")),
+/// The tools people reach for most, as the tools pane names and colours them, each with what it
+/// does for them in a few words: (tool group id, blurb).
+const QUICK_TOOLS: [(&str, &str); 8] = [
+    ("edit", "Change the text and pictures of any PDF"),
+    ("fill_sign", "Fill in forms, sign and date them"),
+    ("combine", "Put several files together into one PDF"),
+    ("compress", "Make a PDF small enough to email"),
+    ("export", "Turn a PDF into Word, Excel or images"),
+    ("create", "Make a PDF from Word, Excel, images or text"),
+    ("organize", "Reorder, rotate, delete or extract pages"),
+    ("scan", "Make a scan searchable and its text editable"),
 ];
 
-/// The NadsPDF tools row: compact cards in the nads.site style, red icon on a raised tile.
+/// The widest and narrowest tool card, and the room between cards.
+const QUICK_MAX_W: f32 = 300.0;
+const QUICK_MIN_W: f32 = 210.0;
+const QUICK_GAP: f32 = 12.0;
+const QUICK_H: f32 = 86.0;
+
+/// The NadsPDF tools: the eight everyday tools in even columns (four on a wide window), each a
+/// card with the tool's own icon and colour, its name and what it does, never cut off.
 fn quick_tools(app: &mut PdfCraftApp, ui: &mut egui::Ui, t: &Tokens) {
     ui.label(egui::RichText::new(tl!("NadsPDF tools")).font(theme::semibold(15.0)));
     ui.add_space(10.0);
-    ui.horizontal_wrapped(|ui| {
-        ui.spacing_mut().item_spacing = vec2(12.0, 12.0);
-        for (index, (label, blurb, icon, action)) in QUICK_TOOLS.into_iter().enumerate() {
-            // Each card comes in once, after the one before (`home_pixels::entrance`): its colours
-            // fade in and it rises into place. (A child `Ui` per card would take the row's whole
-            // width in this wrapping layout, so the fade is in the colours.)
-            let (alpha, rise) = crate::home_pixels::entrance(ui.ctx(), index + 1);
-            let fade = |c: egui::Color32| c.gamma_multiply(alpha);
-            let (rect, resp) = ui.allocate_exact_size(vec2(206.0, 64.0), Sense::click());
-            resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, tl!(label)));
-            let press = theme::Press::track(ui, &resp);
-            if alpha >= 1.0 {
-                card_lift(ui, t, rect, press);
+    let width = ui.available_width().max(QUICK_MIN_W);
+    // As many columns as fit at the narrowest card, at most four; the cards share the width.
+    let columns = (((width + QUICK_GAP) / (QUICK_MIN_W + QUICK_GAP)).floor() as usize).clamp(1, 4);
+    let card_w = ((width - QUICK_GAP * (columns as f32 - 1.0)) / columns as f32).min(QUICK_MAX_W);
+    let tools: Vec<(&'static catalog::ToolGroup, &str)> =
+        QUICK_TOOLS.iter().filter_map(|(id, blurb)| catalog::group(id).map(|g| (g, *blurb))).collect();
+    for (row_index, row) in tools.chunks(columns).enumerate() {
+        ui.horizontal(|ui| {
+            ui.spacing_mut().item_spacing = vec2(QUICK_GAP, 0.0);
+            for (column, (g, blurb)) in row.iter().enumerate() {
+                quick_card(app, ui, t, g, blurb, card_w, row_index * columns + column);
             }
-            let fill = fade(press.fill(t.card, t.hover, t.pressed));
-            let stroke = Stroke::new(1.0, fade(if press.hover > 0.05 { t.accent.gamma_multiply(0.55) } else { t.border }));
-            let shown = rect.translate(vec2(0.0, rise));
-            ui.painter().rect(shown, CornerRadius::same(12), fill, stroke, egui::StrokeKind::Inside);
-            let body = shown.translate(press.offset());
-            let tile = Rect::from_min_size(body.min + vec2(12.0, 14.0), vec2(36.0, 36.0));
-            ui.painter().rect_filled(tile, CornerRadius::same(9), fade(t.accent_soft));
-            icons::paint(ui, tile.shrink(8.0), icon, 19.0, fade(t.accent));
-            let text_w = body.width() - 70.0;
-            let mut title = egui::text::LayoutJob::simple_singleline(tl!(label).to_owned(), theme::semibold(13.0), fade(t.text));
-            title.wrap = egui::text::TextWrapping { max_width: text_w, max_rows: 1, break_anywhere: true, ..Default::default() };
-            let title = ui.fonts_mut(|f| f.layout_job(title));
-            ui.painter().galley(body.min + vec2(58.0, 15.0), title, fade(t.text));
-            let mut sub = egui::text::LayoutJob::simple_singleline(tl!(blurb).to_owned(), theme::regular(11.5), fade(t.text_muted));
-            sub.wrap = egui::text::TextWrapping { max_width: text_w, max_rows: 1, break_anywhere: true, ..Default::default() };
-            let sub = ui.fonts_mut(|f| f.layout_job(sub));
-            ui.painter().galley(body.min + vec2(58.0, 35.0), sub, fade(t.text_muted));
-            if theme::hand(resp.on_hover_text(tl!(blurb))).clicked() {
-                match action {
-                    // Commands that need a document (watermark…) ask for one first, then run.
-                    Quick::Command(id) => app.run_command(id),
-                    Quick::Tool(id) => app.select_tool(id),
-                }
-            }
-        }
-    });
+        });
+        ui.add_space(QUICK_GAP);
+    }
+}
+
+/// One tool card. It comes in after the one before (`home_pixels::entrance`): its colours fade in
+/// and it rises into place.
+fn quick_card(app: &mut PdfCraftApp, ui: &mut egui::Ui, t: &Tokens, g: &'static catalog::ToolGroup, blurb: &str, width: f32, index: usize) {
+    let (alpha, rise) = crate::home_pixels::entrance(ui.ctx(), index + 1);
+    let fade = |c: egui::Color32| c.gamma_multiply(alpha);
+    let (rect, resp) = ui.allocate_exact_size(vec2(width, QUICK_H), Sense::click());
+    resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, tl!(g.label)));
+    let press = theme::Press::track(ui, &resp);
+    if alpha >= 1.0 {
+        card_lift(ui, t, rect, press);
+    }
+    let hue = egui::Color32::from_rgb(g.hue[0], g.hue[1], g.hue[2]);
+    let fill = fade(press.fill(t.card, t.hover, t.pressed));
+    let stroke = Stroke::new(1.0, fade(if press.hover > 0.05 { hue.gamma_multiply(0.6) } else { t.border }));
+    let shown = rect.translate(vec2(0.0, rise));
+    ui.painter().rect(shown, CornerRadius::same(12), fill, stroke, egui::StrokeKind::Inside);
+    let body = shown.translate(press.offset());
+    let tile = Rect::from_min_size(body.min + vec2(14.0, 14.0), vec2(40.0, 40.0));
+    ui.painter().rect_filled(tile, CornerRadius::same(10), fade(hue.gamma_multiply(0.16)));
+    icons::paint(ui, tile.shrink(9.0), g.icon, 21.0, fade(hue));
+    let text_x = 66.0;
+    let text_w = (body.width() - text_x - 14.0).max(40.0);
+    let mut title = egui::text::LayoutJob::simple_singleline(tl!(g.label).to_owned(), theme::semibold(14.0), fade(t.text));
+    title.wrap = egui::text::TextWrapping { max_width: text_w, max_rows: 1, break_anywhere: false, ..Default::default() };
+    let title = ui.fonts_mut(|f| f.layout_job(title));
+    let title_elided = title.elided;
+    ui.painter().galley(body.min + vec2(text_x, 15.0), title, fade(t.text));
+    // Two lines: the blurbs are written to fit, in every language, at the narrowest card.
+    let mut sub = egui::text::LayoutJob::simple(tl!(blurb).to_owned(), theme::regular(12.0), fade(t.text_muted), text_w);
+    sub.wrap.max_rows = 2;
+    let sub = ui.fonts_mut(|f| f.layout_job(sub));
+    let sub_elided = sub.elided;
+    ui.painter().galley(body.min + vec2(text_x, 37.0), sub, fade(t.text_muted));
+    let resp = if title_elided || sub_elided { resp.on_hover_text(format!("{}\n{}", tl!(g.label), tl!(blurb))) } else { resp };
+    if theme::hand(resp).clicked() {
+        app.select_tool(g.id);
+    }
 }
 
 /// A soft shadow that rises on hover and settles when the card is pressed.
@@ -337,7 +351,7 @@ mod tests {
     fn review_home_harness() -> egui_kittest::Harness<'static, PdfCraftApp> {
         crate::i18n::set_current(crate::i18n::Lang::EN);
         let mut app = PdfCraftApp::new();
-        app.pinned_tools = vec!["edit".into()];
+        app.pinned_tools = vec!["comment".into()];
         let mut fonts = false;
         egui_kittest::Harness::builder().with_size(vec2(1500.0, 1200.0)).build_ui_state(
             move |ui, app| {
@@ -356,7 +370,8 @@ mod tests {
         use egui_kittest::kittest::Queryable;
         let mut h = review_home_harness();
         h.run_steps(3);
-        assert_eq!(h.get_all_by_label("Edit a PDF").count(), 1);
+        assert_eq!(h.get_all_by_label("Add comments").count(), 1, "pinned, so not repeated under Recommended tools");
+        assert_eq!(h.get_all_by_label("Edit a PDF").count(), 1, "in the NadsPDF tools row only");
     }
 
     #[test]

@@ -251,3 +251,13 @@ watermark text	CONFIDENTIAL	CONFIDENTIEL
 	NadsPDF on GitHub	NadsPDF sur GitHub
 	Text recognition isn't installed: its model files are missing. Reinstall NadsPDF, or set NADSPDF_MODELS to the folder that holds them.	La reconnaissance de texte n'est pas installée : ses fichiers de modèles sont absents. Réinstallez NadsPDF, ou définissez NADSPDF_MODELS sur le dossier qui les contient.
 	the text recognition models are not installed (reinstall NadsPDF, or set NADSPDF_MODELS to the folder that holds them)	les modèles de reconnaissance de texte ne sont pas installés (réinstallez NadsPDF, ou définissez NADSPDF_MODELS sur le dossier qui les contient)
+
+# NadsPDF 2026-11: the Home tools row.
+	Change the text and pictures of any PDF	Changez le texte et les images de n’importe quel PDF
+	Fill in forms, sign and date them	Remplissez vos formulaires, signez et datez-les
+	Put several files together into one PDF	Rassemblez plusieurs fichiers en un seul PDF
+	Make a PDF small enough to email	Allégez un PDF pour l’envoyer par e-mail
+	Turn a PDF into Word, Excel or images	Transformez un PDF en Word, Excel ou images
+	Make a PDF from Word, Excel, images or text	Créez un PDF depuis Word, Excel, des images ou du texte
+	Reorder, rotate, delete or extract pages	Réordonnez, pivotez ou supprimez des pages
+	Make a scan searchable and its text editable	Rendez un scan cherchable et son texte modifiable
