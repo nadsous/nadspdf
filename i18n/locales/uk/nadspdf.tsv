@@ -137,3 +137,11 @@ watermark text	CONFIDENTIAL	КОНФІДЕНЦІЙНО
 	Turn on	Увімкнути
 	Couldn't save the extension settings: {e}	Не вдалося зберегти налаштування розширень: {e}
 	Loading text recognition…	Завантаження розпізнавання тексту…
+
+# NadsPDF 2026-11: Vision Bubble, the built-in extension.
+	Vision Bubble	Бульбашка огляду
+	Built in	Вбудоване
+	Point at a link to see the website's icon and a preview of the site: its title, description and picture.	Наведіть на посилання, щоб побачити значок сайту та його попередній перегляд: назву, опис і зображення.
+	Reads the home page of each site you point at, which tells that site.	Завантажує головну сторінку кожного сайту, на який ви наводите, — сайт про це дізнається.
+	Vision Bubble: also show a preview of the site	Бульбашка огляду: показувати й попередній перегляд сайту
+	Vision Bubble is reading the site…	Бульбашка огляду читає сайт…

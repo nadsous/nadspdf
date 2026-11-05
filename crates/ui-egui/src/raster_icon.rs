@@ -54,6 +54,33 @@ fn ico_entries(bytes: &[u8]) -> Option<ColorImage> {
     })
 }
 
+/// The largest picture [`thumbnail`] decodes, per side, and the memory one decode may take.
+const MAX_PHOTO_SIDE: u32 = 4096;
+const MAX_PHOTO_ALLOC: u64 = 80 * 1024 * 1024;
+
+/// A website's preview picture (PNG, JPEG or WebP) scaled down to fit `max_w` × `max_h`, or
+/// `None` when it isn't one of those, is too large, or doesn't decode.
+pub(crate) fn thumbnail(bytes: &[u8], max_w: u32, max_h: u32) -> Option<ColorImage> {
+    let format = image::guess_format(bytes).ok()?;
+    if !matches!(format, image::ImageFormat::Png | image::ImageFormat::Jpeg | image::ImageFormat::WebP) {
+        return None;
+    }
+    let mut reader = image::ImageReader::with_format(std::io::Cursor::new(bytes), format);
+    let mut limits = image::Limits::default();
+    limits.max_image_width = Some(MAX_PHOTO_SIDE);
+    limits.max_image_height = Some(MAX_PHOTO_SIDE);
+    limits.max_alloc = Some(MAX_PHOTO_ALLOC);
+    reader.limits(limits);
+    let picture = reader.decode().ok()?;
+    if picture.width() == 0 || picture.height() == 0 || max_w == 0 || max_h == 0 {
+        return None;
+    }
+    let small = if picture.width() > max_w || picture.height() > max_h { picture.thumbnail(max_w, max_h) } else { picture };
+    let rgba = small.into_rgba8();
+    let size = [usize::try_from(rgba.width()).ok()?, usize::try_from(rgba.height()).ok()?];
+    Some(ColorImage::from_rgba_unmultiplied(size, rgba.as_raw()))
+}
+
 fn decode_as(bytes: &[u8], format: image::ImageFormat) -> Option<ColorImage> {
     let mut reader = image::ImageReader::with_format(std::io::Cursor::new(bytes), format);
     let mut limits = image::Limits::default();
@@ -158,5 +185,24 @@ mod ico_tests {
         let mut cut = ico(&[(16, rgba_png(16, 16)), (64, indexed_png(64, 64))]);
         cut.truncate(cut.len() - 10);
         assert_eq!(decode(&cut).map(|i| i.size), Some([16, 16]), "the intact entry is used");
+    }
+}
+
+#[cfg(test)]
+mod thumbnail_tests {
+    use super::*;
+
+    #[test]
+    fn a_large_preview_picture_is_scaled_down_and_keeps_its_shape() {
+        let mut jpeg = Vec::new();
+        image::RgbImage::from_pixel(1200, 630, image::Rgb([20, 30, 200]))
+            .write_to(&mut std::io::Cursor::new(&mut jpeg), image::ImageFormat::Jpeg)
+            .unwrap();
+        let small = thumbnail(&jpeg, 320, 170).expect("a JPEG decodes");
+        assert!(small.size[0] <= 320 && small.size[1] <= 170, "{:?}", small.size);
+        assert!((small.size[0] as f32 / small.size[1] as f32 - 1200.0 / 630.0).abs() < 0.05, "{:?}", small.size);
+        assert!(thumbnail(b"GIF89a....", 320, 170).is_none());
+        assert!(thumbnail(&jpeg, 0, 170).is_none());
+        assert!(thumbnail(&jpeg[..40], 320, 170).is_none(), "a cut picture is refused");
     }
 }

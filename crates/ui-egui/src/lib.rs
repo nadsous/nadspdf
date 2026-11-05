@@ -723,6 +723,11 @@ pub struct PdfCraftApp {
     /// Preferences ▸ Show websites' icons in link bubbles: off by default, as asking a website
     /// for its icon tells it the link was looked at.
     pub link_favicons: bool,
+    /// Reads a website's home page for Vision Bubble (the desktop app sets it).
+    pub preview_fetch: Option<link_bubble::PreviewFetch>,
+    /// Vision Bubble, the built-in extension: off by default. On, link bubbles show each site's
+    /// icon and a preview of the site (it implies [`Self::link_favicons`]).
+    pub link_vision: bool,
     /// The Assistant panel: settings, usage, conversations.
     pub assistant: assistant_ui::AssistantState,
     /// Sends an assistant's request (the desktop app sets it; the interface has no network code).

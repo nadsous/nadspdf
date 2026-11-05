@@ -50,6 +50,7 @@ mod motion;
 mod reopen;
 mod settings;
 mod single_instance;
+mod site_preview;
 mod startup;
 mod text_scale;
 mod updates;
@@ -513,6 +514,8 @@ fn app_creator<'a>(
         app.update_source = Some(std::sync::Arc::new(updates::latest_release));
         // Used only when the user turns on Preferences ▸ Show websites' icons.
         app.favicon_fetch = Some(std::sync::Arc::new(favicon::fetch));
+        // Used only when the user turns Vision Bubble on.
+        app.preview_fetch = Some(std::sync::Arc::new(site_preview::fetch));
         // The Assistant: the user's own key, kept in the system's credential store.
         app.ai_send = Some(std::sync::Arc::new(|provider, model: &str, key: &str, request: &pdfcraft_ai::Request| {
             pdfcraft_ai::net::send(provider, model, key, request)

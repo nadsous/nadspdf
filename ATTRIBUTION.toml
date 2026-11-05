@@ -3186,7 +3186,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs"
-sha256 = "67405cacdc85c748e7c95fdb28c35401bc107010bae04438833cf4de881731e5"
+sha256 = "b26bfdf75ceb796832636e15cf9fad96e5da874823b0317943338508b784fd67"
 
 [[asset]]
 path = "i18n/locales/ar/pdfcraft.tsv"
@@ -3219,7 +3219,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs"
-sha256 = "f8dd27a5c1325deecaa1a4a91a2e84809f5ecf61ff942c2c9a60bcbaa6337af6"
+sha256 = "079934b48ba7bf96e14f065ea5d2c2b468cad13e7848f787ee86bc26908ff754"
 
 [[asset]]
 path = "i18n/locales/bg/pdfcraft.tsv"
@@ -3340,7 +3340,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs"
-sha256 = "0112d093c6edafcf11beb659fd963b97cdecba4d38fd99c4328a7396a3423211"
+sha256 = "02580968238b98ddd158f7a9d503c9c693e594ad28f889481388725eee16ee91"
 
 [[asset]]
 path = "i18n/locales/cs/pdfcraft.tsv"
@@ -3395,7 +3395,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs"
-sha256 = "423bf8f6ae446c8a3a68c8014192c0a89d7c24bdabee4c39182e585ec67d6a1d"
+sha256 = "4ac73000587bf10927e243cee4d89569ea877c0005f4e8c39cde48d5d5031b9b"
 
 [[asset]]
 path = "i18n/locales/de/pdfcraft.tsv"
@@ -3450,7 +3450,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs"
-sha256 = "b7dc08043a406e9238ec01ee5ff683ede2100068bdd25d5f45cf5408aea3643c"
+sha256 = "6cb1611491a80b7296d2c2b8a4a21334ec6e82962d29dc02d1209072d1ab00fa"
 
 [[asset]]
 path = "i18n/locales/el/pdfcraft.tsv"
@@ -3483,7 +3483,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs"
-sha256 = "b0b404071176c5294e7edb8d6330dd81adc62bc391dab1cbad3e272366b999cf"
+sha256 = "9fb8eff60e98cc5201a4d772ef02e18bc87c504d31e8b28761c41bd95f6b5085"
 
 [[asset]]
 path = "i18n/locales/es/pdfcraft.tsv"
@@ -3560,7 +3560,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs"
-sha256 = "c5d04bfaec606b3b9761aaa4cc3aee8d9df025184b9e8e3485b3fce44b1a43e5"
+sha256 = "5c3986eb099123422f18624339cdf4e03af2c9f046334fafb30851e0c9ef1831"
 
 [[asset]]
 path = "i18n/locales/fr/pdfcraft.tsv"
@@ -3637,7 +3637,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs"
-sha256 = "099b4bff6013e77bcc4c732c422e5aad6cbfb270fb5a10ee73c7542eb26a086c"
+sha256 = "06b8d3f966c2010ffa22d25875fb9a5dc3290815efa560d7781a3aca07d9f8ab"
 
 [[asset]]
 path = "i18n/locales/hu/pdfcraft.tsv"
@@ -3692,7 +3692,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs"
-sha256 = "154cf826b0d1b67bd511ecfd98fe5ad7a831b62cb5da557b5c24d0325d2bdd6e"
+sha256 = "1cf94755f1a006c579cfcf84d40c12dd8590307c7586754c22d608c1a56044f5"
 
 [[asset]]
 path = "i18n/locales/it/pdfcraft.tsv"
@@ -3725,7 +3725,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs"
-sha256 = "18bf91da9c171e98321a1f0414730dfced5ee61e7799df769a011285b5479249"
+sha256 = "70e1fa7a3af64a2f32d7c501210ee97385a387d188ba8738fef1f52e6577e6b7"
 
 [[asset]]
 path = "i18n/locales/ja/pdfcraft.tsv"
@@ -3780,7 +3780,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs"
-sha256 = "e243c1ee956c7623c3d83f07a531b313bc9e5541ec13b7d7dcb28bae0325b439"
+sha256 = "467e6763216fa960ec5d4a66cb95b0c910d10cbe7bf1b9f849a545a1602d1839"
 
 [[asset]]
 path = "i18n/locales/kk/pdfcraft.tsv"
@@ -3857,7 +3857,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs"
-sha256 = "96f20a485505ee84054f0e9ec7330580f0d6d138336921ac5b283aa773ef32d7"
+sha256 = "679d0a4de4531bdf8c31f59664af9be4a5d9e1c0d246d5cf46dff62378b3bbe9"
 
 [[asset]]
 path = "i18n/locales/lt/pdfcraft.tsv"
@@ -3934,7 +3934,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs"
-sha256 = "107e08de6f33fe0ab4f41db08734752e2754c2359179df4b55644551bbdb77d5"
+sha256 = "0775776f87b407ab01a8b7d5c0b14a865852f91ee0687218e56fa08726c5810b"
 
 [[asset]]
 path = "i18n/locales/pl/pdfcraft.tsv"
@@ -3967,7 +3967,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs"
-sha256 = "0f754bc0e7aca90d17e5991d79a7966736115fb39e91303cdbcec4b976b36ccb"
+sha256 = "ca0ac853de0de96efef2d259cd9d3c4432f04b649c3465969f4f3725dfd76ebe"
 
 [[asset]]
 path = "i18n/locales/pt-br/pdfcraft.tsv"
@@ -4022,7 +4022,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs"
-sha256 = "0b92093a7c7bac7810279b10e21e766c3e2bc71470b473188393a92aff1b5135"
+sha256 = "915751b3ddf0e5ea11dcacd4dfee87d0c54ba54ca2c8de158acd195e6ee42ff5"
 
 [[asset]]
 path = "i18n/locales/ru/pdfcraft.tsv"
@@ -4055,7 +4055,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs"
-sha256 = "99b88bc40e052bd64e3747cc1a7bd2e1b9c0f9c2597f93f1e9eded4f7913c904"
+sha256 = "79dbb0e2ec5b7c7473c7677fd8a272f7ac3a8845c7ebe0ed08f70a4d77389b23"
 
 [[asset]]
 path = "i18n/locales/sl/pdfcraft.tsv"
@@ -4154,7 +4154,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs"
-sha256 = "63bed4c011a828caf116ef779115433e36b3e567e605d33973fc906247530365"
+sha256 = "38f22a10b439c43071ad2a353e616a6650a702128f2a6b44f30cc7e0bda36fbb"
 
 [[asset]]
 path = "i18n/locales/te/pdfcraft.tsv"
@@ -4209,7 +4209,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs"
-sha256 = "9535b7ec209d82c9d2b90d8c0983bc27b83ad849d8d544d3c6418d277b606ab9"
+sha256 = "3d8551081ea53fa7efd64f781e41a5cfeaa702c01984057edf01352d4208c676"
 
 [[asset]]
 path = "i18n/locales/tr/pdfcraft.tsv"
@@ -4242,7 +4242,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs"
-sha256 = "3a9a2e472aa5a54cc2e8c3f3a4a0d3187c99d903de3f97bf5800d26394fb64b5"
+sha256 = "4bdf64a628f26dfde91583568857c280185dd0e36c81ad374b9cc0584182476c"
 
 [[asset]]
 path = "i18n/locales/uk/pdfcraft.tsv"
@@ -4319,7 +4319,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs"
-sha256 = "8f3516b995f92a29c9b9b9d39cfcf45cd195cb999d6c2d7c7aa4bcb305c28881"
+sha256 = "5f595d8005763a9430def10321a2073e7df9db89cdf130f05686bb32338a96e8"
 
 [[asset]]
 path = "i18n/locales/zh-hans/pdfcraft.tsv"
@@ -4352,7 +4352,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs"
-sha256 = "cc75a5f58613084dc80a7664308283f6bc7738a432f4ffc5e063936b372ef149"
+sha256 = "2b26253ebcd7b8ce6810a84378e61d8b6b6eb0d63c489b266e6cf67751dc65ea"
 
 [[asset]]
 path = "i18n/locales/zh-hant/pdfcraft.tsv"

@@ -1008,6 +1008,12 @@ fn ctx_checkbox_link_icons(ui: &mut egui::Ui, app: &mut PdfCraftApp, t: &Tokens)
         .small()
         .color(t.text_muted),
     );
+    ui.add_space(6.0);
+    let mut vision = app.link_vision;
+    if ui.add(crate::widgets::checkbox(&mut vision, tl!("Vision Bubble: also show a preview of the site"))).changed() {
+        app.set_link_vision(vision);
+    }
+    ui.label(egui::RichText::new(tl!("Reads the home page of each site you point at, which tells that site.")).small().color(t.text_muted));
 }
 
 #[cfg(test)]

@@ -56,6 +56,12 @@ impl PdfCraftApp {
                 "closed" => self.assistant.open = false,
                 _ => return Err("assistant must be open or closed".into()),
             },
+            // Vision Bubble, the built-in extension.
+            ("link-vision", _) => match value {
+                "on" => self.set_link_vision(true),
+                "off" => self.set_link_vision(false),
+                _ => return Err("link-vision must be on or off".into()),
+            },
             ("hotbar-side", _) => self.hotbar.place(value)?,
             ("language", _) => {
                 let language = i18n::normalize_pref(value).ok_or_else(|| {

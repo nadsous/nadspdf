@@ -137,3 +137,11 @@ watermark text	CONFIDENTIAL	ПОВЕРИТЕЛНО
 	Turn on	Включване
 	Couldn't save the extension settings: {e}	Настройките на разширенията не можаха да бъдат записани: {e}
 	Loading text recognition…	Зареждане на разпознаването на текст…
+
+# NadsPDF 2026-11: Vision Bubble, the built-in extension.
+	Vision Bubble	Балон за преглед
+	Built in	Вградено
+	Point at a link to see the website's icon and a preview of the site: its title, description and picture.	Посочете връзка, за да видите иконата на сайта и преглед: заглавие, описание и изображение.
+	Reads the home page of each site you point at, which tells that site.	Зарежда началната страница на всеки посочен сайт, което сайтът разбира.
+	Vision Bubble: also show a preview of the site	Балон за преглед: показвай и преглед на сайта
+	Vision Bubble is reading the site…	Балонът за преглед чете сайта…

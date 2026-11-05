@@ -137,3 +137,11 @@ watermark text	CONFIDENTIAL	RISERVATO
 	Turn on	Attiva
 	Couldn't save the extension settings: {e}	Impossibile salvare le impostazioni delle estensioni: {e}
 	Loading text recognition…	Caricamento del riconoscimento del testo…
+
+# NadsPDF 2026-11: Vision Bubble, the built-in extension.
+	Vision Bubble	Bolla di Visione
+	Built in	Integrata
+	Point at a link to see the website's icon and a preview of the site: its title, description and picture.	Punta un link per vedere l’icona del sito e un’anteprima: titolo, descrizione e immagine.
+	Reads the home page of each site you point at, which tells that site.	Legge la home page di ogni sito che punti, e il sito lo viene a sapere.
+	Vision Bubble: also show a preview of the site	Bolla di Visione: mostra anche un’anteprima del sito
+	Vision Bubble is reading the site…	La Bolla di Visione sta leggendo il sito…

@@ -154,3 +154,11 @@ watermark text	CONFIDENTIAL	KONFIDENCIALU
 	Turn on	Įjungti
 	Couldn't save the extension settings: {e}	Nepavyko įrašyti plėtinių nustatymų: {e}
 	Loading text recognition…	Įkeliamas teksto atpažinimas…
+
+# NadsPDF 2026-11: Vision Bubble, the built-in extension.
+	Vision Bubble	Regos burbulas
+	Built in	Įtaisytas
+	Point at a link to see the website's icon and a preview of the site: its title, description and picture.	Užveskite ant nuorodos ir pamatysite svetainės piktogramą bei peržiūrą: pavadinimą, aprašą ir paveikslėlį.
+	Reads the home page of each site you point at, which tells that site.	Nuskaito kiekvienos svetainės, ant kurios užvedate, pradinį puslapį – svetainė tai mato.
+	Vision Bubble: also show a preview of the site	Regos burbulas: rodyti ir svetainės peržiūrą
+	Vision Bubble is reading the site…	Regos burbulas skaito svetainę…

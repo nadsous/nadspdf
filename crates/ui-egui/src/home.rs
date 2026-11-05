@@ -30,7 +30,7 @@ const QUICK_TOOLS: [(&str, &str); 8] = [
 
 /// The widest and narrowest tool card, and the room between cards.
 const QUICK_MAX_W: f32 = 300.0;
-const QUICK_MIN_W: f32 = 210.0;
+const QUICK_MIN_W: f32 = 270.0;
 const QUICK_GAP: f32 = 12.0;
 const QUICK_H: f32 = 86.0;
 
@@ -174,7 +174,7 @@ pub fn show(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                 ui.add_space(26.0);
             }
             #[cfg(not(target_arch = "wasm32"))]
-            if !app.lite && app.extensions.enabled() {
+            if !app.lite {
                 crate::extensions_home::section(app, ui);
                 ui.add_space(26.0);
             }

@@ -1,6 +1,7 @@
-//! NadsPDF: the extensions on Home. One card per installed extension, with its picture (the
-//! manifest's `icon`, or a pixel pattern of its own), what it does and its on/off switch, and a
-//! way in for new ones: import an extension folder, or open the extensions folder.
+//! NadsPDF: the extensions on Home. First the built-in ones (Vision Bubble), then one card per
+//! installed extension, with its picture (the manifest's `icon`, or a pixel pattern of its own),
+//! what it does and its on/off switch, and a way in for new ones: import an extension folder, or
+//! open the extensions folder.
 //!
 //! Importing copies a checked extension into the folder ([`pdfcraft_extensions::import`]); it
 //! still runs only once the user turns it on and accepts what it will be able to do.
@@ -60,24 +61,22 @@ pub(crate) fn picture(ui: &mut egui::Ui, ext: &Installed, t: &Tokens) {
 
 /// The Extensions section of Home (desktop; extensions are off on the web).
 pub(crate) fn section(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
-    if !app.extensions.enabled() {
-        return;
-    }
     let t = Tokens::get(ui.ctx());
-    let entries = app.extensions.entries().to_vec();
+    let installable = app.extensions.enabled();
+    let entries = if installable { app.extensions.entries().to_vec() } else { Vec::new() };
     ui.horizontal(|ui| {
         ui.label(egui::RichText::new(tl!("Extensions")).font(theme::semibold(15.0)));
-        if !entries.is_empty() {
-            ui.label(egui::RichText::new(entries.len().to_string()).color(t.text_faint));
+        ui.label(egui::RichText::new((entries.len() + 1).to_string()).color(t.text_faint));
+        if installable {
+            ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                if widgets::ghost_button(ui, "folder-open", tl!("Open the extensions folder")).clicked() {
+                    app.open_extensions_folder();
+                }
+                if widgets::ghost_button(ui, "plus", tl!("Import an extension…")).clicked() {
+                    app.import_extension_dialog();
+                }
+            });
         }
-        ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-            if widgets::ghost_button(ui, "folder-open", tl!("Open the extensions folder")).clicked() {
-                app.open_extensions_folder();
-            }
-            if widgets::ghost_button(ui, "plus", tl!("Import an extension…")).clicked() {
-                app.import_extension_dialog();
-            }
-        });
     });
     ui.add_space(4.0);
     ui.label(
@@ -85,16 +84,72 @@ pub(crate) fn section(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
             .color(t.text_muted),
     );
     ui.add_space(10.0);
-    if entries.is_empty() {
-        empty_state(ui, &t);
-        return;
-    }
     ui.horizontal_wrapped(|ui| {
         ui.spacing_mut().item_spacing = vec2(12.0, 12.0);
+        vision_card(app, ui, &t);
         for entry in &entries {
             card(app, ui, &t, entry);
         }
     });
+    if installable && entries.is_empty() {
+        ui.add_space(12.0);
+        empty_state(ui, &t);
+    }
+}
+
+/// Vision Bubble's picture: a speech bubble holding an eye, in nads pixels.
+fn vision_picture(ui: &mut egui::Ui, t: &Tokens, on: bool) {
+    const ROWS: [&str; 9] =
+        ["..#######..", ".#.......#.", "#...###...#", "#..#.#.#..#", "#.#..#..#.#", "#..#.#.#..#", "#...###...#", ".#.......#.", "..###.###.."];
+    let (rect, _) = ui.allocate_exact_size(vec2(PICTURE, PICTURE), Sense::hover());
+    let painter = ui.painter();
+    painter.rect_filled(rect, CornerRadius::same(10), if on { t.accent_soft } else { t.hover });
+    let cell = (rect.width() - 8.0) / 11.0;
+    let color = if on { t.accent } else { t.text_faint };
+    for (row, line) in ROWS.iter().enumerate() {
+        for (col, ch) in line.chars().enumerate() {
+            if ch != '#' {
+                continue;
+            }
+            let min = rect.min + vec2(4.0 + cell * col as f32, 4.0 + cell * (row as f32 + 1.0));
+            painter.rect_filled(Rect::from_min_size(min, vec2(cell, cell)), CornerRadius::ZERO, color);
+        }
+    }
+}
+
+/// The built-in Vision Bubble: what it does, what it sends, and its switch.
+fn vision_card(app: &mut PdfCraftApp, ui: &mut egui::Ui, t: &Tokens) {
+    egui::Frame::NONE
+        .fill(t.card)
+        .stroke(Stroke::new(1.0, if app.link_vision { t.accent.gamma_multiply(0.55) } else { t.border }))
+        .corner_radius(CornerRadius::same(12))
+        .inner_margin(egui::Margin::same(12))
+        .show(ui, |ui| {
+            ui.set_width(340.0);
+            ui.horizontal_top(|ui| {
+                vision_picture(ui, t, app.link_vision);
+                ui.vertical(|ui| {
+                    ui.horizontal(|ui| {
+                        ui.label(egui::RichText::new(tl!("Vision Bubble")).font(theme::semibold(13.5)));
+                        ui.label(egui::RichText::new(tl!("Built in")).small().color(t.text_faint));
+                    });
+                    ui.label(
+                        egui::RichText::new(tl!(
+                            "Point at a link to see the website's icon and a preview of the site: its title, description and picture."
+                        ))
+                        .color(t.text_muted),
+                    );
+                    ui.label(
+                        egui::RichText::new(tl!("Reads the home page of each site you point at, which tells that site.")).small().color(t.text_faint),
+                    );
+                    ui.add_space(4.0);
+                    let (label, on) = if app.link_vision { (tl!("Turn off"), false) } else { (tl!("Turn on"), true) };
+                    if widgets::pill_button(ui, label, on).clicked() {
+                        app.set_link_vision(on);
+                    }
+                });
+            });
+        });
 }
 
 /// No extension yet: what one is, so the import button makes sense.

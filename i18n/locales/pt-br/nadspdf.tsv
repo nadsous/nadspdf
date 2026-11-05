@@ -136,3 +136,11 @@ watermark text	CONFIDENTIAL	CONFIDENCIAL
 	Turn on	Ativar
 	Couldn't save the extension settings: {e}	Não foi possível salvar as configurações das extensões: {e}
 	Loading text recognition…	Carregando o reconhecimento de texto…
+
+# NadsPDF 2026-11: Vision Bubble, the built-in extension.
+	Vision Bubble	Bolha de Visão
+	Built in	Integrada
+	Point at a link to see the website's icon and a preview of the site: its title, description and picture.	Aponte para um link para ver o ícone do site e uma prévia: título, descrição e imagem.
+	Reads the home page of each site you point at, which tells that site.	Lê a página inicial de cada site que você aponta, o que informa esse site.
+	Vision Bubble: also show a preview of the site	Bolha de Visão: mostrar também uma prévia do site
+	Vision Bubble is reading the site…	A Bolha de Visão está lendo o site…

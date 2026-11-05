@@ -139,3 +139,11 @@ watermark text	CONFIDENTIAL	ҚҰПИЯ
 	Turn on	Қосу
 	Couldn't save the extension settings: {e}	Кеңейтімдер параметрлерін сақтау мүмкін болмады: {e}
 	Loading text recognition…	Мәтінді тану жүктелуде…
+
+# NadsPDF 2026-11: Vision Bubble, the built-in extension.
+	Vision Bubble	Шолу көпіршігі
+	Built in	Кіріктірілген
+	Point at a link to see the website's icon and a preview of the site: its title, description and picture.	Сайттың белгішесін және алдын ала көрінісін (тақырыбы, сипаттамасы, суреті) көру үшін сілтемені нұсқаңыз.
+	Reads the home page of each site you point at, which tells that site.	Сіз нұсқаған әр сайттың басты бетін оқиды, сайт бұл туралы біледі.
+	Vision Bubble: also show a preview of the site	Шолу көпіршігі: сайттың алдын ала көрінісін де көрсету
+	Vision Bubble is reading the site…	Шолу көпіршігі сайтты оқып жатыр…

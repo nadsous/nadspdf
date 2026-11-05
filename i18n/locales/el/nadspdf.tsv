@@ -137,3 +137,11 @@ watermark text	CONFIDENTIAL	ΕΜΠΙΣΤΕΥΤΙΚΟ
 	Turn on	Ενεργοποίηση
 	Couldn't save the extension settings: {e}	Δεν ήταν δυνατή η αποθήκευση των ρυθμίσεων επεκτάσεων: {e}
 	Loading text recognition…	Φόρτωση αναγνώρισης κειμένου…
+
+# NadsPDF 2026-11: Vision Bubble, the built-in extension.
+	Vision Bubble	Φούσκα Όρασης
+	Built in	Ενσωματωμένη
+	Point at a link to see the website's icon and a preview of the site: its title, description and picture.	Δείξτε έναν σύνδεσμο για να δείτε το εικονίδιο του ιστότοπου και μια προεπισκόπηση: τίτλο, περιγραφή και εικόνα.
+	Reads the home page of each site you point at, which tells that site.	Διαβάζει την αρχική σελίδα κάθε ιστότοπου που δείχνετε, κάτι που ο ιστότοπος αντιλαμβάνεται.
+	Vision Bubble: also show a preview of the site	Φούσκα Όρασης: εμφάνιση και προεπισκόπησης του ιστότοπου
+	Vision Bubble is reading the site…	Η Φούσκα Όρασης διαβάζει τον ιστότοπο…

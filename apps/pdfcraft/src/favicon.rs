@@ -10,13 +10,15 @@ use std::time::Duration;
 const MAX_BYTES: u64 = 256 * 1024;
 
 /// Whether `host` is a plain DNS name (letters, digits, `-`, `.`), so nothing else can be put
-/// into the request's address.
-fn plain_host(host: &str) -> bool {
+/// into the request's address. Its last label has a letter: an IP address (`192.168.1.1`) would
+/// let a document make NadsPDF call a device on the local network.
+pub(crate) fn plain_host(host: &str) -> bool {
     !host.is_empty()
         && host.len() <= 253
         && host.contains('.')
         && host.bytes().all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-' || b == b'.')
         && !host.starts_with(['.', '-'])
+        && host.rsplit('.').next().is_some_and(|tld| tld.bytes().any(|b| b.is_ascii_lowercase()))
 }
 
 /// The icon `https://<host>/favicon.ico` answers with (blocking).
@@ -44,7 +46,7 @@ mod tests {
     #[test]
     fn only_plain_host_names_are_asked() {
         assert!(super::plain_host("nads.site"));
-        for bad in ["", "localhost", "evil.com/x", "a.com:80", "a.com@b.com", "-a.com", "A.COM", "a .com"] {
+        for bad in ["", "localhost", "evil.com/x", "a.com:80", "a.com@b.com", "-a.com", "A.COM", "a .com", "192.168.1.1", "10.0.0.1."] {
             assert!(!super::plain_host(bad), "{bad}");
             assert!(super::fetch(bad).is_err(), "{bad} is refused before any request");
         }

@@ -59,6 +59,15 @@ impl PdfCraftApp {
         }
     }
 
+    /// Turn Vision Bubble on or off. On, it also turns on websites' icons (it shows them); off,
+    /// the icons stay as the user had them.
+    pub fn set_link_vision(&mut self, on: bool) {
+        self.link_vision = on;
+        if on {
+            self.link_favicons = true;
+        }
+    }
+
     /// Enable the Linux desktop portal in a native window. Headless contexts keep
     /// their supplied input and never connect to the user's session bus.
     #[cfg(target_os = "linux")]
@@ -159,6 +168,7 @@ impl PdfCraftApp {
         v["dark_thumbnails"] = self.view_defaults.dark.thumbnails.into();
         v["raster_level"] = self.raster_level.id().into();
         v["link_favicons"] = self.link_favicons.into();
+        v["link_vision"] = self.link_vision.into();
         v["assistant"] = self.assistant.persist();
         v["updates"] = self.updates.persist();
         v.to_string()
@@ -213,6 +223,9 @@ impl PdfCraftApp {
         self.assistant.restore(&v["assistant"]);
         if let Some(on) = v["link_favicons"].as_bool() {
             self.link_favicons = on;
+        }
+        if let Some(on) = v["link_vision"].as_bool() {
+            self.link_vision = on;
         }
         self.updates.restore(&v["updates"]);
         self.restore_view_extras(&v);

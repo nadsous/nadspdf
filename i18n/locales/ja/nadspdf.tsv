@@ -137,3 +137,11 @@ watermark text	CONFIDENTIAL	社外秘
 	Turn on	オンにする
 	Couldn't save the extension settings: {e}	拡張機能の設定を保存できませんでした: {e}
 	Loading text recognition…	テキスト認識を読み込んでいます…
+
+# NadsPDF 2026-11: Vision Bubble, the built-in extension.
+	Vision Bubble	ビジョンバブル
+	Built in	内蔵
+	Point at a link to see the website's icon and a preview of the site: its title, description and picture.	リンクにポインターを合わせると、サイトのアイコンとプレビュー（タイトル、説明、画像）が表示されます。
+	Reads the home page of each site you point at, which tells that site.	ポインターを合わせた各サイトのトップページを読み込むため、そのサイトに伝わります。
+	Vision Bubble: also show a preview of the site	ビジョンバブル：サイトのプレビューも表示する
+	Vision Bubble is reading the site…	ビジョンバブルがサイトを読み込んでいます…

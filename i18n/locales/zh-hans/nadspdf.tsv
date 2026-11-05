@@ -137,3 +137,11 @@ watermark text	CONFIDENTIAL	机密
 	Turn on	启用
 	Couldn't save the extension settings: {e}	无法保存扩展设置：{e}
 	Loading text recognition…	正在加载文字识别…
+
+# NadsPDF 2026-11: Vision Bubble, the built-in extension.
+	Vision Bubble	视界气泡
+	Built in	内置
+	Point at a link to see the website's icon and a preview of the site: its title, description and picture.	将指针指向链接，即可看到网站图标和预览：标题、描述和图片。
+	Reads the home page of each site you point at, which tells that site.	会读取你指向的每个网站的首页，网站会因此得知。
+	Vision Bubble: also show a preview of the site	视界气泡：同时显示网站预览
+	Vision Bubble is reading the site…	视界气泡正在读取网站…

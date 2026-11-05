@@ -315,6 +315,8 @@ impl PdfCraftApp {
             updates_from_store: false,
             favicon_fetch: None,
             link_favicons: false,
+            preview_fetch: None,
+            link_vision: false,
             assistant: Default::default(),
             ai_send: None,
             ai_keys: None,
@@ -734,7 +736,11 @@ impl eframe::App for PdfCraftApp {
             return;
         }
         // The link bubble may ask websites for their icons only with the preference on.
-        link_bubble::publish(&ctx, if self.link_favicons { self.favicon_fetch.clone() } else { None });
+        link_bubble::publish(
+            &ctx,
+            if self.link_favicons || self.link_vision { self.favicon_fetch.clone() } else { None },
+            if self.link_vision { self.preview_fetch.clone() } else { None },
+        );
         // nads.site's base: the near-black socle the rounded panels float on.
         let base = theme::Tokens::get(&ctx).titlebar;
         ui.painter().rect_filled(ctx.content_rect(), 0.0, base);
