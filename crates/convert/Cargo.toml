@@ -15,9 +15,9 @@ pdfcraft-fonts = { workspace = true }
 pdfcraft-create = { workspace = true }
 thiserror = { workspace = true }
 # Already in the workspace (xfa, xfdf): DOCX, XLSX and ODS are zipped XML.
-roxmltree = "0.20"
+roxmltree = "0.21"
 # Reading only, Deflate through flate2's Rust backend (already in the tree); no other codecs.
-zip = { version = "4.6", default-features = false, features = ["deflate-flate2"] }
+zip = { version = "9.4", default-features = false, features = ["deflate-flate2"] }
 flate2 = { workspace = true }
 
 [dev-dependencies]
