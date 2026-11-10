@@ -1,10 +1,10 @@
-//! NadsPDF's Mise en page tab in the real shell: opened from the mode bar, a frame drawn on the
-//! page, its text changed, undone, and the document exported into a PDF tab.
+//! NadsPDF's Mise en page tab in the real shell: the page layout interface opened from the mode
+//! bar, page layouts opened from NadsPDF's Open, and unsaved work kept when the tab closes.
 
 use egui_kittest::Harness;
 use egui_kittest::kittest::Queryable;
 use pdfcraft_ui_egui::PdfCraftApp;
-use pdfcraft_ui_egui::layout_ui::Tool;
+use serde_json::json;
 
 fn harness() -> Harness<'static, PdfCraftApp> {
     let mut h = Harness::builder().with_size(egui::vec2(1400.0, 900.0)).build_eframe(|_cc| {
@@ -17,78 +17,68 @@ fn harness() -> Harness<'static, PdfCraftApp> {
 }
 
 #[test]
-fn the_mode_bar_opens_the_tab_and_a_new_document_starts_empty() {
+fn the_mode_bar_opens_the_tab_and_home_leaves_it_open() {
     let mut h = harness();
     h.get_by_label("Page design").click();
-    h.run_steps(3);
+    h.run_steps(6);
     assert!(h.state().layout_showing());
-    h.get_by_label("New A4 document").click();
-    h.run_steps(3);
-    assert_eq!(h.state().layout_tab.page_count(), 1);
-    assert!(h.state().layout_tab.items().is_empty());
-    // Its tab is in the strip; Home leaves it open but not shown.
+    assert!(!h.state().layout_tab.has_document());
     h.get_by_label("Home").click();
     h.run_steps(2);
     assert!(!h.state().layout_showing() && h.state().layout_tab.open);
 }
 
 #[test]
-fn a_frame_is_drawn_typed_in_undone_and_exported() {
+fn the_sample_opens_in_the_interface_and_its_menus_run() {
     let mut h = harness();
-    h.state_mut().new_layout(pdfcraft_layout::Paper::A4);
-    h.run_steps(3);
-    h.get_by_label("Text frame").click();
-    h.run_steps(2);
-    assert_eq!(h.state().layout_tab.tool, Tool::Text);
-    // Drag across the middle of the page area.
-    let (from, to) = (egui::pos2(400.0, 300.0), egui::pos2(650.0, 420.0));
-    h.hover_at(from);
-    h.run_steps(1);
-    h.drag_at(from);
-    h.run_steps(1);
-    for i in 1..=6 {
-        h.hover_at(from + (to - from) * (i as f32 / 6.0));
-        h.run_steps(1);
-    }
-    h.drop_at(to);
-    h.run_steps(3);
-    let items = h.state().layout_tab.items();
-    assert_eq!(items.len(), 1, "one frame drawn");
-    let id = items[0].id;
-    assert!(items[0].rect.width() > 50.0 && items[0].rect.height() > 20.0, "{:?}", items[0].rect);
-    assert_eq!(h.state().layout_tab.selected, Some(id), "the new frame is selected");
-    assert_eq!(h.state().layout_tab.tool, Tool::Select, "back to Select");
-
-    let text = h.state_mut().layout_tab.document_mut().and_then(|d| d.text(id));
-    assert_eq!(text.as_deref(), Some("Type your text here"));
-    h.state_mut().layout_tab.document_mut().map(|d| d.set_text(id, "Bonjour")).unwrap().unwrap();
-    assert!(h.state_mut().execute("edit.undo"));
-    h.run_steps(2);
-    let text = h.state_mut().layout_tab.document_mut().and_then(|d| d.text(id));
-    assert_eq!(text.as_deref(), Some("Type your text here"), "Undo goes to the Mise en page document");
-
-    // Export opens the PDF in a NadsPDF tab.
-    h.get_by_label("Export as PDF").click();
-    h.run_steps(4);
-    assert_eq!(h.state().views.len(), 1);
-    assert!(h.state().active.is_some() && !h.state().layout_showing());
-    assert!(h.state().layout_tab.open, "the Mise en page tab stays open");
+    assert!(h.state_mut().execute("layout.sample"));
+    h.run_steps(8);
+    assert_eq!(h.state().layout_tab.document_count(), 1);
+    // The engine's commands run through the interface.
+    let pages = h.state_mut().layout_tab.run("document.inspect", json!({})).unwrap();
+    assert!(pages.to_string().contains("pages"), "{pages}");
+    // NadsPDF's look stays: the interface's text is in NadsPDF's interface font.
+    let font = h.ctx.fonts(|f| f.definitions().families.get(&egui::FontFamily::Proportional).and_then(|s| s.first().cloned()));
+    assert_eq!(font.as_deref(), Some("Onest"));
 }
 
 #[test]
-fn the_sample_command_opens_the_magazine_and_delete_removes_a_frame() {
+fn a_page_layout_opens_from_nadspdf_open_and_unsaved_work_is_kept_on_close() {
+    let dir = std::env::temp_dir().join(format!("nadspdf-page-design-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let file = dir.join("Affiche.nadsmep");
+    let mut doc = pdfcraft_layout::Layout::new(pdfcraft_layout::Paper::A4, 1).unwrap();
+    doc.add_text_frame(0, pdfcraft_layout::Rect::new(72.0, 72.0, 300.0, 200.0), "Affiche").unwrap();
+    std::fs::write(&file, doc.save_bytes().unwrap()).unwrap();
+
     let mut h = harness();
-    assert!(h.state_mut().execute("layout.sample"));
-    h.run_steps(3);
-    assert_eq!(h.state().layout_tab.page_count(), 4);
-    let first = h.state().layout_tab.items().first().map(|i| i.id).unwrap();
-    let before = h.state().layout_tab.items().len();
-    h.state_mut().layout_tab.selected = Some(first);
+    h.state_mut().open_path(file.to_str().unwrap());
+    h.run_steps(8);
+    assert!(h.state().layout_showing());
+    assert!(h.state().views.is_empty(), "no PDF tab");
+    assert_eq!(h.state().layout_tab.document_count(), 1);
+    assert_eq!(h.state().layout_tab.title(), "Affiche.nadsmep");
+    assert!(!h.state().layout_tab.is_dirty());
+
+    // A change makes it unsaved: closing once keeps it, twice discards it.
+    h.state_mut().layout_tab.run("frame.create", json!({"rect": [72, 300, 300, 400], "content": "text", "text": "x"})).unwrap();
     h.run_steps(2);
-    h.get_by_label("Delete").click();
-    h.run_steps(3);
-    assert_eq!(h.state().layout_tab.items().len(), before - 1);
-    assert_eq!(h.state().layout_tab.selected, None);
+    assert!(h.state().layout_tab.is_dirty());
+    h.state_mut().request_close_layout_tab();
+    h.run_steps(2);
+    assert!(h.state().layout_tab.open && h.state().layout_tab.has_document(), "kept");
+    h.state_mut().request_close_layout_tab();
+    h.run_steps(2);
+    assert!(!h.state().layout_tab.open);
+    std::fs::remove_dir_all(&dir).ok();
+}
+
+#[test]
+fn a_file_that_is_not_a_layout_is_refused_in_words() {
+    let mut h = harness();
+    let e = h.state_mut().open_bytes("broken.nadsmep", None, b"not a layout".to_vec()).unwrap_err();
+    assert!(!e.contains("DesignCraft"), "{e}");
+    assert!(!h.state().layout_tab.has_document());
 }
 
 /// Screenshots for review: `NADSPDF_PAGE_DESIGN_SHOTS=<folder> cargo test -p pdfcraft-ui-egui --test it page_design`.
@@ -102,75 +92,25 @@ fn screenshots_when_asked() {
     });
     h.run_steps(4);
     h.state_mut().open_layout_tab();
-    h.run_steps(6);
+    h.run_steps(10);
     h.render().unwrap().save(dir.join("1-vide.png")).unwrap();
     assert!(h.state_mut().execute("layout.sample"));
-    h.run_steps(6);
-    h.state_mut().layout_tab.page = 1;
-    h.run_steps(6);
-    let pick = h.state().layout_tab.items().into_iter().find(|i| i.kind == pdfcraft_layout::ItemKind::Text).map(|i| i.id);
-    h.state_mut().layout_tab.selected = pick;
-    h.run_steps(6);
+    h.run_steps(30);
     h.render().unwrap().save(dir.join("2-magazine.png")).unwrap();
 }
 
-/// A page layout saved to a file, opened again through File ▸ Open (the main Open), and the
-/// tab's close button keeping unsaved work the first time.
 #[test]
-fn a_layout_is_saved_reopened_from_open_and_unsaved_work_is_kept_on_close() {
-    let dir = std::env::temp_dir().join(format!("nadspdf-page-design-{}", std::process::id()));
-    std::fs::create_dir_all(&dir).unwrap();
-    let file = dir.join("Affiche.nadsmep");
+fn quitting_with_an_unsaved_page_layout_asks_first() {
     let mut h = harness();
-    h.state_mut().new_layout(pdfcraft_layout::Paper::A4);
-    h.state_mut()
-        .layout_tab
-        .document_mut()
-        .map(|d| d.add_text_frame(0, pdfcraft_layout::Rect::new(72.0, 72.0, 300.0, 200.0), "Affiche"))
-        .unwrap()
-        .unwrap();
+    assert!(h.state_mut().execute("layout.sample"));
+    h.run_steps(6);
+    h.state_mut().layout_tab.run("frame.create", json!({"rect": [72, 72, 200, 200], "content": "text", "text": "x"})).unwrap();
+    // Home: the tab is not shown when the window is closed.
+    h.state_mut().active = None;
+    h.state_mut().layout_tab.focused = false;
     h.run_steps(2);
-    assert!(h.state().layout_tab.is_dirty());
-
-    // Closing once keeps it and says how to save it; the tab is still there.
-    h.state_mut().request_close_layout_tab();
-    h.run_steps(2);
-    assert!(h.state().layout_tab.open && h.state().layout_tab.has_document());
-
-    // Saved to its file: no longer unsaved, and the tab takes the file's name.
-    h.state_mut().layout_tab.path = Some(file.to_string_lossy().into_owned());
-    assert!(h.state_mut().execute("file.save"));
-    h.run_steps(2);
-    assert!(file.exists(), "written");
-    assert!(!h.state().layout_tab.is_dirty());
-    assert_eq!(h.state().layout_tab.title(), "Affiche.nadsmep");
-    h.get_by_label("Affiche.nadsmep");
-
-    // A saved document closes at once.
-    h.state_mut().request_close_layout_tab();
-    h.run_steps(2);
-    assert!(!h.state().layout_tab.open);
-
-    // File ▸ Open of a .nadsmep opens it in the Mise en page tab, not as a PDF.
-    h.state_mut().open_path(file.to_str().unwrap());
-    h.run_steps(3);
-    assert!(h.state().layout_showing());
-    assert!(h.state().views.is_empty(), "no PDF tab");
-    let items = h.state().layout_tab.items();
-    assert_eq!(items.len(), 1);
-    let text = h.state_mut().layout_tab.document_mut().and_then(|d| d.text(items[0].id));
-    assert_eq!(text.as_deref(), Some("Affiche"));
-    std::fs::remove_dir_all(&dir).ok();
-}
-
-#[test]
-fn a_file_that_is_not_a_layout_is_refused_and_an_unsaved_one_is_not_replaced() {
-    let mut h = harness();
-    assert!(h.state_mut().open_bytes("broken.nadsmep", None, b"not a layout".to_vec()).is_err());
-    assert!(!h.state().layout_tab.has_document());
-    h.state_mut().new_layout(pdfcraft_layout::Paper::A4);
-    h.state_mut().layout_tab.document_mut().map(|d| d.add_page()).unwrap().unwrap();
-    let saved = pdfcraft_layout::Layout::new(pdfcraft_layout::Paper::Letter, 3).unwrap().save_bytes().unwrap();
-    assert!(h.state_mut().open_bytes("other.nadsmep", None, saved).is_err(), "the unsaved one stays");
-    assert_eq!(h.state().layout_tab.page_count(), 2);
+    h.input_mut().viewports.entry(egui::ViewportId::ROOT).or_default().events.push(egui::ViewportEvent::Close);
+    h.run_steps(1);
+    assert!(h.state().layout_showing(), "the window stays open on the unsaved page layout");
+    assert!(h.state().layout_tab.has_document());
 }

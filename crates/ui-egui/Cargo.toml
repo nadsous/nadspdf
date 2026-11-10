@@ -28,6 +28,9 @@ pdfcraft-ai = { workspace = true }
 pdfcraft-export = { workspace = true }
 # NadsPDF: the Mise en page tab (src/layout_ui.rs).
 pdfcraft-layout = { workspace = true }
+# NadsPDF: the Mise en page tab's full page layout interface (vendor/designcraft/crates/ui-egui).
+designcraft-ui-egui = { path = "../../vendor/designcraft/crates/ui-egui" }
+designcraft-engine = { path = "../../vendor/designcraft/crates/engine" }
 # NadsPDF: extension pictures and website icons (src/raster_icon.rs); already in the tree.
 image = { version = "0.25", default-features = false, features = ["png", "ico", "jpeg", "webp"] }
 pdfcraft-cos = { workspace = true }

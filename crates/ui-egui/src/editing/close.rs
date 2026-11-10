@@ -262,6 +262,9 @@ impl PdfCraftApp {
         }
         if !self.allow_quit && self.hold_for_any_ocr_review() {
             ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
+        } else if !self.allow_quit && self.hold_quit_for_layout() {
+            // NadsPDF: an unsaved page layout keeps the window open once (see `layout_ui`).
+            ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
         } else if !self.allow_quit && self.first_dirty().is_some() {
             // `first_dirty` counts text typed into a field as an unsaved change.
             ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);

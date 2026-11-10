@@ -411,12 +411,26 @@ fn font_definitions_for_platform(prefer_hans: bool, platform: FontPolicyPlatform
             }
         }
     }
+    // NadsPDF: egui's bundled Hack (already in the definitions) last, for the arrows and shapes
+    // the Mise en page interface draws (▾, ◂, ■…) that the interface faces lack.
+    if fonts.font_data.contains_key("Hack") {
+        let stack = fonts.families.entry(FontFamily::Proportional).or_default();
+        if !stack.iter().any(|n| n == "Hack") {
+            stack.push("Hack".to_owned());
+        }
+    }
     let fallback: Vec<String> = fonts.families[&FontFamily::Proportional].clone();
     for (fam, primary, second) in [("medium", "Onest-Medium", "Inter-Medium"), ("semibold", "Onest-SemiBold", "Inter-SemiBold")] {
         let mut stack = vec![primary.to_owned(), second.to_owned()];
         stack.extend(fallback.iter().cloned());
         fonts.families.insert(FontFamily::Name(fam.into()), stack);
     }
+    // NadsPDF: the Mise en page interface (vendor/designcraft) names two more families for
+    // Arabic text; they are the interface's own stacks.
+    if let Some(semibold) = fonts.families.get(&FontFamily::Name("semibold".into())).cloned() {
+        fonts.families.insert(FontFamily::Name("arabic-semibold".into()), semibold);
+    }
+    fonts.families.insert(FontFamily::Name("arabic".into()), fallback);
     fonts
 }
 

@@ -3,6 +3,11 @@ use super::*;
 impl PdfCraftApp {
     pub(super) fn shortcuts(&mut self, ctx: &egui::Context) {
         use egui::Key;
+        // NadsPDF: the Mise en page tab's interface has its own keyboard (its shortcuts, its text
+        // editing); NadsPDF's would act twice on the same key.
+        if self.layout_showing() {
+            return;
+        }
         // "Save changes?" is modal: its keys are its own (⌘D is Don't save there, not Document
         // properties; Escape cancels it rather than clearing a selection), and nothing may run
         // underneath it. They are read here, before the canvas can consume them.
