@@ -83,7 +83,7 @@ Copy-Item (Join-Path $PSScriptRoot 'popup.html') $Out
 $ModelDir = if ($env:PDFCRAFT_MODELS) { $env:PDFCRAFT_MODELS } else { Join-Path $Root 'assets\models' }
 $Models = Join-Path $Out 'models'
 New-Item -ItemType Directory -Force -Path $Models | Out-Null
-foreach ($m in 'text-detection.rten', 'text-recognition.rten') {
+foreach ($m in 'text-detection.onnx', 'text-recognition.onnx') {
   $src = Join-Path $ModelDir $m
   if (-not (Test-Path $src)) { throw "$src missing: run cargo xtask models (or set PDFCRAFT_MODELS)" }
   Copy-Item $src $Models
