@@ -186,6 +186,7 @@ impl PdfCraftApp {
         v["raster_level"] = self.raster_level.id().into();
         v["link_favicons"] = self.link_favicons.into();
         v["link_vision"] = self.link_vision.into();
+        v["pixel_icons"] = crate::icons::pixel_style().into();
         v["assistant"] = self.assistant.persist();
         v["updates"] = self.updates.persist();
         v.to_string()
@@ -243,6 +244,9 @@ impl PdfCraftApp {
         }
         if let Some(on) = v["link_vision"].as_bool() {
             self.link_vision = on;
+        }
+        if let Some(on) = v["pixel_icons"].as_bool() {
+            crate::icons::set_pixel_style(on);
         }
         self.updates.restore(&v["updates"]);
         self.restore_view_extras(&v);

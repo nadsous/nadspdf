@@ -194,6 +194,7 @@ use tools::stamps_ui;
 use tools::tags_ui;
 use widgets::icon_data;
 pub use widgets::icons;
+use widgets::pixel_icon_data;
 use workflows::a11y_ui;
 use workflows::actions_ui;
 use workflows::combine_grid;

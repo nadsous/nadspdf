@@ -697,6 +697,16 @@ fn card_appearance(ui: &mut egui::Ui, app: &mut PdfCraftApp, t: &Tokens, ctx: &m
     if ctx.checkbox(ui, &mut app.show_page_edge_shadows, tl!("Show Page Edge Shadows"), t).changed() {
         ui.ctx().request_repaint();
     }
+    // NadsPDF: the interface's icons, Lucide outlines as before or Pixelarticons.
+    let mut pixel = crate::icons::pixel_style();
+    ui.horizontal(|ui| {
+        ctx.label_primary(ui, tl!("Icons"), t);
+        ctx.pill_choice(ui, t, &mut pixel, &[(false, tl!("Classic")), (true, "Pixelarticons")]);
+    });
+    if pixel != crate::icons::pixel_style() {
+        crate::icons::set_pixel_style(pixel);
+        ui.ctx().request_repaint();
+    }
     ui.add_space(4.0);
     crate::appearance::preferences_section_with_context(ui, app, t, ctx);
     ui.add_space(8.0);

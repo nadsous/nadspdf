@@ -2,6 +2,7 @@
 //! on-screen pixel size, and tinted per use (PhotoCraft lesson: never use Unicode glyphs as icons).
 
 use std::sync::OnceLock;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 use craft_ui::buttons::{ButtonVisuals, IconButton, IconButtonStyle};
 use craft_ui::icons::{SvgIconSet, SvgStyle};
@@ -9,11 +10,35 @@ use craft_ui::icons::{SvgIconSet, SvgStyle};
 use egui::{Color32, Rect, Response, Stroke, Vec2};
 
 use crate::icon_data::ICONS;
+use crate::pixel_icon_data::PIXEL_ICONS;
 use crate::theme::{self, Tokens};
 
 fn white_icons() -> &'static SvgIconSet {
     static MAP: OnceLock<SvgIconSet> = OnceLock::new();
     MAP.get_or_init(|| SvgIconSet::new(ICONS, SvgStyle { current_color: "#ffffff", stroke_width: Some("1.75") }, "bytes://icons/", "square"))
+}
+
+/// NadsPDF: Pixelarticons, for Preferences ▸ Icons ▸ Pixelarticons. Same names as the Lucide
+/// set, so every place that asks for an icon gets its pixel counterpart.
+fn pixel_icons() -> &'static SvgIconSet {
+    static MAP: OnceLock<SvgIconSet> = OnceLock::new();
+    MAP.get_or_init(|| SvgIconSet::new(PIXEL_ICONS, SvgStyle { current_color: "#ffffff", stroke_width: None }, "bytes://pixel-icons/", "square"))
+}
+
+/// Preferences ▸ Icons: Lucide outlines (the default, as before) or Pixelarticons.
+static PIXEL_STYLE: AtomicBool = AtomicBool::new(false);
+
+/// Draw the icons with Pixelarticons (`true`) or as Lucide outlines.
+pub fn set_pixel_style(on: bool) {
+    PIXEL_STYLE.store(on, Ordering::Relaxed);
+}
+
+pub fn pixel_style() -> bool {
+    PIXEL_STYLE.load(Ordering::Relaxed)
+}
+
+fn icons() -> &'static SvgIconSet {
+    if pixel_style() { pixel_icons() } else { white_icons() }
 }
 
 pub fn exists(name: &str) -> bool {
@@ -22,7 +47,8 @@ pub fn exists(name: &str) -> bool {
 
 pub(crate) fn source(name: &str) -> egui::ImageSource<'static> {
     // NadsPDF caches an unknown name under the resolved fallback name.
-    white_icons().source(white_icons().canonical_name(name).unwrap_or("square"))
+    let set = icons();
+    set.source(set.canonical_name(name).unwrap_or("square"))
 }
 
 pub fn image(name: &str, size: f32, tint: Color32) -> egui::Image<'static> {
@@ -30,7 +56,37 @@ pub fn image(name: &str, size: f32, tint: Color32) -> egui::Image<'static> {
 }
 
 pub fn paint(ui: &egui::Ui, rect: Rect, name: &str, size: f32, tint: Color32) {
-    image(name, size, tint).paint_at(ui, Rect::from_center_size(rect.center(), Vec2::splat(size)));
+    let ppp = ui.ctx().pixels_per_point();
+    let size = if pixel_style() { pixel_size(size, ppp) } else { size };
+    // Whole screen pixels, so each icon pixel covers the same number of them.
+    let center = if pixel_style() && ppp > 0.0 { (rect.center().to_vec2() * ppp).round().to_pos2() / ppp } else { rect.center() };
+    image(name, size, tint).paint_at(ui, Rect::from_center_size(center, Vec2::splat(size)));
+}
+
+/// Pixelarticons' grid: 24 × 24 pixels.
+const PIXEL_GRID: f32 = 24.0;
+
+/// A size near `size` points at which every pixel of a pixel icon covers the same whole number
+/// of screen pixels. Drawn at any other size, one- and two-pixel-wide cells alternate, and below
+/// 24 screen pixels some of the icon's lines disappear. A little smaller (to 88 %) or larger (to
+/// 150 %: a 16-point icon on a 100 % screen becomes 24 pixels) is fine; when neither fits, the
+/// icon keeps its size rather than becoming too large for its place.
+pub(crate) fn pixel_size(size: f32, ppp: f32) -> f32 {
+    if !(size.is_finite() && ppp.is_finite() && size > 0.0 && ppp > 0.0) {
+        return size;
+    }
+    let target = size * ppp;
+    let cells = target / PIXEL_GRID;
+    let below = cells.floor() * PIXEL_GRID;
+    let above = cells.ceil().max(1.0) * PIXEL_GRID;
+    let px = if below >= PIXEL_GRID && below >= 0.88 * target {
+        below
+    } else if above <= 1.5 * target {
+        above
+    } else {
+        target.round().max(1.0)
+    };
+    px / ppp
 }
 
 /// Square icon button: transparent until hovered; `selected` gets the accent treatment.
@@ -85,6 +141,39 @@ pub fn labeled_button(ui: &mut egui::Ui, name: &str, box_size: f32, selected: bo
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn pixel_icons_cover_whole_screen_pixels() {
+        let px = |size: f32, ppp: f32| pixel_size(size, ppp) * ppp;
+        // 16 points at 150 % is exactly the grid; at 100 % it grows to the grid (no lost lines).
+        assert!((px(16.0, 1.5) - 24.0).abs() < 1e-3);
+        assert!((px(16.0, 1.0) - 24.0).abs() < 1e-3);
+        assert!((px(17.0, 1.25) - 24.0).abs() < 1e-3);
+        assert!((px(18.0, 2.0) - 48.0).abs() < 1e-3);
+        // 10 points at 100 %: 24 would be too large for its place, so it stays 10.
+        assert!((px(10.0, 1.0) - 10.0).abs() < 1e-3);
+        for ppp in [1.0, 1.25, 1.5, 1.75, 2.0] {
+            for size in [8.0, 10.0, 12.0, 14.0, 16.0, 17.0, 18.0, 20.0, 24.0] {
+                let got = pixel_size(size, ppp);
+                assert!(got >= size * 0.87 && got <= size * 1.51, "{size} at {ppp}: {got}");
+            }
+        }
+        assert!(pixel_size(f32::NAN, 1.0).is_nan());
+        assert_eq!(pixel_size(16.0, 0.0), 16.0);
+    }
+
+    #[test]
+    fn every_lucide_icon_has_a_pixel_counterpart() {
+        let pixel: std::collections::HashSet<&str> = PIXEL_ICONS.iter().map(|(n, _)| *n).collect();
+        for (name, _) in ICONS {
+            assert!(pixel.contains(name), "{name} has no Pixelarticons counterpart");
+        }
+        assert_eq!(PIXEL_ICONS.len(), ICONS.len(), "a pixel icon stands for no Lucide icon");
+        for (name, svg) in PIXEL_ICONS {
+            let text = std::str::from_utf8(svg).unwrap_or_default();
+            assert!(text.contains("viewBox=\"0 0 24 24\"") && text.contains("currentColor"), "{name}");
+        }
+    }
+
     #[test]
     fn every_catalog_icon_exists() {
         for g in pdfcraft_engine::catalog::TOOL_GROUPS {
