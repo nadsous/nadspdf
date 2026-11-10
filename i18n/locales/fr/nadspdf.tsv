@@ -329,3 +329,7 @@ watermark text	CONFIDENTIAL	CONFIDENTIEL
 	Type your text here	Tapez votre texte ici
 	Drag on the page to place the image	Faites glisser sur la page pour placer l’image
 	Page design	Mise en page
+	Save or close the page layout that is open first.	Enregistrez ou fermez d’abord la mise en page ouverte.
+	This page layout has unsaved changes. Save it (Ctrl+S), or close it again to discard them.	Cette mise en page a des modifications non enregistrées. Enregistrez-la (Ctrl+S), ou fermez-la à nouveau pour les abandonner.
+	Lay out pages with text and pictures, then export them as a PDF. Opens InDesign files (.idml, .indd) too.	Mettez en page du texte et des images, puis exportez le tout en PDF. Ouvre aussi les fichiers InDesign (.idml, .indd).
+	Saved {path}	Enregistré : {path}

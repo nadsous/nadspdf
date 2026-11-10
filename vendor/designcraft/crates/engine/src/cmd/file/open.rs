@@ -89,8 +89,8 @@ fn open_path(s: &mut Session, p: &Value) -> Result<Value> {
         if designcraft_idml::is_idml(&bytes) || (!native && (crate::cmd::interchange::is_indd(path, &bytes) || ext == "idml")) {
             return crate::cmd::interchange::open_idml(s, p);
         }
-        if !native && ext != designcraft_format::EXTENSION {
-            return Err(bad("file.open", format!("{path}: not a DesignCraft or IDML file")));
+        if !native && ext != designcraft_format::EXTENSION && ext != designcraft_format::LEGACY_EXTENSION {
+            return Err(bad("file.open", format!("{path}: not a page layout or IDML file")));
         }
         let (mut d, mut warnings) = load_bytes(&bytes)?;
         crate::cmd::interchange::resolve_packaged_links(&mut d, Some(std::path::Path::new(path)));

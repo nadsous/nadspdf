@@ -175,3 +175,84 @@ fn base64_matches_the_rfc_vectors() {
         assert_eq!(base64(i.as_bytes()), o);
     }
 }
+
+#[test]
+fn a_saved_document_reopens_the_same_and_is_no_longer_unsaved() {
+    let mut l = a4();
+    assert!(!l.is_dirty(), "a new document has nothing to save");
+    let id = l.add_text_frame(0, Rect::new(72.0, 72.0, 300.0, 200.0), "Gardé à l'enregistrement").unwrap();
+    assert!(l.is_dirty());
+    let revision = l.revision();
+    let bytes = l.save_bytes().unwrap();
+    assert!(l.is_dirty(), "not saved until the file is written");
+    l.mark_saved(revision);
+    assert!(!l.is_dirty());
+    assert!(is_layout_file("anything", &bytes), "recognised by its content");
+    let mut z = zip::ZipArchive::new(std::io::Cursor::new(&bytes)).unwrap();
+    let mut meta = String::new();
+    std::io::Read::read_to_string(&mut z.by_name("meta.json").unwrap(), &mut meta).unwrap();
+    assert!(meta.contains("NadsPDF") && !meta.contains("DesignCraft"), "the file names NadsPDF as its maker: {meta}");
+    let (mut back, warnings) = Layout::open(&format!("Affiche.{EXTENSION}"), &bytes).unwrap();
+    assert!(warnings.is_empty(), "{warnings:?}");
+    assert!(!back.is_dirty());
+    assert_eq!(back.page_count(), 1);
+    let it = back.items(0);
+    assert_eq!(it.len(), 1);
+    assert_eq!(back.text(it[0].id).as_deref(), Some("Gardé à l'enregistrement"));
+    assert_eq!(it[0].rect, l.item(0, id).unwrap().rect);
+}
+
+#[test]
+fn an_idml_package_opens_as_a_layout() {
+    let mut l = a4();
+    l.add_text_frame(0, Rect::new(72.0, 72.0, 300.0, 200.0), "Depuis InDesign").unwrap();
+    let v = l.session.execute("file.exportIdml", &json!({})).unwrap();
+    let idml = designcraft_engine_base64_decode(v["base64"].as_str().unwrap());
+    assert!(is_layout_file("Brochure.idml", &idml) && is_layout_file("Brochure.IDML", b""));
+    let (mut back, _) = Layout::open("Brochure.idml", &idml).unwrap();
+    let texts: Vec<String> = back
+        .items(0)
+        .iter()
+        .filter_map(|i| i.kind.eq(&ItemKind::Text).then_some(i.id))
+        .collect::<Vec<_>>()
+        .into_iter()
+        .filter_map(|id| back.text(id))
+        .collect();
+    assert!(texts.iter().any(|t| t.contains("Depuis InDesign")), "{texts:?}");
+}
+
+#[test]
+fn files_that_are_not_layouts_are_refused_in_words() {
+    assert!(!is_layout_file("report.pdf", b"%PDF-1.7"));
+    for (name, bytes) in [("x.nadsmep", &b"not a zip"[..]), ("x.idml", b"PK\x03\x04broken"), ("x.nadsmep", b"")] {
+        match Layout::open(name, bytes) {
+            Err(e) => assert!(!e.to_string().contains("DesignCraft"), "{e}"),
+            Ok(_) => panic!("{name} opened"),
+        }
+    }
+}
+
+/// Base64 back to bytes (tests only: the engine returns IDML as base64).
+fn designcraft_engine_base64_decode(s: &str) -> Vec<u8> {
+    let val = |c: u8| match c {
+        b'A'..=b'Z' => Some(c - b'A'),
+        b'a'..=b'z' => Some(c - b'a' + 26),
+        b'0'..=b'9' => Some(c - b'0' + 52),
+        b'+' => Some(62),
+        b'/' => Some(63),
+        _ => None,
+    };
+    let bits: Vec<u8> = s.bytes().filter_map(val).collect();
+    let mut out = Vec::new();
+    for c in bits.chunks(4) {
+        let n = c.iter().enumerate().fold(0u32, |n, (i, v)| n | (u32::from(*v) << (18 - 6 * i)));
+        out.push((n >> 16) as u8);
+        if c.len() > 2 {
+            out.push((n >> 8) as u8);
+        }
+        if c.len() > 3 {
+            out.push(n as u8);
+        }
+    }
+    out
+}

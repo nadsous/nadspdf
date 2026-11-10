@@ -23,6 +23,9 @@ are LF.
 - **Name.** Exported PDFs say NadsPDF made them (`Creator`/`Producer`, `pdf/src/export/metadata.rs`
   and `booklet.rs`), and recovery files go to NadsPDF's folder (`engine/src/recovery.rs`): the
   interface never names DesignCraft.
+- **Assets.** The renderer's golden test images (`crates/render/tests/golden/`) are left out: they
+  were drawn with DesignCraft's own fonts. The sRGB profile in `assets/icc/` has its entry in
+  NadsPDF's `ATTRIBUTION.toml`.
 - **Workspace.** `Cargo.toml` keeps DesignCraft's dependency versions; its `[patch]` and
   `[profile]` sections are NadsPDF's root ones. `craft-pdf` comes from `../craft-pdf`.
 

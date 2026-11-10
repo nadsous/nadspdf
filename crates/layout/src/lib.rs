@@ -130,6 +130,25 @@ pub struct PageImage {
 pub struct Layout {
     session: Session,
     renderer: designcraft_render::Renderer,
+    /// The revision last saved (or opened); the document is unsaved while it differs.
+    saved: u64,
+}
+
+/// The extension NadsPDF saves page layouts with.
+pub const EXTENSION: &str = designcraft_format::EXTENSION;
+
+/// The extensions a page layout opens from: NadsPDF's own, DesignCraft's (the same format), an
+/// IDML package, and InDesign documents and templates (converted on opening).
+pub const OPENS: [&str; 5] = [designcraft_format::EXTENSION, designcraft_format::LEGACY_EXTENSION, "idml", "indd", "indt"];
+
+/// The largest file a page layout opens from.
+const MAX_DOCUMENT_BYTES: usize = 512 << 20;
+
+/// Whether `name` (by its extension) or `bytes` (a page layout package) is a file that opens in
+/// the Mise en page tab rather than as a PDF.
+pub fn is_layout_file(name: &str, bytes: &[u8]) -> bool {
+    let ext = name.rsplit_once('.').map(|(_, e)| e.to_ascii_lowercase()).unwrap_or_default();
+    OPENS.contains(&ext.as_str()) || designcraft_format::is_designcraft(bytes)
 }
 
 impl Layout {
@@ -138,14 +157,48 @@ impl Layout {
         let pages = pages.clamp(1, 999);
         let mut session = Session::new();
         session.execute("file.new", &json!({ "preset": paper.preset(), "pages": pages, "facingPages": false })).map_err(engine)?;
-        Ok(Self { session, renderer: designcraft_render::Renderer::new() })
+        Ok(Self::with(session))
     }
 
     /// The sample magazine (four pages), to show what the mode does.
     pub fn sample() -> Result<Self> {
         let mut session = Session::new();
         session.execute("file.newSample", &json!({})).map_err(engine)?;
-        Ok(Self { session, renderer: designcraft_render::Renderer::new() })
+        Ok(Self::with(session))
+    }
+
+    fn with(session: Session) -> Self {
+        let saved = session.doc().map_or(0, |d| d.revision);
+        Self { session, renderer: designcraft_render::Renderer::new(), saved }
+    }
+
+    /// Open a page layout (`.nadsmep`), an IDML package or an InDesign document from its bytes;
+    /// `name` is the file name (its extension helps tell InDesign files apart). Also returns what
+    /// could not be carried over (fonts, missing parts), in words.
+    pub fn open(name: &str, bytes: &[u8]) -> Result<(Self, Vec<String>)> {
+        if bytes.is_empty() || bytes.len() > MAX_DOCUMENT_BYTES {
+            return Err(LayoutError::Invalid(format!("{name}: the file is empty or too large")));
+        }
+        let mut session = Session::new();
+        let v = session.execute("file.openBytes", &json!({ "name": name, "base64": base64(bytes) })).map_err(engine)?;
+        let warnings = v["warnings"].as_array().map(|w| w.iter().filter_map(|x| x.as_str().map(str::to_owned)).collect()).unwrap_or_default();
+        Ok((Self::with(session), warnings))
+    }
+
+    /// The document as a `.nadsmep` file. It counts as saved once the caller has written it
+    /// ([`Layout::mark_saved`] with the [`Layout::revision`] taken before).
+    pub fn save_bytes(&self) -> Result<Vec<u8>> {
+        designcraft_format::save(self.doc()?).map_err(engine)
+    }
+
+    /// The document as it was at `revision` is now in a file.
+    pub fn mark_saved(&mut self, revision: u64) {
+        self.saved = revision;
+    }
+
+    /// Whether the document changed since it was last saved or opened.
+    pub fn is_dirty(&self) -> bool {
+        self.revision() != self.saved
     }
 
     fn doc(&self) -> Result<&Document> {

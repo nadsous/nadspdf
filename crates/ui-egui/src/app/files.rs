@@ -92,6 +92,10 @@ impl PdfCraftApp {
         // Files opened before the first frame (the ones named at startup) are drawn once, in the
         // interface language, rather than in English and again when the frame applies it.
         self.apply_status_captions(i18n::Lang::from_pref(&self.language));
+        // NadsPDF: page layouts, IDML and InDesign files open in the Mise en page tab.
+        if crate::layout_ui::is_layout_name(name) {
+            return self.open_layout_file(name, path, &bytes);
+        }
         // Images and text files become new, unsaved PDFs (Create a PDF).
         let active = self.active;
         if let Some(r) = self.open_converted(name, &bytes) {
@@ -778,6 +782,19 @@ impl PdfCraftApp {
 
     #[cfg(not(target_arch = "wasm32"))]
     fn open_path_request(&mut self, path: &str, then: Option<&'static str>, display_override: Option<(canvas::PageLayout, bool)>) -> OpenOutcome {
+        // NadsPDF: page layouts, IDML and InDesign files open in the Mise en page tab.
+        if crate::layout_ui::is_layout_name(path) {
+            let name = std::path::Path::new(path).file_name().map_or_else(|| path.to_owned(), |n| n.to_string_lossy().into_owned());
+            let opened =
+                std::fs::read(path).map_err(|e| format!("{name}: {e}")).and_then(|b| self.open_layout_file(&name, Some(path.to_owned()), &b));
+            return match opened {
+                Ok(()) => OpenOutcome::Opened,
+                Err(e) => {
+                    self.notify_error(e);
+                    OpenOutcome::Failed
+                }
+            };
+        }
         // One file, one tab (#2166): a file that is open already comes to the front instead,
         // and the tool it was opened for runs on it. One still being opened is left to that.
         if let Some(i) = self.tab_showing(path) {
@@ -947,13 +964,14 @@ impl PdfCraftApp {
     pub(crate) fn with_open_filters(dialog: rfd::AsyncFileDialog) -> rfd::AsyncFileDialog {
         dialog
             .add_filter_any_case(tl!("PDF, Word, Excel, images and text"), &Self::openable_extensions())
+            .add_filter_any_case(tl!("Page design"), &pdfcraft_layout::OPENS)
             .add_filter_any_case("PDF", &["pdf"])
             .add_filter_any_case(tl!("Images, text and documents (converted to PDF)"), &create_ui::CONVERTIBLE)
     }
 
     /// Every extension File ▸ Open accepts: PDF and what is converted.
     pub(crate) fn openable_extensions() -> Vec<&'static str> {
-        std::iter::once("pdf").chain(create_ui::CONVERTIBLE.iter().copied()).collect()
+        std::iter::once("pdf").chain(create_ui::CONVERTIBLE.iter().copied()).chain(pdfcraft_layout::OPENS).collect()
     }
 
     pub fn open_dialog(&mut self) {

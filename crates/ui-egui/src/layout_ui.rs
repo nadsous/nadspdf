@@ -128,6 +128,12 @@ pub struct LayoutTab {
     draft: Option<(u64, String)>,
     /// The image the Image tool places, and its name.
     image: Option<(Vec<u8>, String)>,
+    /// The file the document was opened from or last saved to.
+    pub path: Option<String>,
+    /// Its name in the tab ("Mise en page" while it has none).
+    pub name: Option<String>,
+    /// Closing an unsaved document was asked once: the next close discards it.
+    close_armed: bool,
 }
 
 impl std::fmt::Debug for LayoutTab {
@@ -159,6 +165,34 @@ impl LayoutTab {
 
     fn set_doc(&mut self, doc: Doc) {
         *self = LayoutTab { open: true, focused: true, doc: Some(doc), ..LayoutTab::default() };
+    }
+
+    /// Whether the document has changes not saved to a file.
+    pub fn is_dirty(&self) -> bool {
+        self.doc.as_ref().is_some_and(Doc::is_dirty)
+    }
+
+    /// The name the tab shows.
+    pub fn title(&self) -> String {
+        self.name.clone().unwrap_or_else(|| tl!("Page design").to_owned())
+    }
+}
+
+/// Whether `name` is a file the Mise en page tab opens (by its extension).
+pub(crate) fn is_layout_name(name: &str) -> bool {
+    let ext = std::path::Path::new(name).extension().map(|e| e.to_string_lossy().to_ascii_lowercase()).unwrap_or_default();
+    pdfcraft_layout::OPENS.contains(&ext.as_str())
+}
+
+/// The file name in `path`.
+fn file_name(path: &str) -> String {
+    std::path::Path::new(path).file_name().map_or_else(|| path.to_owned(), |n| n.to_string_lossy().into_owned())
+}
+
+impl LayoutTab {
+    /// The document's file name extension check, for the tab's Save dialog.
+    fn has_layout_extension(path: &str) -> bool {
+        std::path::Path::new(path).extension().is_some_and(|e| e.eq_ignore_ascii_case(pdfcraft_layout::EXTENSION))
     }
 }
 
@@ -205,6 +239,98 @@ impl PdfCraftApp {
             }
             Err(e) => self.notify_error(e),
         }
+    }
+
+    /// Open a page layout, IDML or InDesign file (`bytes`, named `name`, read from `path`) in the
+    /// Mise en page tab. An unsaved document already there is kept: the user is told to save it.
+    pub fn open_layout_file(&mut self, name: &str, path: Option<String>, bytes: &[u8]) -> Result<(), String> {
+        if self.layout_tab.is_dirty() {
+            self.open_layout_tab();
+            return Err(tl!("Save or close the page layout that is open first.").to_owned());
+        }
+        let (doc, warnings) = Doc::open(name, bytes).map_err(|e| e.to_string())?;
+        self.layout_tab.set_doc(doc);
+        // InDesign files become NadsPDF page layouts: they are saved as a new `.nadsmep` file.
+        self.layout_tab.path = path.filter(|p| LayoutTab::has_layout_extension(p));
+        self.layout_tab.name = Some(name.to_owned());
+        self.open_layout_tab();
+        if let Some(first) = warnings.first() {
+            let more = warnings.len().saturating_sub(1);
+            self.notify(if more > 0 { format!("{first} (+{more})") } else { first.clone() });
+        }
+        Ok(())
+    }
+
+    /// Save the page layout to its file, or ask where (`as_new`: always ask).
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn save_layout(&mut self, as_new: bool) {
+        self.commit_layout_text();
+        let Some(doc) = self.layout_tab.doc.as_ref() else { return };
+        // The version written is the one that counts as saved, even if editing goes on while
+        // the Save dialog is open.
+        let revision = doc.revision();
+        let bytes = match doc.save_bytes() {
+            Ok(b) => b,
+            Err(e) => return self.notify_error(e),
+        };
+        let write = move |app: &mut PdfCraftApp, path: String| match crate::editing::write_atomically(&path, &bytes) {
+            Ok(()) => {
+                if let Some(d) = app.layout_tab.doc.as_mut() {
+                    d.mark_saved(revision);
+                }
+                app.layout_tab.name = Some(file_name(&path));
+                app.layout_tab.path = Some(path.clone());
+                app.layout_tab.close_armed = false;
+                app.notify_fmt("Saved {path}", &[("path", &path)]);
+            }
+            Err(e) => {
+                // Not written: the document keeps its unsaved changes.
+                app.notify_fmt("Couldn't write {path}: {e}", &[("path", &path), ("e", &e.to_string())]);
+            }
+        };
+        match self.layout_tab.path.clone().filter(|_| !as_new) {
+            Some(path) => write(self, path),
+            None => {
+                let title = self.layout_tab.title();
+                let stem = title.rsplit_once('.').map_or(title.as_str(), |(s, _)| s).to_owned();
+                let dialog = rfd::AsyncFileDialog::new()
+                    .add_filter(tl!("Page design"), &[pdfcraft_layout::EXTENSION])
+                    .set_file_name(format!("{stem}.{}", pdfcraft_layout::EXTENSION));
+                self.ask_one(crate::pickers::Ask::Save(dialog), None, move |app, p| {
+                    let mut path = p.to_string_lossy().into_owned();
+                    if !LayoutTab::has_layout_extension(&path) {
+                        path.push('.');
+                        path.push_str(pdfcraft_layout::EXTENSION);
+                    }
+                    write(app, path);
+                });
+            }
+        }
+    }
+
+    /// Pick a page layout, IDML or InDesign file to open in the tab.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn open_layout_dialog(&mut self) {
+        let dialog = rfd::AsyncFileDialog::new().add_filter(tl!("Page design"), &pdfcraft_layout::OPENS);
+        self.ask_one(crate::pickers::Ask::File(dialog), None, |app, path| {
+            let p = path.to_string_lossy().into_owned();
+            let r = std::fs::read(&path).map_err(|e| e.to_string()).and_then(|b| app.open_layout_file(&file_name(&p), Some(p.clone()), &b));
+            if let Err(e) = r {
+                app.notify_error(e);
+            }
+        });
+    }
+
+    /// The tab's close button: an unsaved document is kept the first time, with a word on how
+    /// to keep it; asked again, it is discarded.
+    pub fn request_close_layout_tab(&mut self) {
+        if self.layout_tab.is_dirty() && !self.layout_tab.close_armed {
+            self.layout_tab.close_armed = true;
+            self.open_layout_tab();
+            self.notify_tr("This page layout has unsaved changes. Save it (Ctrl+S), or close it again to discard them.");
+            return;
+        }
+        self.close_layout_tab();
     }
 
     /// Close the Mise en page tab and forget its document; the last PDF tab shows, if any.
@@ -314,14 +440,16 @@ fn empty_state(app: &mut PdfCraftApp, ui: &mut egui::Ui, t: &Tokens) {
                     ui.label(egui::RichText::new(tl!("Page design")).font(theme::semibold(22.0)).color(t.text));
                     ui.add_space(4.0);
                     ui.label(
-                        egui::RichText::new(tl!("Lay out pages with text and pictures, then export them as a PDF."))
-                            .font(theme::regular(14.0))
-                            .color(t.text_muted),
+                        egui::RichText::new(tl!(
+                            "Lay out pages with text and pictures, then export them as a PDF. Opens InDesign files (.idml, .indd) too."
+                        ))
+                        .font(theme::regular(14.0))
+                        .color(t.text_muted),
                     );
                     ui.add_space(18.0);
                     ui.horizontal(|ui| {
                         let w = ui.available_width();
-                        ui.add_space((w - 380.0).max(0.0) / 2.0);
+                        ui.add_space((w - 470.0).max(0.0) / 2.0);
                         if widgets::pill_button(ui, tl!("New A4 document"), true).clicked() {
                             app.new_layout(Paper::A4);
                         }
@@ -330,6 +458,10 @@ fn empty_state(app: &mut PdfCraftApp, ui: &mut egui::Ui, t: &Tokens) {
                         }
                         if widgets::pill_button(ui, tl!("Sample magazine"), false).clicked() {
                             app.open_layout_sample();
+                        }
+                        #[cfg(not(target_arch = "wasm32"))]
+                        if widgets::pill_button(ui, tl!("Open…"), false).clicked() {
+                            app.open_layout_dialog();
                         }
                     });
                 });
@@ -342,6 +474,16 @@ fn toolbar(app: &mut PdfCraftApp, ui: &mut egui::Ui, t: &Tokens) {
     let pages = app.layout_tab.page_count();
     ui.horizontal(|ui| {
         ui.spacing_mut().item_spacing.x = 8.0;
+        #[cfg(not(target_arch = "wasm32"))]
+        widgets::pill_group(ui, |ui| {
+            if icons::button(ui, "folder-open", widgets::PILL_HEIGHT, false, tl!("Open…")).clicked() {
+                app.open_layout_dialog();
+            }
+            let tip = crate::commands::command_tip(ui.ctx(), tl!("Save ({key})"), "file.save");
+            if icons::button(ui, "save", widgets::PILL_HEIGHT, false, &tip).clicked() {
+                app.save_layout(false);
+            }
+        });
         widgets::pill_group(ui, |ui| {
             for (tool, icon, label) in
                 [(Tool::Select, "mouse-pointer-2", "Select"), (Tool::Text, "type", "Text frame"), (Tool::Image, "image", "Image")]

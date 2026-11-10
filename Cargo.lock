@@ -5118,10 +5118,12 @@ name = "pdfcraft-layout"
 version = "0.8.1"
 dependencies = [
  "designcraft-engine",
+ "designcraft-format",
  "designcraft-pdf",
  "designcraft-render",
  "serde_json",
  "thiserror 2.0.21",
+ "zip 3.0.0",
 ]
 
 [[package]]

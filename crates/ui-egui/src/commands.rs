@@ -91,8 +91,10 @@ impl PdfCraftApp {
         if self.combine_showing() && matches!(spec.needs, commands::Needs::Undo | commands::Needs::Redo) {
             return self.combine_can_undo(spec.needs == commands::Needs::Undo);
         }
-        // NadsPDF: and on the Mise en page document while its tab shows.
-        if self.layout_showing() && matches!(spec.needs, commands::Needs::Undo | commands::Needs::Redo) {
+        // NadsPDF: and on the Mise en page document while its tab shows, as Save and Save As do.
+        if self.layout_showing()
+            && (matches!(spec.needs, commands::Needs::Undo | commands::Needs::Redo) || matches!(spec.id, "file.save" | "file.save_as"))
+        {
             return self.layout_tab.has_document();
         }
         // Undo also takes back typing in a box open on the page, and Redo what Undo took there,
@@ -205,6 +207,10 @@ impl PdfCraftApp {
             "file.clear_recent" if self.recent.is_empty() => self.notify_tr("No recent files"),
             "file.clear_recent" => self.recent.clear(),
             "file.pin_folder" => self.pin_folder_dialog(),
+            #[cfg(not(target_arch = "wasm32"))]
+            "file.save" if self.layout_showing() => self.save_layout(false),
+            #[cfg(not(target_arch = "wasm32"))]
+            "file.save_as" if self.layout_showing() => self.save_layout(true),
             "file.save" => {
                 self.save_active(SaveTarget::InPlace);
             }

@@ -314,6 +314,7 @@ pub fn tab_strip(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                             }
                             // NadsPDF: the Mise en page tab, after Combine files.
                             if app.layout_tab.open {
+                                let layout_title = app.layout_tab.title();
                                 let mut close = None;
                                 let response = tab(
                                     ui,
@@ -321,9 +322,9 @@ pub fn tab_strip(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                                         id: ui.scope_id().with("layout-tab"),
                                         theme: &t,
                                         icon: "panels-top-left",
-                                        name: tl!("Page design"),
+                                        name: &layout_title,
                                         file: None,
-                                        dirty: false,
+                                        dirty: app.layout_tab.is_dirty(),
                                         active: app.layout_showing(),
                                         index: usize::MAX - 1,
                                         cap,
@@ -339,7 +340,7 @@ pub fn tab_strip(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                                     app.open_layout_tab();
                                 }
                                 if close.is_some() || response.middle_clicked() {
-                                    app.close_layout_tab();
+                                    app.request_close_layout_tab();
                                 }
                             }
                         });

@@ -13,5 +13,10 @@ workspace = true
 designcraft-engine = { path = "../../vendor/designcraft/crates/engine" }
 designcraft-pdf = { path = "../../vendor/designcraft/crates/pdf" }
 designcraft-render = { path = "../../vendor/designcraft/crates/render" }
+designcraft-format = { path = "../../vendor/designcraft/crates/format" }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
+
+[dev-dependencies]
+# Reads a saved page layout's meta.json (already in the tree through the layout engine).
+zip = { version = "3", default-features = false, features = ["deflate"] }

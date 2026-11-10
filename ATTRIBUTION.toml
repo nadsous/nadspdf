@@ -3605,7 +3605,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "NadsPDF's own rows, merged over pdfcraft.tsv by crates/ui-egui/build.rs"
-sha256 = "a4f8fbac3942f15846f181da42e590328c7e6dc6b51b151cd8773da4258a9770"
+sha256 = "f97d6da93da8fa98e6100ed9c5232796c539a088e91ef4cc65a35c802f7ab9d9"
 
 [[asset]]
 path = "i18n/locales/fr/pdfcraft.tsv"
@@ -6191,3 +6191,14 @@ licence_file = "assets/icons-pixel/LICENSE-pixelarticons.txt"
 kind = "icon"
 usage = "UI icon (Pixelarticons style), embedded via crates/ui-egui/src/widgets/pixel_icon_data.rs"
 sha256 = "a8636066122a9bfd12bb3c7e17fa6ae38f5fd44800f9209de585e1a6d194a9f2"
+
+[[asset]]
+path = "vendor/designcraft/assets/icc/sRGB-v2-magic.icc"
+title = "Compact ICC profile sRGB-v2-magic"
+author = "Clinton Ingram (Compact ICC Profiles)"
+source = "https://github.com/saucecontrol/Compact-ICC-Profiles (profiles/sRGB-v2-magic.icc at abb1b6f48570b4eb0fabd8566e517dca07e617d4), as bundled by DesignCraft"
+licence = "CC0-1.0"
+licence_file = "vendor/hayro-interpret/assets/CGATS_LICENSE.txt"
+kind = "data"
+usage = "Mise en page PDF export: tags RGB images that have no colour profile of their own"
+sha256 = "af4efe28f6d311799865f325ba39184a2e978b113ca74124d60af7de22b105f4"

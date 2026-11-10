@@ -113,3 +113,64 @@ fn screenshots_when_asked() {
     h.run_steps(6);
     h.render().unwrap().save(dir.join("2-magazine.png")).unwrap();
 }
+
+/// A page layout saved to a file, opened again through File ▸ Open (the main Open), and the
+/// tab's close button keeping unsaved work the first time.
+#[test]
+fn a_layout_is_saved_reopened_from_open_and_unsaved_work_is_kept_on_close() {
+    let dir = std::env::temp_dir().join(format!("nadspdf-page-design-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let file = dir.join("Affiche.nadsmep");
+    let mut h = harness();
+    h.state_mut().new_layout(pdfcraft_layout::Paper::A4);
+    h.state_mut()
+        .layout_tab
+        .document_mut()
+        .map(|d| d.add_text_frame(0, pdfcraft_layout::Rect::new(72.0, 72.0, 300.0, 200.0), "Affiche"))
+        .unwrap()
+        .unwrap();
+    h.run_steps(2);
+    assert!(h.state().layout_tab.is_dirty());
+
+    // Closing once keeps it and says how to save it; the tab is still there.
+    h.state_mut().request_close_layout_tab();
+    h.run_steps(2);
+    assert!(h.state().layout_tab.open && h.state().layout_tab.has_document());
+
+    // Saved to its file: no longer unsaved, and the tab takes the file's name.
+    h.state_mut().layout_tab.path = Some(file.to_string_lossy().into_owned());
+    assert!(h.state_mut().execute("file.save"));
+    h.run_steps(2);
+    assert!(file.exists(), "written");
+    assert!(!h.state().layout_tab.is_dirty());
+    assert_eq!(h.state().layout_tab.title(), "Affiche.nadsmep");
+    h.get_by_label("Affiche.nadsmep");
+
+    // A saved document closes at once.
+    h.state_mut().request_close_layout_tab();
+    h.run_steps(2);
+    assert!(!h.state().layout_tab.open);
+
+    // File ▸ Open of a .nadsmep opens it in the Mise en page tab, not as a PDF.
+    h.state_mut().open_path(file.to_str().unwrap());
+    h.run_steps(3);
+    assert!(h.state().layout_showing());
+    assert!(h.state().views.is_empty(), "no PDF tab");
+    let items = h.state().layout_tab.items();
+    assert_eq!(items.len(), 1);
+    let text = h.state_mut().layout_tab.document_mut().and_then(|d| d.text(items[0].id));
+    assert_eq!(text.as_deref(), Some("Affiche"));
+    std::fs::remove_dir_all(&dir).ok();
+}
+
+#[test]
+fn a_file_that_is_not_a_layout_is_refused_and_an_unsaved_one_is_not_replaced() {
+    let mut h = harness();
+    assert!(h.state_mut().open_bytes("broken.nadsmep", None, b"not a layout".to_vec()).is_err());
+    assert!(!h.state().layout_tab.has_document());
+    h.state_mut().new_layout(pdfcraft_layout::Paper::A4);
+    h.state_mut().layout_tab.document_mut().map(|d| d.add_page()).unwrap().unwrap();
+    let saved = pdfcraft_layout::Layout::new(pdfcraft_layout::Paper::Letter, 3).unwrap().save_bytes().unwrap();
+    assert!(h.state_mut().open_bytes("other.nadsmep", None, saved).is_err(), "the unsaved one stays");
+    assert_eq!(h.state().layout_tab.page_count(), 2);
+}

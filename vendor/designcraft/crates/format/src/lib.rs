@@ -30,9 +30,9 @@ pub const VERSION: u32 = 4;
 
 #[derive(Debug, thiserror::Error)]
 pub enum FormatError {
-    #[error("not a DesignCraft document: {0}")]
+    #[error("not a page layout document: {0}")]
     NotOurs(String),
-    #[error("document is from a newer DesignCraft (format {0}); please update")]
+    #[error("this page layout was made by a newer version (format {0}); please update NadsPDF")]
     TooNew(u64),
     #[error("{0}")]
     Io(String),
@@ -103,7 +103,8 @@ fn save_with_large_entries_from(doc: &Document, preview: Option<&[u8]>, large_en
         z.write_all(MIME.as_bytes()).map_err(|e| FormatError::Io(e.to_string()))?;
         z.start_file("meta.json", deflate).map_err(io)?;
         let version = required_version(doc);
-        let meta = json!({"format": "designcraft", "version": version, "generator": concat!("DesignCraft ", env!("CARGO_PKG_VERSION"))});
+        // NadsPDF: the file names NadsPDF as its maker; the format name stays, for compatibility.
+        let meta = json!({"format": "designcraft", "version": version, "generator": "NadsPDF Mise en page"});
         z.write_all(meta.to_string().as_bytes()).map_err(|e| FormatError::Io(e.to_string()))?;
         if let Some(png) = preview {
             z.start_file(PREVIEW, stored).map_err(io)?;
@@ -127,8 +128,12 @@ fn save_with_large_entries_from(doc: &Document, preview: Option<&[u8]>, large_en
     Ok(buf.into_inner())
 }
 
-/// The file name extension of a DesignCraft document.
-pub const EXTENSION: &str = "designcraft";
+/// The file name extension of a NadsPDF page layout document (NadsPDF: `.nadsmep`, for Mise en
+/// page; files saved by DesignCraft as `.designcraft` still open, see [`LEGACY_EXTENSION`]).
+pub const EXTENSION: &str = "nadsmep";
+
+/// The extension DesignCraft itself saves with: the same format.
+pub const LEGACY_EXTENSION: &str = "designcraft";
 
 /// Whether `bytes` are a DesignCraft document package: a zip holding `document.json`. Files
 /// without an extension are recognised by this (the legacy JSON form is too generic to sniff).

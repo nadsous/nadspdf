@@ -4,7 +4,7 @@
 
 Every asset PdfCraft includes, bundles or uses to build its published material, with its author, source and licence. The policy is in [AGENTS.md](AGENTS.md) §1. The machine-readable list, with the SHA-256 of every asset, is [ATTRIBUTION.toml](ATTRIBUTION.toml). Licence texts are kept beside the assets and summarised in [NOTICE](NOTICE).
 
-## In this repository (527)
+## In this repository (528)
 
 | Asset | Title | Author | Licence | Source | Used for |
 |---|---|---|---|---|---|
@@ -535,6 +535,7 @@ Every asset PdfCraft includes, bundles or uses to build its published material, 
 | `assets/icons-pixel/zoom-in.svg` | Pixelarticons icon "zoom-in" | Gerrit Halfmann (Pixelarticons) | MIT | https://github.com/halfmage/pixelarticons (npm pixelarticons 2.4.2, svg/zoom-in.svg) | UI icon (Pixelarticons style), embedded via crates/ui-egui/src/widgets/pixel_icon_data.rs |
 | `assets/icons-pixel/zoom-out.svg` | Pixelarticons icon "zoom-out" | Gerrit Halfmann (Pixelarticons) | MIT | https://github.com/halfmage/pixelarticons (npm pixelarticons 2.4.2, svg/zoom-out.svg) | UI icon (Pixelarticons style), embedded via crates/ui-egui/src/widgets/pixel_icon_data.rs |
 | `assets/icons-pixel/a-arrow-up.svg` | Pixelarticons icon "a-arrow-up" | Gerrit Halfmann (Pixelarticons) | MIT | https://github.com/halfmage/pixelarticons (npm pixelarticons 2.4.2, svg/a-arrow-up.svg) | UI icon (Pixelarticons style), embedded via crates/ui-egui/src/widgets/pixel_icon_data.rs |
+| `vendor/designcraft/assets/icc/sRGB-v2-magic.icc` | Compact ICC profile sRGB-v2-magic | Clinton Ingram (Compact ICC Profiles) | CC0-1.0 | https://github.com/saucecontrol/Compact-ICC-Profiles (profiles/sRGB-v2-magic.icc at abb1b6f48570b4eb0fabd8566e517dca07e617d4), as bundled by DesignCraft | Mise en page PDF export: tags RGB images that have no colour profile of their own |
 
 ## Compiled in through dependencies (7)
 
