@@ -3,6 +3,7 @@
 //! Lucide name the interface asks for and the pixel drawing that stands for it.
 
 pub static PIXEL_ICONS: &[(&str, &[u8])] = &[
+    ("a-large-small", include_bytes!("../../../../assets/icons-pixel/a-arrow-up.svg")),
     ("accessibility", include_bytes!("../../../../assets/icons-pixel/human.svg")),
     ("align-center", include_bytes!("../../../../assets/icons-pixel/text-align-center.svg")),
     ("align-justify", include_bytes!("../../../../assets/icons-pixel/text-align-justify.svg")),
