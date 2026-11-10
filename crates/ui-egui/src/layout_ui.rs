@@ -670,7 +670,7 @@ fn inspector(app: &mut PdfCraftApp, ui: &mut egui::Ui, t: &Tokens) {
                 ui.add_space(10.0);
                 ui.label(egui::RichText::new(tl!("Font")).font(theme::medium(13.0)).color(t.text));
                 let mut family = None;
-                egui::ComboBox::from_id_salt("layout-font").selected_text(tl!("Choose a font")).width(ui.available_width()).show_ui(ui, |ui| {
+                craft_ui::ComboBox::from_id_salt("layout-font").selected_text(tl!("Choose a font")).width(ui.available_width()).show_ui(ui, |ui| {
                     for f in FAMILIES {
                         if ui.selectable_label(false, f).clicked() {
                             family = Some(f);

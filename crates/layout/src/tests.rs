@@ -16,13 +16,9 @@ fn png() -> Vec<u8> {
         }
         out.extend_from_slice(&(!crc).to_be_bytes());
     }
-    let mut raw = Vec::new();
-    for _ in 0..4 {
-        raw.push(0);
-        for _ in 0..4 {
-            raw.extend_from_slice(&[255, 0, 0]);
-        }
-    }
+    // Four rows: filter byte 0, then four red pixels.
+    let row: Vec<u8> = std::iter::once(0).chain([255, 0, 0].repeat(4)).collect();
+    let raw = row.repeat(4);
     let mut z = vec![0x78, 0x01, 1];
     z.extend_from_slice(&(raw.len() as u16).to_le_bytes());
     z.extend_from_slice(&(!(raw.len() as u16)).to_le_bytes());
@@ -74,7 +70,7 @@ fn text_is_replaced_and_formatted() {
     let mut l = a4();
     let id = l.add_text_frame(0, Rect::new(72.0, 72.0, 400.0, 300.0), "avant").unwrap();
     l.set_text(id, "après, sur deux\nparagraphes").unwrap();
-    assert_eq!(l.text(id).as_deref().map(|t| t.replace('\u{2029}', "\n").replace('\r', "\n")).as_deref(), Some("après, sur deux\nparagraphes"));
+    assert_eq!(l.text(id).as_deref().map(|t| t.replace(['\u{2029}', '\r'], "\n")).as_deref(), Some("après, sur deux\nparagraphes"));
     l.set_font_size(id, 24.0).unwrap();
     l.set_font_family(id, "Inter").unwrap();
     assert!(l.set_font_size(id, 0.0).is_err());
