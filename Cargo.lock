@@ -269,9 +269,6 @@ name = "arrayvec"
 version = "0.7.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d3fb67a6e08acf24fdeccbac2cb6ac4305825bd1f117462e0e6f2f193345ad56"
-dependencies = [
- "serde",
-]
 
 [[package]]
 name = "as-raw-xcb-connection"
@@ -1343,19 +1340,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-prepress"
-version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=92d392cff132eaf53e13afff77f38b5c11b73aa0#92d392cff132eaf53e13afff77f38b5c11b73aa0"
-dependencies = [
- "craft-cms",
- "craft-pdf",
- "kurbo 0.13.1",
- "linesweeper",
- "thiserror 2.0.21",
- "ttf-parser",
-]
-
-[[package]]
 name = "craft-print"
 version = "0.1.0"
 source = "git+https://github.com/storytold/craft-libs?rev=7ee35a9fbd47af572d55fd63dbf0333d1f00da17#7ee35a9fbd47af572d55fd63dbf0333d1f00da17"
@@ -1686,7 +1670,6 @@ dependencies = [
 [[package]]
 name = "designcraft-color"
 version = "0.17.0"
-source = "git+https://github.com/storytold/designcraft?rev=0078f832a7ab8fee64f091b01fed151a512a5901#0078f832a7ab8fee64f091b01fed151a512a5901"
 dependencies = [
  "craft-cms",
  "kurbo 0.13.1",
@@ -1697,7 +1680,6 @@ dependencies = [
 [[package]]
 name = "designcraft-compose"
 version = "0.17.0"
-source = "git+https://github.com/storytold/designcraft?rev=0078f832a7ab8fee64f091b01fed151a512a5901#0078f832a7ab8fee64f091b01fed151a512a5901"
 dependencies = [
  "designcraft-color",
  "designcraft-doc",
@@ -1717,7 +1699,6 @@ dependencies = [
 [[package]]
 name = "designcraft-doc"
 version = "0.17.0"
-source = "git+https://github.com/storytold/designcraft?rev=0078f832a7ab8fee64f091b01fed151a512a5901#0078f832a7ab8fee64f091b01fed151a512a5901"
 dependencies = [
  "chrono",
  "designcraft-color",
@@ -1730,12 +1711,10 @@ dependencies = [
 [[package]]
 name = "designcraft-engine"
 version = "0.17.0"
-source = "git+https://github.com/storytold/designcraft?rev=0078f832a7ab8fee64f091b01fed151a512a5901#0078f832a7ab8fee64f091b01fed151a512a5901"
 dependencies = [
  "caseless",
  "craft-atomic",
  "craft-docpath 0.1.0 (git+https://github.com/storytold/craft-libs?rev=92d392cff132eaf53e13afff77f38b5c11b73aa0)",
- "craft-prepress",
  "craft-print 0.1.0 (git+https://github.com/storytold/craft-libs?rev=92d392cff132eaf53e13afff77f38b5c11b73aa0)",
  "designcraft-color",
  "designcraft-compose",
@@ -1765,7 +1744,6 @@ dependencies = [
 [[package]]
 name = "designcraft-epub"
 version = "0.17.0"
-source = "git+https://github.com/storytold/designcraft?rev=0078f832a7ab8fee64f091b01fed151a512a5901#0078f832a7ab8fee64f091b01fed151a512a5901"
 dependencies = [
  "chrono",
  "designcraft-color",
@@ -1776,7 +1754,6 @@ dependencies = [
 [[package]]
 name = "designcraft-fonts"
 version = "0.17.0"
-source = "git+https://github.com/storytold/designcraft?rev=0078f832a7ab8fee64f091b01fed151a512a5901#0078f832a7ab8fee64f091b01fed151a512a5901"
 dependencies = [
  "core-text",
  "harfrust 0.13.3",
@@ -1790,7 +1767,6 @@ dependencies = [
 [[package]]
 name = "designcraft-format"
 version = "0.17.0"
-source = "git+https://github.com/storytold/designcraft?rev=0078f832a7ab8fee64f091b01fed151a512a5901#0078f832a7ab8fee64f091b01fed151a512a5901"
 dependencies = [
  "designcraft-doc",
  "designcraft-images",
@@ -1803,7 +1779,6 @@ dependencies = [
 [[package]]
 name = "designcraft-geom"
 version = "0.17.0"
-source = "git+https://github.com/storytold/designcraft?rev=0078f832a7ab8fee64f091b01fed151a512a5901#0078f832a7ab8fee64f091b01fed151a512a5901"
 dependencies = [
  "flo_curves",
  "kurbo 0.13.1",
@@ -1815,7 +1790,6 @@ dependencies = [
 [[package]]
 name = "designcraft-idml"
 version = "0.17.0"
-source = "git+https://github.com/storytold/designcraft?rev=0078f832a7ab8fee64f091b01fed151a512a5901#0078f832a7ab8fee64f091b01fed151a512a5901"
 dependencies = [
  "designcraft-color",
  "designcraft-doc",
@@ -1830,7 +1804,6 @@ dependencies = [
 [[package]]
 name = "designcraft-images"
 version = "0.17.0"
-source = "git+https://github.com/storytold/designcraft?rev=0078f832a7ab8fee64f091b01fed151a512a5901#0078f832a7ab8fee64f091b01fed151a512a5901"
 dependencies = [
  "craft-cms",
  "designcraft-color",
@@ -1849,12 +1822,10 @@ dependencies = [
 [[package]]
 name = "designcraft-pdf"
 version = "0.17.0"
-source = "git+https://github.com/storytold/designcraft?rev=0078f832a7ab8fee64f091b01fed151a512a5901#0078f832a7ab8fee64f091b01fed151a512a5901"
 dependencies = [
  "chrono",
  "craft-cms",
  "craft-pdf",
- "craft-prepress",
  "designcraft-color",
  "designcraft-compose",
  "designcraft-doc",
@@ -1871,7 +1842,6 @@ dependencies = [
 [[package]]
 name = "designcraft-pptx"
 version = "0.17.0"
-source = "git+https://github.com/storytold/designcraft?rev=0078f832a7ab8fee64f091b01fed151a512a5901#0078f832a7ab8fee64f091b01fed151a512a5901"
 dependencies = [
  "chrono",
  "designcraft-color",
@@ -1889,7 +1859,6 @@ dependencies = [
 [[package]]
 name = "designcraft-render"
 version = "0.17.0"
-source = "git+https://github.com/storytold/designcraft?rev=0078f832a7ab8fee64f091b01fed151a512a5901#0078f832a7ab8fee64f091b01fed151a512a5901"
 dependencies = [
  "craft-pdf",
  "designcraft-color",
@@ -1909,7 +1878,6 @@ dependencies = [
 [[package]]
 name = "designcraft-textimport"
 version = "0.17.0"
-source = "git+https://github.com/storytold/designcraft?rev=0078f832a7ab8fee64f091b01fed151a512a5901#0078f832a7ab8fee64f091b01fed151a512a5901"
 dependencies = [
  "designcraft-doc",
  "quick-xml 0.41.0",
@@ -1919,7 +1887,6 @@ dependencies = [
 [[package]]
 name = "designcraft-tools"
 version = "0.17.0"
-source = "git+https://github.com/storytold/designcraft?rev=0078f832a7ab8fee64f091b01fed151a512a5901#0078f832a7ab8fee64f091b01fed151a512a5901"
 dependencies = [
  "designcraft-color",
  "designcraft-compose",
@@ -3969,19 +3936,6 @@ name = "linebender_resource_handle"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d4a5ff6bcca6c4867b1c4fd4ef63e4db7436ef363e0ad7531d1558856bae64f4"
-
-[[package]]
-name = "linesweeper"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a25df1b0c5432893f41bba817150e323703ee5f6d974f3a6808ac7fd7f046d18"
-dependencies = [
- "arrayvec",
- "kurbo 0.13.1",
- "polycool",
- "rustc-hash 2.1.3",
- "smallvec",
-]
 
 [[package]]
 name = "linux-raw-sys"
