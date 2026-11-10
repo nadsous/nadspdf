@@ -5,6 +5,7 @@ use std::process::ExitCode;
 mod assets;
 mod corpus;
 mod demo_pdf;
+mod extensions;
 mod fuzz;
 mod gates;
 mod layers;
@@ -61,6 +62,7 @@ const COMMANDS: &[(&str, &str, Command)] = &[
         "Hash the web build's OCR worker files and name the worker in index.html (a Trunk post-build hook runs it)",
         web::worker_link,
     ),
+    ("extensions", "Build NadsPDF's own extensions into importable folders under dist/extensions/", extensions::run),
 ];
 
 fn version_cmd(args: &[String]) -> anyhow::Result<()> {

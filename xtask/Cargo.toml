@@ -11,6 +11,7 @@ workspace = true
 [dependencies]
 pdfcraft-oracle = { workspace = true }
 pdfcraft-cos = { workspace = true }
+pdfcraft-extensions = { workspace = true }
 anyhow = "1"
 lopdf = "0.45"
 png = "0.18"

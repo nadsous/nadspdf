@@ -1,7 +1,7 @@
 # Extensions
 
 > **Status:** protocol 1, desktop app only (Windows, macOS, Linux, FreeBSD); the web build has no
-> extensions. · **Last updated:** 2026-10-15
+> extensions. · **Last updated:** 2026-11-10
 
 An extension adds behaviour to NadsPDF without being part of it: a separate program, in any
 language, that NadsPDF starts and talks to over its standard input and output. NadsPDF itself
@@ -154,6 +154,8 @@ document isn't open, isn't saved…).
 
 ## Revision history
 
+- 2026-11-10: NadsPDF's own extensions, Contrôle des factures and Échéances (`apps/nads-extensions`,
+  `cargo xtask extensions`).
 - 2026-10-15: protocol 1 — manifest, approvals bound to a fingerprint, document events,
   `doc.text`, `doc.file`, message bars, `shell.open_url` on listed origins;
   `pdfcraft-cli extensions list|check`.
@@ -165,3 +167,24 @@ NadsPDF checks it as it would at start, then copies it into the extensions folde
 (replacing an earlier copy of the same extension; symbolic links are not followed, and the copy
 stops past 4 000 files, 2 GiB or 16 nested folders). An imported extension is off until you turn
 it on. **Open the extensions folder** shows the folder itself.
+
+## NadsPDF's own extensions
+
+`apps/nads-extensions` holds two extensions written against protocol 1 like anyone's: separate
+programs, off until imported and turned on. Both ask only for `document_events`, `read_text` and
+`banner` (no file path, no web page), work offline, and keep their own files in
+`<NadsPDF data>/ExtensionData/<id>/`, beside the extensions folder, so importing a new version
+keeps them.
+
+| Extension | What it does |
+|---|---|
+| **Contrôle des factures** (`site.nads.factures`) | Checks the IBAN (ISO 13616 mod 97, country length), BIC, SIREN/SIRET (Luhn, La Poste's rule) and French VAT key of an opened invoice, and flags a foreign IBAN for a French company or a BIC from another country than the IBAN. **Mémoriser cet IBAN** remembers it with the invoice's SIRENs (`iban-connus.json`); a later invoice whose companies are all known but whose IBAN isn't one of theirs is flagged as a changed IBAN, the usual invoice fraud. A SIREN seen on invoices paid to different companies (your own) stops counting. |
+| **Échéances** (`site.nads.echeances`) | Finds the dates a document asks something for (a deadline word before the date, on its line or the line above): payments, expiries, hearings and appointments, deadlines; from today to five years ahead. **Ajouter au calendrier** writes an iCalendar file (all-day events, a reminder the day before at 9:00, stable ids so importing again updates) and opens it with the system's calendar. |
+
+`cargo xtask extensions` builds them in release and writes `dist/extensions/<id>/` (manifest and
+program, checked as NadsPDF checks an import): import each folder with Home ▸ Extensions ▸
+**Import an extension…**. Tests: `cargo test -p nads-extensions`.
+
+Not yet: only the first 10 pages are read (protocol 1's default); dates in other languages than
+French and English, and the RIB key inside French IBANs, are not checked; a remembered IBAN can't
+be forgotten from NadsPDF (edit or delete `iban-connus.json`).

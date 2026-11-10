@@ -97,6 +97,7 @@ pub const TABLE: &[(&str, Class)] = &[
     ("web", Class::Exempt),
     ("ocr-worker", Class::Exempt),
     ("xtask", Class::Exempt),
+    ("nads-extensions", Class::Exempt),
 ];
 
 /// Workspace crates a standalone crate may use (architecture §3 rule 3: `cos → filters, crypt, geom`).

@@ -4231,6 +4231,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "743fb55ba31b18fb1ecef6bdc9aa2743314978ac084044301a7eee33fb99a20d"
 
 [[package]]
+name = "nads-extensions"
+version = "0.8.1"
+dependencies = [
+ "chrono",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "naga"
 version = "30.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -9523,6 +9532,7 @@ dependencies = [
  "chrono",
  "lopdf",
  "pdfcraft-cos",
+ "pdfcraft-extensions",
  "pdfcraft-oracle",
  "png 0.18.1",
  "serde",

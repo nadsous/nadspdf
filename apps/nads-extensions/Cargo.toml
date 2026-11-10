@@ -1,0 +1,24 @@
+[package]
+name = "nads-extensions"
+description = "NadsPDF's own extensions (protocol 1): invoice checks and deadlines to a calendar"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[[bin]]
+name = "nads-factures"
+path = "src/bin/nads-factures.rs"
+
+[[bin]]
+name = "nads-echeances"
+path = "src/bin/nads-echeances.rs"
+
+[lints]
+workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+# Today's date (which deadlines are still ahead) and the calendar file's time stamp.
+chrono = { workspace = true, features = ["clock"] }
