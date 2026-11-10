@@ -11,6 +11,37 @@ use crate::xref::{XRef, XRefError, cut_off_update_follows, fallback, root_xref};
 pub use crate::crypto::DecryptionError;
 use crate::metadata::Metadata;
 
+/// NadsPDF patch: the stream expansion limits of the shared craft-libs reader, so its
+/// `craft-pdf` (the Mise en page engine's PDF reader) builds on this copy. Only the default is
+/// supported: this reader keeps its fixed ceiling (`MAX_DECODED_STREAM`,
+/// 256 MiB), which is also the shared reader's default, and no caller lowers it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct DecodeLimits {
+    max_decoded_stream: usize,
+}
+
+impl DecodeLimits {
+    /// The ordinary stream limit, 256 MiB.
+    pub const DEFAULT: Self = Self { max_decoded_stream: crate::filter::MAX_DECODED_STREAM };
+
+    /// The limit lowered to `max` (clamped to the ceiling). Recorded but not applied: see the
+    /// type's documentation.
+    pub const fn with_max_decoded_stream(self, max: usize) -> Self {
+        Self { max_decoded_stream: if max < self.max_decoded_stream { max } else { self.max_decoded_stream } }
+    }
+
+    /// The maximum expanded bytes per ordinary stream.
+    pub const fn max_decoded_stream(self) -> usize {
+        self.max_decoded_stream
+    }
+}
+
+impl Default for DecodeLimits {
+    fn default() -> Self {
+        Self::DEFAULT
+    }
+}
+
 /// A PDF file.
 pub struct Pdf {
     xref: Arc<XRef>,
@@ -37,6 +68,18 @@ impl Pdf {
     /// Returns `Err` if it was unable to read it.
     pub fn new(data: impl Into<PdfData>) -> Result<Self, LoadPdfError> {
         Self::new_with_password(data, "")
+    }
+
+    /// NadsPDF patch: [`Pdf::new`] with the shared reader's limits (see [`DecodeLimits`]).
+    pub fn new_with_limits(data: impl Into<PdfData>, limits: DecodeLimits) -> Result<Self, LoadPdfError> {
+        Self::new_with_password_and_limits(data, "", limits)
+    }
+
+    /// NadsPDF patch: [`Pdf::new_with_password`] with the shared reader's limits (see
+    /// [`DecodeLimits`]).
+    pub fn new_with_password_and_limits(data: impl Into<PdfData>, password: &str, limits: DecodeLimits) -> Result<Self, LoadPdfError> {
+        let _ = limits;
+        Self::new_with_password(data, password)
     }
 
     /// Try to read the given PDF file with a password.

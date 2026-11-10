@@ -173,3 +173,8 @@ eframe = { git = "https://github.com/storytold/egui.git", rev = "6d518fc79968157
 egui_demo_lib = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
 egui_inspection = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
 winit = { git = "https://github.com/storytold/winit.git", rev = "a517b3846ee8457d84ee4975110bfda6797c44dc" }
+
+# Mise en page: the shared reader the DesignCraft engine reads placed PDFs with, adapted to this
+# workspace's hayro copy (vendor/craft-pdf/Cargo.toml says what changed).
+[patch."https://github.com/storytold/craft-libs"]
+craft-pdf = { path = "vendor/craft-pdf" }

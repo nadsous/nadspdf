@@ -1,0 +1,28 @@
+# NadsPDF: craft-libs' craft-pdf (storytold/craft-libs 92d392cff132eaf53e13afff77f38b5c11b73aa0,
+# crates/pdf), the PDF reader of the Mise en page engine, with its workspace settings written out
+# and two changes in `src/raster.rs` for this hayro copy: it fills `RenderSettings::max_coverage`,
+# and maps the copy's further `InterpreterWarning`s onto the reader's diagnostics.
+[package]
+name = "craft-pdf"
+description = "Shared PDF reading, rendering and optional writing for Craft apps"
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+publish = false
+
+[features]
+default = []
+read = ["dep:hayro-syntax", "dep:thiserror"]
+interpret = ["read", "dep:hayro-interpret"]
+raster = ["interpret", "dep:hayro", "dep:bytemuck"]
+write = ["dep:krilla", "dep:thiserror"]
+write-pdf = ["write", "krilla/pdf"]
+write-simple-text = ["write", "krilla/simple-text"]
+
+[dependencies]
+hayro-syntax = { version = "=0.7.2", default-features = false, features = ["std"], optional = true }
+hayro-interpret = { version = "=0.7.0", default-features = false, features = ["embed-fonts", "embed-cmaps"], optional = true }
+hayro = { version = "=0.7.1", default-features = false, optional = true }
+bytemuck = { version = "1", optional = true }
+krilla = { version = "=0.8.2", default-features = false, features = ["raster-images"], optional = true }
+thiserror = { version = "2", optional = true }
