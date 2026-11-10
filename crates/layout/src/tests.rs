@@ -256,3 +256,65 @@ fn designcraft_engine_base64_decode(s: &str) -> Vec<u8> {
     }
     out
 }
+
+/// A one-page 300 × 200 pt PDF drawing a red rectangle (the artwork behind the words).
+fn artwork_pdf() -> Vec<u8> {
+    let content = b"1 0 0 rg 20 20 100 50 re f";
+    let objs = [
+        "<< /Type /Catalog /Pages 2 0 R >>".to_string(),
+        "<< /Type /Pages /Kids [3 0 R] /Count 1 >>".to_string(),
+        "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 200] /Contents 4 0 R >>".to_string(),
+        format!("<< /Length {} >>\nstream\n{}\nendstream", content.len(), String::from_utf8_lossy(content)),
+    ];
+    let mut out = b"%PDF-1.7\n".to_vec();
+    let mut offs = Vec::new();
+    for (i, o) in objs.iter().enumerate() {
+        offs.push(out.len());
+        out.extend_from_slice(format!("{} 0 obj\n{o}\nendobj\n", i + 1).as_bytes());
+    }
+    let x = out.len();
+    out.extend_from_slice(format!("xref\n0 {}\n0000000000 65535 f \n", objs.len() + 1).as_bytes());
+    for o in offs {
+        out.extend_from_slice(format!("{o:010} 00000 n \n").as_bytes());
+    }
+    out.extend_from_slice(format!("trailer\n<< /Size {} /Root 1 0 R >>\nstartxref\n{x}\n%%EOF\n", objs.len() + 1).as_bytes());
+    out
+}
+
+#[test]
+fn a_pdf_becomes_artwork_behind_editable_words() {
+    let block = |text: &str, rect: [f64; 4], bold: bool, color: [f64; 3]| PdfBlock {
+        text: text.into(),
+        rect,
+        style: TextStyle { size: 14.0, bold, color },
+        rotation: 0.0,
+    };
+    let pages = [PdfPage {
+        width: 300.0,
+        height: 200.0,
+        blocks: vec![
+            block("Titre en gras", [20.0, 160.0, 160.0, 176.0], true, [0.8, 0.1, 0.1]),
+            block("Un paragraphe ordinaire", [20.0, 120.0, 220.0, 134.0], false, [0.0, 0.0, 0.0]),
+            block("   ", [20.0, 100.0, 60.0, 110.0], false, [0.0; 3]),
+            block("hors champ", [f64::NAN, 0.0, 1.0, 1.0], false, [0.0; 3]),
+        ],
+    }];
+    let mut l = Layout::from_pdf(&artwork_pdf(), "Affiche.pdf", &pages).unwrap();
+    assert_eq!(l.page_count(), 1);
+    assert_eq!(l.page_size(0).map(|(w, h)| (w.round(), h.round())), Some((300.0, 200.0)));
+    let items = l.items(0);
+    assert_eq!(items.iter().filter(|i| i.kind == ItemKind::Image).count(), 1, "the artwork: {items:?}");
+    let texts: Vec<Item> = items.iter().filter(|i| i.kind == ItemKind::Text).cloned().collect();
+    assert_eq!(texts.len(), 2, "blank and broken blocks are left out: {texts:?}");
+    let title = texts.iter().find(|i| l.text(i.id).as_deref() == Some("Titre en gras")).cloned().unwrap();
+    // Placed where the PDF drew it, the page being y-down: 200 - 176 = 24 pt from the top.
+    assert!((title.rect.x0 - 20.0).abs() < 0.5 && (title.rect.y0 - 22.6).abs() < 1.5, "{:?}", title.rect);
+    // Editable: the words change like any frame's.
+    l.set_text(title.id, "Nouveau titre").unwrap();
+    assert_eq!(l.text(title.id).as_deref(), Some("Nouveau titre"));
+    // The artwork is locked: a click on it finds the words, not the picture.
+    let pdf = l.export_pdf().unwrap();
+    assert!(pdf.starts_with(b"%PDF-"));
+    assert!(Layout::from_pdf(b"", "x.pdf", &pages).is_err());
+    assert!(Layout::from_pdf(&artwork_pdf(), "x.pdf", &[]).is_err());
+}

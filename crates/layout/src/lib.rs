@@ -132,6 +132,42 @@ pub struct Layout {
     renderer: designcraft_render::Renderer,
     /// The revision last saved (or opened); the document is unsaved while it differs.
     saved: u64,
+    /// The colour swatches made for text, by `#rrggbb`.
+    swatches: std::collections::HashMap<String, String>,
+}
+
+/// One page of a PDF to turn into a page layout: its size and its words, as NadsPDF reads them
+/// for Word export.
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct PdfPage {
+    /// Points.
+    pub width: f64,
+    pub height: f64,
+    pub blocks: Vec<PdfBlock>,
+}
+
+/// A paragraph of a PDF page.
+#[derive(Clone, Debug, PartialEq)]
+pub struct PdfBlock {
+    pub text: String,
+    /// [x0, y0, x1, y1] in points, y up from the page's bottom (PDF space).
+    pub rect: [f64; 4],
+    pub style: TextStyle,
+    /// Counterclockwise angle of its baseline (degrees).
+    pub rotation: f64,
+}
+
+/// The most text frames one conversion makes, so a page of thousands of tiny words stays usable.
+const MAX_BLOCKS: usize = 20_000;
+
+/// How a text frame made from a PDF's words looks.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct TextStyle {
+    /// Points.
+    pub size: f64,
+    pub bold: bool,
+    /// sRGB, 0..=1.
+    pub color: [f64; 3],
 }
 
 /// The extension NadsPDF saves page layouts with.
@@ -169,7 +205,7 @@ impl Layout {
 
     fn with(session: Session) -> Self {
         let saved = session.doc().map_or(0, |d| d.revision);
-        Self { session, renderer: designcraft_render::Renderer::new(), saved }
+        Self { session, renderer: designcraft_render::Renderer::new(), saved, swatches: Default::default() }
     }
 
     /// Open a page layout (`.nadsmep`), an IDML package or an InDesign document from its bytes;
@@ -382,6 +418,124 @@ impl Layout {
         let r = self.run("type.char", json!({ "attrs": attrs }));
         let _ = self.run("selection.set", json!({ "ids": [] }));
         r.map(|_| ())
+    }
+
+    /// A document with one page per entry of `sizes` (width, height in points), no margins, as
+    /// a PDF's pages are. Sizes outside 1–15 552 pt (InDesign's range) are refused.
+    pub fn with_page_sizes(sizes: &[(f64, f64)]) -> Result<Self> {
+        let ok = |v: f64| v.is_finite() && (1.0..=15_552.0).contains(&v);
+        let Some(&(w, h)) = sizes.first() else { return Err(LayoutError::Invalid("no pages".into())) };
+        if sizes.len() > 9_999 || sizes.iter().any(|&(w, h)| !ok(w) || !ok(h)) {
+            return Err(LayoutError::Invalid("a page is too small, too large, or there are too many".into()));
+        }
+        let mut session = Session::new();
+        session
+            .execute("file.new", &json!({ "width": w, "height": h, "pages": sizes.len(), "facingPages": false, "margins": 0, "columns": 1 }))
+            .map_err(engine)?;
+        let mut l = Self::with(session);
+        for (i, &(pw, ph)) in sizes.iter().enumerate().skip(1) {
+            if (pw - w).abs() > 0.01 || (ph - h).abs() > 0.01 {
+                l.run("layout.pageSize", json!({ "pages": [i + 1], "width": pw, "height": ph }))?;
+            }
+        }
+        l.saved = l.revision();
+        Ok(l)
+    }
+
+    /// Page `pdf_page` (1-based) of the PDF in `pdf` drawn in `rect` on page `page`, as vector
+    /// artwork (text in it stays text, pictures stay sharp). Returns the frame's id.
+    pub fn place_pdf_page(&mut self, page: usize, rect: Rect, pdf: &[u8], name: &str, pdf_page: usize) -> Result<u64> {
+        if pdf.is_empty() || pdf.len() > MAX_DOCUMENT_BYTES || pdf_page == 0 {
+            return Err(LayoutError::Invalid("the PDF is empty, too large, or has no such page".into()));
+        }
+        let r = Self::check_rect(rect)?;
+        let (spread, x) = self.locate(page)?;
+        let id = Self::id_of(&self.run("frame.create", json!({ "spread": spread, "rect": r.offset(x, 0.0).json(), "content": "graphic" }))?)?;
+        let placed = self.run("file.place", json!({ "base64": base64(pdf), "name": name, "frame": id, "pdfPage": pdf_page, "pdfCrop": "crop" }));
+        if let Err(e) = placed {
+            let _ = self.run("edit.clear", json!({ "ids": [id] }));
+            return Err(e);
+        }
+        let _ = self.run("object.fit", json!({ "mode": "fitContentToFrame", "ids": [id] }));
+        Ok(id)
+    }
+
+    /// Lock frame `id`: it can no longer be selected or moved on the page (Object ▸ Unlock All).
+    pub fn lock(&mut self, id: u64) -> Result<()> {
+        self.run("object.lock", json!({ "ids": [id] })).map(|_| ())
+    }
+
+    /// A text frame holding `text` in `style` (the interface face, Inter, in its regular or
+    /// semibold weight; the size and colour given). Returns its id.
+    pub fn add_styled_text(&mut self, page: usize, rect: Rect, text: &str, style: &TextStyle) -> Result<u64> {
+        let id = self.add_text_frame(page, rect, text)?;
+        // The frame takes the text exactly: no inset, so it sits where the PDF drew it.
+        let _ = self.run("object.textFrameOptions", json!({ "inset": 0, "ids": [id] }));
+        let mut attrs = serde_json::Map::new();
+        attrs.insert("fontFamily".into(), json!("Inter"));
+        attrs.insert("fontStyle".into(), json!(if style.bold { "SemiBold" } else { "Regular" }));
+        if style.size.is_finite() && FONT_SIZES.contains(&style.size) {
+            attrs.insert("size".into(), json!(style.size));
+        }
+        if let Some(swatch) = self.swatch_for(style.color)? {
+            attrs.insert("fill".into(), json!(swatch));
+        }
+        self.char_attrs(id, Value::Object(attrs))?;
+        Ok(id)
+    }
+
+    /// The swatch of colour `rgb` (0..=1), made once per colour; `None` for black, the default.
+    fn swatch_for(&mut self, rgb: [f64; 3]) -> Result<Option<String>> {
+        let byte = |v: f64| if v.is_finite() { (v.clamp(0.0, 1.0) * 255.0).round() as u8 } else { 0 };
+        let [r, g, b] = rgb.map(byte);
+        if r < 8 && g < 8 && b < 8 {
+            return Ok(None);
+        }
+        let hex = format!("#{r:02x}{g:02x}{b:02x}");
+        if let Some(name) = self.swatches.get(&hex) {
+            return Ok(Some(name.clone()));
+        }
+        let v = self.run("swatch.create", json!({ "color": hex }))?;
+        let name = v["name"].as_str().map(str::to_owned).ok_or_else(|| LayoutError::Engine("the colour has no name".into()))?;
+        self.swatches.insert(hex, name.clone());
+        Ok(Some(name))
+    }
+
+    /// A page layout made from a PDF: each page shows `artwork` (the PDF without its text,
+    /// `name`) as locked vector artwork, and each paragraph of `pages` as an editable text frame
+    /// where the PDF drew it, in its size, weight and colour (a rotated paragraph becomes an
+    /// upright frame at its place: the artwork holds no text).
+    pub fn from_pdf(artwork: &[u8], name: &str, pages: &[PdfPage]) -> Result<Self> {
+        let sizes: Vec<(f64, f64)> = pages.iter().map(|p| (p.width, p.height)).collect();
+        let mut l = Self::with_page_sizes(&sizes)?;
+        let mut made = 0usize;
+        for (i, p) in pages.iter().enumerate() {
+            let id = l.place_pdf_page(i, Rect::new(0.0, 0.0, p.width, p.height), artwork, name, i + 1)?;
+            l.lock(id)?;
+            for b in &p.blocks {
+                if made >= MAX_BLOCKS {
+                    break;
+                }
+                let text = b.text.trim_end();
+                let [x0, y0, x1, y1] = b.rect;
+                if text.is_empty() || ![x0, y0, x1, y1].iter().all(|v| v.is_finite()) {
+                    continue;
+                }
+                // PDF space (y up) to the page's (y down); a little room so the interface face,
+                // which may be wider than the PDF's, keeps the same lines.
+                let size = if b.style.size.is_finite() && b.style.size > 0.0 { b.style.size } else { 10.0 };
+                let (left, right) = (x0.min(x1), x0.max(x1));
+                let (top, bottom) = (p.height - y0.max(y1), p.height - y0.min(y1));
+                let width = (right - left) * 1.06 + size * 0.5;
+                let height = ((bottom - top) * 1.15).max(size * 1.4);
+                let rect = Rect::new(left, top - size * 0.1, left + width.max(MIN_FRAME), top - size * 0.1 + height.max(MIN_FRAME));
+                // A word the engine can't take (a frame off every page) is left out, not fatal.
+                if l.add_styled_text(i, rect, text, &b.style).is_ok() {
+                    made += 1;
+                }
+            }
+        }
+        Ok(l)
     }
 
     /// Add a page after the last one; returns its index.

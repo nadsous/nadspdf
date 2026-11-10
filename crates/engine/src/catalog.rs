@@ -181,7 +181,11 @@ pub static TOOL_GROUPS: &[ToolGroup] = &[
         availability: Ready,
         sections: &[ToolSection {
             title: "Page design",
-            items: &[item("New document", "panels-top-left", "layout.new", Ready), item("Sample magazine", "book-open", "layout.sample", Ready)],
+            items: &[
+                item("New document", "panels-top-left", "layout.new", Ready),
+                item("Sample magazine", "book-open", "layout.sample", Ready),
+                item("Open this PDF in page layout", "file-pen-line", "layout.from_pdf", Ready),
+            ],
         }],
     },
     ToolGroup {

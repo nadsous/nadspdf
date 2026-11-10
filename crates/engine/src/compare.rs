@@ -383,6 +383,22 @@ impl crate::Document {
         (pages, truncated)
     }
 
+    /// NadsPDF Mise en page: what turns this PDF into an editable page layout. The document with
+    /// every text-showing operator removed (written unencrypted: the pages' artwork, shapes and
+    /// pictures, drawn behind), and its pages as paragraphs (the words, to become text frames).
+    /// `None` when the document's security doesn't allow copying its content, or it can't be
+    /// written.
+    pub fn layout_sources(&self) -> Option<(Vec<u8>, Vec<pdfcraft_export::Page>)> {
+        if !self.allows_copying() {
+            return None;
+        }
+        let cos = self.editor.as_ref().map(|e| &e.cos)?;
+        let bytes = pdfcraft_cos::write_full(&pdfcraft_edit::without_text(cos), &pdfcraft_cos::SaveOptions::default()).ok()?;
+        // No pictures: they stay in the artwork behind the words.
+        let (pages, _) = self.export_pages_checked(false, 0);
+        Some((bytes, pages))
+    }
+
     /// Word's layout mode for `pages`: each page whose artwork shows gets a picture of itself
     /// without text, and its paragraphs row by row. Plain text pages (nothing but words on white)
     /// and OCR layers over scans keep flowing.

@@ -97,6 +97,14 @@ fn screenshots_when_asked() {
     assert!(h.state_mut().execute("layout.sample"));
     h.run_steps(30);
     h.render().unwrap().save(dir.join("2-magazine.png")).unwrap();
+    // A PDF (the magazine exported) opened in page layout: artwork behind editable words.
+    let pdf = pdfcraft_layout::Layout::sample().unwrap().export_pdf().unwrap();
+    h.state_mut().close_layout_tab();
+    h.state_mut().open_bytes("Magazine.pdf", None, pdf).unwrap();
+    h.run_steps(10);
+    assert!(h.state_mut().execute("layout.from_pdf"));
+    h.run_steps(30);
+    h.render().unwrap().save(dir.join("3-pdf-en-mise-en-page.png")).unwrap();
 }
 
 #[test]
@@ -113,4 +121,21 @@ fn quitting_with_an_unsaved_page_layout_asks_first() {
     h.run_steps(1);
     assert!(h.state().layout_showing(), "the window stays open on the unsaved page layout");
     assert!(h.state().layout_tab.has_document());
+}
+
+#[test]
+fn an_open_pdf_opens_in_page_layout_with_its_words_editable() {
+    let mut h = harness();
+    h.state_mut().open_bytes("notes.txt", None, b"Bonjour NadsPDF\nUne seconde ligne".to_vec()).unwrap();
+    h.run_steps(4);
+    let pdf_tabs = h.state().views.len();
+    assert!(h.state_mut().execute("layout.from_pdf"));
+    h.run_steps(8);
+    assert!(h.state().layout_showing());
+    assert_eq!(h.state().layout_tab.document_count(), 1);
+    assert_eq!(h.state().views.len(), pdf_tabs, "the PDF stays open, untouched");
+    // The words are in text frames: a story of the page layout holds them.
+    let found = h.state_mut().layout_tab.run("find.find", json!({"find": "Bonjour"}));
+    let n = found.as_ref().ok().and_then(|v| v["count"].as_u64().or_else(|| v.as_array().map(|a| a.len() as u64))).unwrap_or(0);
+    assert!(n >= 1, "{found:?}");
 }

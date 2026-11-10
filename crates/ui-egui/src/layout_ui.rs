@@ -199,6 +199,41 @@ impl PdfCraftApp {
         Ok(())
     }
 
+    /// Open in page layout: the active PDF becomes a page layout in the Mise en page tab, its
+    /// pages' artwork locked behind editable text frames (`pdfcraft_layout::Layout::from_pdf`).
+    /// The PDF itself is untouched.
+    pub fn layout_from_active_pdf(&mut self) {
+        let Some((_, id)) = self.active_ids() else { return };
+        let Some(doc) = self.session.get(id) else { return };
+        let stem = doc.name.rsplit_once('.').map_or(doc.name.as_str(), |(s, _)| s).to_owned();
+        let Some((artwork, pages)) = doc.layout_sources() else {
+            return self.notify_tr("This PDF's security doesn't allow copying its content, so it can't be opened in page layout.");
+        };
+        let pages: Vec<pdfcraft_layout::PdfPage> = pages
+            .into_iter()
+            .map(|p| pdfcraft_layout::PdfPage {
+                width: p.width,
+                height: p.height,
+                blocks: p
+                    .blocks
+                    .into_iter()
+                    .map(|b| pdfcraft_layout::PdfBlock {
+                        text: b.text,
+                        rect: b.rect,
+                        style: pdfcraft_layout::TextStyle { size: b.size, bold: b.bold, color: b.color },
+                        rotation: b.rotation,
+                    })
+                    .collect(),
+            })
+            .collect();
+        let made = pdfcraft_layout::Layout::from_pdf(&artwork, &format!("{stem}.pdf"), &pages).and_then(|l| l.save_bytes());
+        let r =
+            made.map_err(|e| e.to_string()).and_then(|bytes| self.open_layout_file(&format!("{stem}.{}", pdfcraft_layout::EXTENSION), None, &bytes));
+        if let Err(e) = r {
+            self.notify_error(e);
+        }
+    }
+
     /// Undo in the page layout interface.
     pub fn layout_undo(&mut self) -> bool {
         self.layout_tab.run("edit.undo", json!({})).is_ok()

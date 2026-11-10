@@ -273,6 +273,7 @@ impl PdfCraftApp {
             "create.blank" => self.create_blank(),
             "layout.new" => self.open_layout_tab(),
             "layout.sample" => self.open_layout_sample(),
+            "layout.from_pdf" => self.layout_from_active_pdf(),
             "create.file" => self.open_dialog(),
             "create.multiple" => self.create_multiple_dialog(),
             "create.multiple_separate" => self.create_multiple_separate_dialog(),

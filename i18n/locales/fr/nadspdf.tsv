@@ -334,3 +334,7 @@ watermark text	CONFIDENTIAL	CONFIDENTIEL
 	Lay out pages with text and pictures, then export them as a PDF. Opens InDesign files (.idml, .indd) too.	Mettez en page du texte et des images, puis exportez le tout en PDF. Ouvre aussi les fichiers InDesign (.idml, .indd).
 	Saved {path}	Enregistré : {path}
 	This page layout has unsaved changes. Save it (Ctrl+S), or close again to quit without saving.	Cette mise en page a des modifications non enregistrées. Enregistrez-la (Ctrl+S), ou fermez à nouveau pour quitter sans enregistrer.
+	Open in page layout	Ouvrir en mise en page
+	Open this PDF in page layout	Ouvrir ce PDF en mise en page
+	This PDF's security doesn't allow copying its content, so it can't be opened in page layout.	La sécurité de ce PDF interdit de copier son contenu : il ne peut pas être ouvert en mise en page.
+	the file is empty	le fichier est vide

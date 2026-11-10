@@ -14,6 +14,7 @@ that script. File names are upstream PdfCraft's so every reference keeps working
 | `nads-n.svg` | the red mark alone (title bar) |
 | `pdfcraft-1024.png`, `pdfcraft.icns` | macOS (824 px body on a 1024 canvas) |
 | `pdfcraft.ico`, `pdfcraft-document.ico` | Windows, 16–256 px |
+| `nadsmep-document.svg`, `nadsmep-document.ico` | page layout files (`.nadsmep`): the sheet in a yellow-to-orange gradient with a white grid and the mark alone |
 | `hicolor/` | Linux hicolor theme, 16–512 px |
 
 Trademark of nads, not covered by the code licence: see `docs/brand/LICENSE-brand.txt`.

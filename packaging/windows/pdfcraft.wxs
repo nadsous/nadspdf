@@ -97,6 +97,23 @@
         <RegistryValue Root="HKLM" Key="Software\NadsPDF\Capabilities\FileAssociations" Name=".pdf" Value="NadsPDF.Document" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\RegisteredApplications" Name="NadsPDF" Value="Software\NadsPDF\Capabilities" Type="string" />
 
+        <!-- NadsPDF page layouts (.nadsmep, the Mise en page tab's files): NadsPDF's own type, so it
+             is the default, with the yellow-orange grid icon (resource 3). IDML and InDesign files
+             (.idml, .indd, .indt) open in the same tab: NadsPDF is offered under Open with, and
+             their own default (InDesign's, if installed) is left alone. -->
+        <RegistryValue Root="HKLM" Key="Software\Classes\.nadsmep" Value="NadsPDF.PageLayout" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\.nadsmep" Name="Content Type" Value="application/vnd.nadspdf.page-layout+zip" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\NadsPDF.PageLayout" Value="Mise en page NadsPDF" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\NadsPDF.PageLayout\DefaultIcon" Value="&quot;[#PdfcraftExe]&quot;,-3" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\NadsPDF.PageLayout\shell\open\command" Value="&quot;[#PdfcraftExe]&quot; &quot;%1&quot;" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\.idml\OpenWithProgids" Name="NadsPDF.PageLayout" Value="" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\.indd\OpenWithProgids" Name="NadsPDF.PageLayout" Value="" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\.indt\OpenWithProgids" Name="NadsPDF.PageLayout" Value="" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\Applications\nadspdf.exe\SupportedTypes" Name=".nadsmep" Value="" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\Applications\nadspdf.exe\SupportedTypes" Name=".idml" Value="" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\NadsPDF\Capabilities\FileAssociations" Name=".nadsmep" Value="NadsPDF.PageLayout" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\NadsPDF\Capabilities\FileAssociations" Name=".idml" Value="NadsPDF.PageLayout" Type="string" />
+
       </Component>
 
       <!-- Shortcuts (#143) are plain links to pdfcraft.exe, not advertised MSI shortcuts: advertised

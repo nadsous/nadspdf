@@ -157,6 +157,88 @@ def render_doc(size: int) -> Image.Image:
     return img.resize((size, size), Image.LANCZOS)
 
 
+# The page layout document icon (.nadsmep, the Mise en page tab's files): the same sheet, in a
+# yellow-to-orange gradient with a white layout grid, and the nads mark alone in white.
+LAYOUT_TOP, LAYOUT_BOTTOM, LAYOUT_EDGE, LAYOUT_FOLD = (255, 214, 64), (255, 112, 24), "#D9620F", "#FFE7A3"
+GRID_STEP = 64
+
+
+def mark_shapes(size: float):
+    """The nads mark alone (no "PDF" letters: a page layout is not a PDF), 460/1024 wide, centred
+    on the sheet, for a `size` document icon."""
+    k = size / 1024.0
+    sc = 460.0 / (829.5 - 170.5)
+    mw, mh = (829.5 - 170.5) * sc, (725 - 275) * sc
+    cx, cy = 512.0, 540.0
+    return [([((cx - mw / 2 + (x - 170.5) * sc) * k, (cy - mh / 2 + (y - 275) * sc) * k) for x, y in MARK], [])]
+
+
+def layout_doc_svg() -> str:
+    pts = lambda poly: " ".join(f"{x:.1f},{y:.1f}" for x, y in poly)  # noqa: E731
+    d = []
+    for outer, holes in mark_shapes(1024):
+        for poly in [outer, *holes]:
+            d.append("M" + "L".join(f"{x:.1f} {y:.1f}" for x, y in poly) + "Z")
+    grid = []
+    for x in range(180 + GRID_STEP, 844, GRID_STEP):
+        grid.append(f'<line x1="{x}" y1="60" x2="{x}" y2="964"/>')
+    for y in range(60 + GRID_STEP, 964, GRID_STEP):
+        grid.append(f'<line x1="180" y1="{y}" x2="844" y2="{y}"/>')
+    return "\n".join([
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">',
+        '<defs><linearGradient id="g" x1="0" y1="0" x2="0.6" y2="1">'
+        f'<stop offset="0" stop-color="rgb{LAYOUT_TOP}"/><stop offset="1" stop-color="rgb{LAYOUT_BOTTOM}"/></linearGradient>'
+        f'<clipPath id="page"><polygon points="{pts(PAGE)}"/></clipPath></defs>',
+        f'<polygon points="{pts(PAGE)}" fill="url(#g)"/>',
+        f'<g clip-path="url(#page)" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="10">{"".join(grid)}</g>',
+        f'<polygon points="{pts(PAGE)}" fill="none" stroke="{LAYOUT_EDGE}" stroke-width="24" stroke-linejoin="round"/>',
+        f'<polygon points="{pts(FOLD)}" fill="{LAYOUT_FOLD}" stroke="{LAYOUT_EDGE}" stroke-width="24" stroke-linejoin="round"/>',
+        f'<path fill="#FFFFFF" fill-rule="evenodd" d="{"".join(d)}"/>',
+        "</svg>",
+    ]) + "\n"
+
+
+def render_layout_doc(size: int) -> Image.Image:
+    ss = 4
+    big = size * ss
+    k = big / 1024.0
+    page = [(x * k, y * k) for x, y in PAGE]
+    # The gradient, top-left yellow to bottom-right orange, cut to the sheet.
+    grad = Image.new("RGBA", (big, big))
+    gp = grad.load()
+    for yy in range(big):
+        for xx in range(0, big):
+            t = min(1.0, max(0.0, (yy + 0.6 * xx) / (1.6 * big)))
+            gp[xx, yy] = tuple(round(a + (b - a) * t) for a, b in zip(LAYOUT_TOP, LAYOUT_BOTTOM)) + (255,)
+    sheet = Image.new("L", (big, big), 0)
+    ImageDraw.Draw(sheet).polygon(page, fill=255)
+    img = Image.new("RGBA", (big, big), (0, 0, 0, 0))
+    img.paste(grad, (0, 0), sheet)
+    # The grid: every 64 units, every 128 at 24 px and below so it stays a grid, not a blur.
+    step = GRID_STEP if size > 24 else GRID_STEP * 2
+    lines = Image.new("L", (big, big), 0)
+    ld = ImageDraw.Draw(lines)
+    w = max(1, round(10 * k))
+    for x in range(180 + step, 844, step):
+        ld.line([(x * k, 60 * k), (x * k, 964 * k)], fill=115, width=w)
+    for y in range(60 + step, 964, step):
+        ld.line([(180 * k, y * k), (844 * k, y * k)], fill=115, width=w)
+    from PIL import ImageChops
+    img.paste(Image.new("RGBA", (big, big), (255, 255, 255, 255)), (0, 0), ImageChops.multiply(lines, sheet))
+    draw = ImageDraw.Draw(img)
+    edge = max(1, round(24 * k))
+    draw.polygon(page, outline=LAYOUT_EDGE, width=edge)
+    draw.polygon([(x * k, y * k) for x, y in FOLD], fill=LAYOUT_FOLD, outline=LAYOUT_EDGE, width=edge)
+    mask = Image.new("L", (big, big), 0)
+    md = ImageDraw.Draw(mask)
+    for outer, holes in mark_shapes(big):
+        md.polygon(outer, fill=255)
+        for h in holes:
+            md.polygon(h, fill=0)
+    img.paste(Image.new("RGBA", (big, big), (255, 255, 255, 255)), (0, 0), mask)
+    return img.resize((size, size), Image.LANCZOS)
+
+
 def banner(path: Path):
     """The Windows installer's banner (installer-banner.bmp): the icon, the name and what
     it does on the nads base, with the red rule."""
@@ -192,6 +274,9 @@ def main():
     frames[-1].save(OUT / "pdfcraft.ico", sizes=[(s, s) for s in sizes], append_images=frames[:-1])
     docs = [render_doc(s) for s in sizes]
     docs[-1].save(OUT / "pdfcraft-document.ico", sizes=[(s, s) for s in sizes], append_images=docs[:-1])
+    (OUT / "nadsmep-document.svg").write_text(layout_doc_svg(), encoding="utf-8")
+    layouts = [render_layout_doc(s) for s in sizes]
+    layouts[-1].save(OUT / "nadsmep-document.ico", sizes=[(s, s) for s in sizes], append_images=layouts[:-1])
 
     for s in [16, 24, 32, 48, 64, 128, 256, 512]:
         p = OUT / f"hicolor/{s}x{s}/apps/ai.storyteller.pdfcraft.png"

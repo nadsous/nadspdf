@@ -176,6 +176,7 @@ pub const COMMANDS: &[CommandSpec] = &[
     // NadsPDF: Mise en page (page layout), in its own tab.
     c("layout.new", "New page layout", FILE, None, Nothing, "panels-top-left"),
     c("layout.sample", "Page layout sample", None, None, Nothing, "book-open"),
+    c("layout.from_pdf", "Open in page layout", FILE, None, Document, "panels-top-left"),
     c("measure.distance", "Measure distance", None, None, Annotate, "ruler"),
     c("measure.perimeter", "Measure perimeter", None, None, Annotate, "ruler"),
     c("measure.area", "Measure area", None, None, Annotate, "ruler"),
