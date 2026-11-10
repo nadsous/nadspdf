@@ -17,3 +17,4 @@ legacy-electron/dist/
 legacy-electron/dist-electron/
 legacy-electron/release/
 legacy-electron/*.tsbuildinfo
+__pycache__/
