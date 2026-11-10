@@ -49,6 +49,7 @@ impl PdfCraftApp {
 
     /// Show the Combine files tab (File ▸ Combine files…), opening it if needed.
     pub fn open_combine_tab(&mut self) {
+        self.layout_tab.focused = false;
         self.combine_tab.open = true;
         self.combine_tab.focused = true;
         self.active = None;

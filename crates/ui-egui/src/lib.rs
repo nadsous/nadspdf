@@ -66,6 +66,8 @@ pub mod explorer_menu;
 mod extensions_home;
 pub mod extensions_ui;
 mod home_pixels;
+/// NadsPDF: the Mise en page tab (page layout).
+pub mod layout_ui;
 pub mod link_bubble;
 mod lite;
 mod nads_menu;
@@ -653,6 +655,8 @@ pub struct PdfCraftApp {
     pub combine_conflicts: combine_ui::ConflictPreview,
     /// The Combine files tab: whether it is open, shown, its selection and undo history.
     pub combine_tab: combine_ui::CombineTab,
+    /// NadsPDF: the Mise en page tab and its document.
+    pub layout_tab: layout_ui::LayoutTab,
     /// The Combine files table's column order and widths (kept in the settings).
     pub combine_columns: combine_ui::Columns,
     /// Combine files as thumbnails or as the table (kept in the settings).

@@ -44,6 +44,7 @@ impl PdfCraftApp {
         let mark = if dirty { " •" } else { "" };
         let titled = |name: Option<String>| {
             name.or_else(|| self.combine_showing().then(|| tl!("Combine files").to_owned()))
+                .or_else(|| self.layout_showing().then(|| tl!("Page design").to_owned()))
                 .map_or_else(|| "NadsPDF".to_owned(), |name| format!("{name}{mark} — NadsPDF"))
         };
         let title = titled(front.and_then(|i| crate::canvas::tab_label(self, i)));
@@ -255,6 +256,7 @@ impl PdfCraftApp {
             combine_draft: Vec::new(),
             combine_conflicts: Default::default(),
             combine_tab: Default::default(),
+            layout_tab: Default::default(),
             combine_columns: Default::default(),
             combine_view: Default::default(),
             combine_zoom: 1.0,

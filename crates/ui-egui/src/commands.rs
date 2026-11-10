@@ -91,6 +91,10 @@ impl PdfCraftApp {
         if self.combine_showing() && matches!(spec.needs, commands::Needs::Undo | commands::Needs::Redo) {
             return self.combine_can_undo(spec.needs == commands::Needs::Undo);
         }
+        // NadsPDF: and on the Mise en page document while its tab shows.
+        if self.layout_showing() && matches!(spec.needs, commands::Needs::Undo | commands::Needs::Redo) {
+            return self.layout_tab.has_document();
+        }
         // Undo also takes back typing in a box open on the page, and Redo what Undo took there,
         // with no document step.
         (commands::is_enabled(spec, &self.session, self.active_ids().map(|(_, id)| id))
@@ -261,6 +265,8 @@ impl PdfCraftApp {
                 self.dialog = Some(Dialog::ActionWizard);
             }
             "create.blank" => self.create_blank(),
+            "layout.new" => self.open_layout_tab(),
+            "layout.sample" => self.open_layout_sample(),
             "create.file" => self.open_dialog(),
             "create.multiple" => self.create_multiple_dialog(),
             "create.multiple_separate" => self.create_multiple_separate_dialog(),
@@ -475,6 +481,12 @@ impl PdfCraftApp {
     fn run_edit_command(&mut self, id: &str, active: Option<usize>) -> Option<bool> {
         match id {
             "edit.attach" => self.attach_file_dialog(),
+            "edit.undo" if self.layout_showing() => {
+                self.layout_undo();
+            }
+            "edit.redo" if self.layout_showing() => {
+                self.layout_redo();
+            }
             "edit.undo" => self.undo(),
             "edit.redo" => self.redo(),
             "edit.find" => {

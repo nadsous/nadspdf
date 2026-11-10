@@ -75,9 +75,11 @@ pub fn tab_strip(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                 // The nads.site brand, as on the site's top bar, opens the main menu.
                 app.nads_menu(ui, button);
                 ui.add_space(2.0);
-                if icons::button(ui, "house", button, app.active.is_none() && !app.combine_showing(), tl!("Home")).clicked() {
+                if icons::button(ui, "house", button, app.active.is_none() && !app.combine_showing() && !app.layout_showing(), tl!("Home")).clicked()
+                {
                     app.active = None;
                     app.combine_tab.focused = false;
+                    app.layout_tab.focused = false;
                 }
                 // Reserve the three icon buttons and their gaps outside the scrolling tabs.
                 let controls_width = 3.0 * button + 54.0 + window_controls::width(&controls.right);
@@ -308,6 +310,36 @@ pub fn tab_strip(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                                 }
                                 if close.is_some() || response.middle_clicked() {
                                     app.close_combine_tab();
+                                }
+                            }
+                            // NadsPDF: the Mise en page tab, after Combine files.
+                            if app.layout_tab.open {
+                                let mut close = None;
+                                let response = tab(
+                                    ui,
+                                    TabSpec {
+                                        id: ui.scope_id().with("layout-tab"),
+                                        theme: &t,
+                                        icon: "panels-top-left",
+                                        name: tl!("Page design"),
+                                        file: None,
+                                        dirty: false,
+                                        active: app.layout_showing(),
+                                        index: usize::MAX - 1,
+                                        cap,
+                                        height: tab_h,
+                                        draggable: false,
+                                    },
+                                    &mut close,
+                                );
+                                if changed && app.layout_showing() {
+                                    response.scroll_to_me(Some(Align::Center));
+                                }
+                                if response.clicked() {
+                                    app.open_layout_tab();
+                                }
+                                if close.is_some() || response.middle_clicked() {
+                                    app.close_layout_tab();
                                 }
                             }
                         });
@@ -863,10 +895,14 @@ pub fn mode_bar(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
             return;
         }
         let modes: Vec<(Mode, &str, &str)> = MODES.into_iter().filter(|&(mode, _, _)| app.offered_mode(mode) == mode).collect();
-        let pills: Vec<(&str, bool)> = modes.iter().map(|&(mode, _, label)| (tl!(label), app.mode == mode)).collect();
+        // NadsPDF: Mise en page follows the modes; while its tab shows, no mode is the current one.
+        let layout = app.layout_showing();
+        let mut pills: Vec<(&str, bool)> = modes.iter().map(|&(mode, _, label)| (tl!(label), app.mode == mode && !layout)).collect();
+        pills.push((tl!("Page design"), layout));
         // A narrow window (#1913): the modes fold into one pill named after the current mode, so
         // the command search keeps its room instead of running under them.
-        let current = tl!(modes.iter().find(|(m, _, _)| *m == app.mode).map_or("Read", |&(_, _, label)| label));
+        let current =
+            if layout { tl!("Page design") } else { tl!(modes.iter().find(|(m, _, _)| *m == app.mode).map_or("Read", |&(_, _, label)| label)) };
         let fold = widgets::mode_pills_width(ui, &pills) + MODE_BAR_GAP + MODE_BAR_RIGHT + MODE_BAR_SEARCH_MIN > bar.width();
         let modes_width = if fold { widgets::mode_pills_width(ui, &[(current, true)]) } else { widgets::mode_pills_width(ui, &pills) };
         // The modes sit at the left end; the search box and the document buttons at the right end,
@@ -921,17 +957,25 @@ pub fn mode_bar(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                 egui::Popup::menu(&resp).show(|ui| {
                     ui.set_min_width(160.0);
                     for &(mode, _, label) in &modes {
-                        if ui.add(egui::Button::selectable(app.mode == mode, tl!(label))).clicked() {
+                        if ui.add(egui::Button::selectable(app.mode == mode && !layout, tl!(label))).clicked() {
+                            app.leave_layout_tab();
                             app.switch_mode(mode, true);
                         }
+                    }
+                    if ui.add(egui::Button::selectable(layout, tl!("Page design"))).clicked() {
+                        app.open_layout_tab();
                     }
                 });
             } else {
                 widgets::pill_group(ui, |ui| {
                     for &(mode, icon, label) in &modes {
-                        if widgets::mode_pill(ui, icon, tl!(label), app.mode == mode).clicked() {
+                        if widgets::mode_pill(ui, icon, tl!(label), app.mode == mode && !layout).clicked() {
+                            app.leave_layout_tab();
                             app.switch_mode(mode, true);
                         }
+                    }
+                    if widgets::mode_pill(ui, "panels-top-left", tl!("Page design"), layout).clicked() {
+                        app.open_layout_tab();
                     }
                 });
             }

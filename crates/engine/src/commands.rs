@@ -173,6 +173,9 @@ pub const COMMANDS: &[CommandSpec] = &[
     c("vault.new", "New vault…", FILE, None, Nothing, "plus"),
     c("vault.add_current", "Add document to vault…", FILE, None, Document, "bookmark-plus"),
     c("create.blank", "New blank PDF", FILE, None, Nothing, "file-plus-2"),
+    // NadsPDF: Mise en page (page layout), in its own tab.
+    c("layout.new", "New page layout", FILE, None, Nothing, "panels-top-left"),
+    c("layout.sample", "Page layout sample", None, None, Nothing, "book-open"),
     c("measure.distance", "Measure distance", None, None, Annotate, "ruler"),
     c("measure.perimeter", "Measure perimeter", None, None, Annotate, "ruler"),
     c("measure.area", "Measure area", None, None, Annotate, "ruler"),

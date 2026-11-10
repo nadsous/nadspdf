@@ -26,6 +26,8 @@ pdfcraft-extensions = { workspace = true }
 # NadsPDF: the Assistant panel (src/assistant_ui.rs); the network part stays in the desktop app.
 pdfcraft-ai = { workspace = true }
 pdfcraft-export = { workspace = true }
+# NadsPDF: the Mise en page tab (src/layout_ui.rs).
+pdfcraft-layout = { workspace = true }
 # NadsPDF: extension pictures and website icons (src/raster_icon.rs); already in the tree.
 image = { version = "0.25", default-features = false, features = ["png", "ico", "jpeg", "webp"] }
 pdfcraft-cos = { workspace = true }

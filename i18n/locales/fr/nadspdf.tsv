@@ -314,3 +314,18 @@ watermark text	CONFIDENTIAL	CONFIDENTIEL
 	This file is already as small as it can be made ({size}): it has no large images to shrink. No copy was saved.	Ce fichier est déjà aussi léger que possible ({size}) : il ne contient pas de grandes images à réduire. Aucune copie n’a été enregistrée.
 	Icons	Icônes
 	Not added: {names}. Combine takes PDFs, images, text files and Word or Excel documents.	Non ajoutés : {names}. Combiner prend les PDF, les images, les fichiers texte et les documents Word ou Excel.
+	Sample magazine	Magazine d’exemple
+	New page layout	Nouvelle mise en page
+	Page layout sample	Exemple de mise en page
+	Lay out pages with text and pictures, then export them as a PDF.	Mettez en page du texte et des images, puis exportez le tout en PDF.
+	New A4 document	Nouveau document A4
+	New Letter document	Nouveau document Letter
+	Text frame	Cadre de texte
+	Page {n} of {count}	Page {n} sur {count}
+	Add a page	Ajouter une page
+	Export as PDF	Exporter en PDF
+	Pick a tool above and drag on the page to add a frame. Click a frame to change it.	Choisissez un outil en haut et faites glisser sur la page pour ajouter un cadre. Cliquez sur un cadre pour le modifier.
+	Choose a font	Choisir une police
+	Type your text here	Tapez votre texte ici
+	Drag on the page to place the image	Faites glisser sur la page pour placer l’image
+	Page design	Mise en page

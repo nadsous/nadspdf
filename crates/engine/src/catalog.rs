@@ -171,6 +171,19 @@ pub static TOOL_GROUPS: &[ToolGroup] = &[
             ],
         }],
     },
+    // NadsPDF: Mise en page, page layout in its own tab.
+    ToolGroup {
+        id: "layout",
+        label: "Page design",
+        icon: "panels-top-left",
+        hue: ORANGE,
+        badge: None,
+        availability: Ready,
+        sections: &[ToolSection {
+            title: "Page design",
+            items: &[item("New document", "panels-top-left", "layout.new", Ready), item("Sample magazine", "book-open", "layout.sample", Ready)],
+        }],
+    },
     ToolGroup {
         id: "combine",
         label: "Combine files",
@@ -561,7 +574,7 @@ pub struct ToolCategory {
 }
 
 pub static TOOL_CATEGORIES: &[ToolCategory] = &[
-    ToolCategory { label: "Create & Edit", groups: &["create", "edit", "export", "combine", "organize", "scan", "compress"] },
+    ToolCategory { label: "Create & Edit", groups: &["create", "layout", "edit", "export", "combine", "organize", "scan", "compress"] },
     ToolCategory { label: "Review & Compare", groups: &["comment", "stamp", "compare", "measure"] },
     ToolCategory { label: "Forms & Signatures", groups: &["fill_sign", "form", "certificate"] },
     ToolCategory { label: "Protect & Standardize", groups: &["protect", "redact", "accessibility", "standards", "print_production"] },

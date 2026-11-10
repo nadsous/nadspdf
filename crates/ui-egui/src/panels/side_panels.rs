@@ -379,8 +379,8 @@ fn state_of(panels: &SidePanels, pane: Pane) -> PaneState {
 /// The panes that show this frame, outermost first on a shared edge.
 fn open_panes(app: &PdfCraftApp) -> Vec<Pane> {
     let mut open = Vec::new();
-    // Read mode hides the tools, not the navigation panes.
-    if app.left_open && app.mode != Mode::Read {
+    // Read mode hides the tools, not the navigation panes; the Mise en page tab has its own tools.
+    if app.left_open && app.mode != Mode::Read && !app.layout_showing() {
         open.push(Pane::Tools);
     }
     // Home and Combine files have no side panel; the choice is kept for the next document.

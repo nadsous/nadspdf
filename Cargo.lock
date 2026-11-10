@@ -5376,6 +5376,7 @@ dependencies = [
  "pdfcraft-export",
  "pdfcraft-extensions",
  "pdfcraft-fonts",
+ "pdfcraft-layout",
  "pdfcraft-model",
  "pdfcraft-ocr",
  "pdfcraft-platform",
