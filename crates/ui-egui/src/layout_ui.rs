@@ -220,8 +220,9 @@ impl PdfCraftApp {
                     .map(|b| pdfcraft_layout::PdfBlock {
                         text: b.text,
                         rect: b.rect,
-                        style: pdfcraft_layout::TextStyle { size: b.size, bold: b.bold, color: b.color },
+                        style: pdfcraft_layout::TextStyle { size: b.size, bold: b.bold, italic: b.italic, color: b.color },
                         rotation: b.rotation,
+                        font: b.font,
                     })
                     .collect(),
             })

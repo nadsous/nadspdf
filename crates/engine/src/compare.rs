@@ -282,6 +282,33 @@ pub(crate) fn weight_and_slant(base_font: &str) -> (bool, bool) {
     (f.contains("bold") || f.contains("black") || f.contains("heavy"), f.contains("italic") || f.contains("oblique"))
 }
 
+/// NadsPDF Mise en page: a page's size and paragraphs, as [`crate::Document::layout_sources`]
+/// reads them for the text frames that replace them.
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct LayoutPage {
+    /// Points.
+    pub width: f64,
+    pub height: f64,
+    pub blocks: Vec<LayoutBlock>,
+}
+
+/// A paragraph of a page: its words, where and how the PDF drew them, and the font's name.
+#[derive(Clone, Debug, PartialEq)]
+pub struct LayoutBlock {
+    pub text: String,
+    /// [x0, y0, x1, y1] on the displayed page in points, y up.
+    pub rect: [f64; 4],
+    pub size: f64,
+    pub bold: bool,
+    pub italic: bool,
+    /// sRGB, 0..=1.
+    pub color: [f64; 3],
+    /// Counterclockwise baseline angle (degrees).
+    pub rotation: f64,
+    /// The PDF font's name (`/BaseFont`, a subset's `ABCDEF+` prefix included).
+    pub font: String,
+}
+
 impl crate::Document {
     /// The pages as paragraphs and images (for Word, HTML and RTF export), including what
     /// form XObjects draw.
@@ -388,14 +415,48 @@ impl crate::Document {
     /// pictures, drawn behind), and its pages as paragraphs (the words, to become text frames).
     /// `None` when the document's security doesn't allow copying its content, or it can't be
     /// written.
-    pub fn layout_sources(&self) -> Option<(Vec<u8>, Vec<pdfcraft_export::Page>)> {
+    pub fn layout_sources(&self) -> Option<(Vec<u8>, Vec<LayoutPage>)> {
         if !self.allows_copying() {
             return None;
         }
         let cos = self.editor.as_ref().map(|e| &e.cos)?;
         let bytes = pdfcraft_cos::write_full(&pdfcraft_edit::without_text(cos), &pdfcraft_cos::SaveOptions::default()).ok()?;
-        // No pictures: they stay in the artwork behind the words.
-        let (pages, _) = self.export_pages_checked(false, 0);
+        let pages = self
+            .info
+            .pages
+            .iter()
+            .enumerate()
+            .map(|(i, info)| {
+                // As Word export reads them (`export_pages_within`): the visible page in points,
+                // y up, after CropBox offsets, /Rotate and /UserUnit.
+                let visible_rect = |r: [f64; 4]| {
+                    let a = info.user_to_view(r[0] as f32, r[1] as f32);
+                    let b = info.user_to_view(r[2] as f32, r[3] as f32);
+                    [a[0].min(b[0]) as f64, (info.height - a[1].max(b[1])) as f64, a[0].max(b[0]) as f64, (info.height - a[1].min(b[1])) as f64]
+                };
+                let unit = display_unit(info);
+                let reading = pdfcraft_edit::reading_blocks_checked(cos, i).unwrap_or_default();
+                let blocks = reading
+                    .blocks
+                    .into_iter()
+                    .filter(|b| !b.text.trim().is_empty())
+                    .map(|b| {
+                        let (bold, italic) = weight_and_slant(&b.base_font);
+                        LayoutBlock {
+                            text: b.text,
+                            rect: visible_rect(b.rect),
+                            size: b.size * unit,
+                            bold: bold || b.bold,
+                            italic: italic || b.italic,
+                            color: b.color,
+                            rotation: b.rotation - f64::from(info.rotation),
+                            font: b.base_font,
+                        }
+                    })
+                    .collect();
+                LayoutPage { width: f64::from(info.width), height: f64::from(info.height), blocks }
+            })
+            .collect();
         Some((bytes, pages))
     }
 

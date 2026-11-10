@@ -5231,6 +5231,7 @@ name = "pdfcraft-layout"
 version = "0.8.1"
 dependencies = [
  "designcraft-engine",
+ "designcraft-fonts",
  "designcraft-format",
  "designcraft-pdf",
  "designcraft-render",

@@ -877,6 +877,21 @@ fn vertical_gradient(painter: &egui::Painter, rect: Rect, top: Color32, bottom: 
 
 /// Least space between the modes and the search box.
 const MODE_BAR_GAP: f32 = 16.0;
+/// What the Mise en page menus' pill group adds around their titles.
+const LAYOUT_MENUS_PAD: f32 = 2.0 * 6.0 + 4.0;
+
+/// How wide a menu title is in the mode bar: the text and the menu button's padding.
+fn menu_title_width(ui: &egui::Ui, title: &str) -> f32 {
+    let font = egui::TextStyle::Button.resolve(ui.style());
+    let w = ui.fonts_mut(|f| f.layout_no_wrap(title.to_owned(), font, egui::Color32::WHITE).size().x);
+    w + 2.0 * 7.0
+}
+
+/// How wide the Mise en page menus are as a row of titles.
+fn layout_menus_width(app: &mut PdfCraftApp, ui: &egui::Ui) -> f32 {
+    let titles = app.layout_tab.design().embedded_menu_titles();
+    titles.iter().map(|t| menu_title_width(ui, t)).sum::<f32>() + LAYOUT_MENUS_PAD
+}
 /// What the mode bar's right end needs besides the search box: four document buttons in their
 /// pill group and the gap before it.
 const MODE_BAR_RIGHT: f32 = 4.0 * widgets::PILL_HEIGHT + 3.0 * 8.0 + 2.0 * 6.0 + 8.0;
@@ -904,42 +919,54 @@ pub fn mode_bar(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
         // the command search keeps its room instead of running under them.
         let current =
             if layout { tl!("Page design") } else { tl!(modes.iter().find(|(m, _, _)| *m == app.mode).map_or("Read", |&(_, _, label)| label)) };
-        let fold = widgets::mode_pills_width(ui, &pills) + MODE_BAR_GAP + MODE_BAR_RIGHT + MODE_BAR_SEARCH_MIN > bar.width();
+        // NadsPDF: in the Mise en page tab, its menus follow the modes (File, Edit, Layout…), the
+        // PDF buttons on the right are left out (they act on PDF tabs), and the menus fold into one
+        // Menu button before the modes fold.
+        let right = if layout { 0.0 } else { MODE_BAR_RIGHT };
+        let menus_full = if layout { layout_menus_width(app, ui) } else { 0.0 };
+        let menus_folded = if layout { menu_title_width(ui, tl!("Menu")) + LAYOUT_MENUS_PAD } else { 0.0 };
+        let fits = |modes: f32, menus: f32| modes + menus + MODE_BAR_GAP + right + MODE_BAR_SEARCH_MIN <= bar.width();
+        let menus_fold = layout && !fits(widgets::mode_pills_width(ui, &pills), menus_full);
+        let menus_width = if menus_fold { menus_folded } else { menus_full };
+        let fold = !fits(widgets::mode_pills_width(ui, &pills), menus_width);
         let modes_width = if fold { widgets::mode_pills_width(ui, &[(current, true)]) } else { widgets::mode_pills_width(ui, &pills) };
         // The modes sit at the left end; the search box and the document buttons at the right end,
         // the search box no wider than the room the modes leave it.
-        let modes_right = bar.left() + modes_width;
+        let menus_gap = if layout { 8.0 } else { 0.0 };
+        let modes_right = bar.left() + modes_width + menus_gap + menus_width;
         ui.scope_builder(egui::UiBuilder::new().max_rect(bar).layout(Layout::right_to_left(Align::Center)), |ui| {
             ui.spacing_mut().item_spacing.x = 8.0;
             let has_doc = app.active.is_some();
-            widgets::pill_group(ui, |ui| {
-                // The group lays out right to left like the bar: Print is added first, so
-                // it reads Properties, Save, Print.
-                ui.add_enabled_ui(has_doc, |ui| {
-                    let tip = crate::commands::command_tip(ui.ctx(), tl!("Print ({key})"), "print.dialog");
-                    // A document that forbids printing says so here, before the dialog (#2669).
-                    let may_print = !has_doc || pdfcraft_engine::commands::command("print.dialog").is_some_and(|c| app.command_enabled(c));
-                    let mut print = ui.add_enabled_ui(may_print, |ui| icons::button(ui, "printer", widgets::PILL_HEIGHT, false, &tip)).inner;
-                    if !may_print {
-                        print = print.on_disabled_hover_text(crate::print_refused());
-                    }
-                    if print.clicked() {
-                        app.run_command("print.dialog");
-                    }
-                    let tip = crate::commands::command_tip(ui.ctx(), tl!("Save ({key})"), "file.save");
-                    if icons::button(ui, "save", widgets::PILL_HEIGHT, false, &tip).clicked() {
-                        app.run_command("file.save");
-                    }
-                    // NadsPDF's Assistant (the user's own AI key).
-                    if icons::button(ui, "message-square-text", widgets::PILL_HEIGHT, app.assistant.open, tl!("Assistant")).clicked() {
-                        app.toggle_assistant();
-                    }
-                    let tip = crate::commands::command_tip(ui.ctx(), tl!("Document properties ({key})"), "file.properties");
-                    if icons::button(ui, "info", widgets::PILL_HEIGHT, false, &tip).clicked() {
-                        app.dialog = Some(Dialog::Properties(PropsTab::Description));
-                    }
+            if !layout {
+                widgets::pill_group(ui, |ui| {
+                    // The group lays out right to left like the bar: Print is added first, so
+                    // it reads Properties, Save, Print.
+                    ui.add_enabled_ui(has_doc, |ui| {
+                        let tip = crate::commands::command_tip(ui.ctx(), tl!("Print ({key})"), "print.dialog");
+                        // A document that forbids printing says so here, before the dialog (#2669).
+                        let may_print = !has_doc || pdfcraft_engine::commands::command("print.dialog").is_some_and(|c| app.command_enabled(c));
+                        let mut print = ui.add_enabled_ui(may_print, |ui| icons::button(ui, "printer", widgets::PILL_HEIGHT, false, &tip)).inner;
+                        if !may_print {
+                            print = print.on_disabled_hover_text(crate::print_refused());
+                        }
+                        if print.clicked() {
+                            app.run_command("print.dialog");
+                        }
+                        let tip = crate::commands::command_tip(ui.ctx(), tl!("Save ({key})"), "file.save");
+                        if icons::button(ui, "save", widgets::PILL_HEIGHT, false, &tip).clicked() {
+                            app.run_command("file.save");
+                        }
+                        // NadsPDF's Assistant (the user's own AI key).
+                        if icons::button(ui, "message-square-text", widgets::PILL_HEIGHT, app.assistant.open, tl!("Assistant")).clicked() {
+                            app.toggle_assistant();
+                        }
+                        let tip = crate::commands::command_tip(ui.ctx(), tl!("Document properties ({key})"), "file.properties");
+                        if icons::button(ui, "info", widgets::PILL_HEIGHT, false, &tip).clicked() {
+                            app.dialog = Some(Dialog::Properties(PropsTab::Description));
+                        }
+                    });
                 });
-            });
+            }
             let room = ui.available_rect_before_wrap().right() - modes_right - MODE_BAR_GAP;
             // Too narrow for the field: a button opens the same command search.
             let opened = if room >= MODE_BAR_SEARCH_MIN {
@@ -948,9 +975,28 @@ pub fn mode_bar(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                 icons::button(ui, "search", widgets::PILL_HEIGHT, false, tl!("Find tools and commands")).clicked()
             };
             if opened {
-                app.palette_open = true;
+                // In the Mise en page tab the search finds its commands and styles (Quick Apply).
+                if layout {
+                    app.layout_tab.design().open_command_search();
+                } else {
+                    app.palette_open = true;
+                }
             }
         });
+        // NadsPDF: the Mise en page menus, after the modes.
+        if layout {
+            let slot = Rect::from_min_size(bar.left_top() + vec2(modes_width + menus_gap, 0.0), vec2(menus_width, bar.height()));
+            ui.scope_builder(egui::UiBuilder::new().max_rect(slot).layout(Layout::left_to_right(Align::Center)), |ui| {
+                widgets::pill_group(ui, |ui| {
+                    ui.spacing_mut().item_spacing.x = 0.0;
+                    if menus_fold {
+                        app.layout_tab.design().embedded_menu_button(ui, tl!("Menu"));
+                    } else {
+                        app.layout_tab.design().embedded_menu_bar(ui);
+                    }
+                });
+            });
+        }
         let slot = Rect::from_min_size(bar.left_top(), vec2(modes_width, bar.height()));
         ui.scope_builder(egui::UiBuilder::new().max_rect(slot).layout(Layout::left_to_right(Align::Center)), |ui| {
             if fold {

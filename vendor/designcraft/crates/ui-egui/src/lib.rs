@@ -205,7 +205,8 @@ pub struct DesignApp {
     input_ticks: u32,
     styled: bool,
     /// NadsPDF: drawn inside NadsPDF's Mise en page tab: the window's fonts, look and zoom
-    /// stay NadsPDF's (`app/frame.rs`).
+    /// stay NadsPDF's (`app/frame.rs`), and its menus are drawn by NadsPDF's mode bar
+    /// ([`DesignApp::embedded_menu_bar`]) instead of an app bar of its own.
     pub embedded: bool,
     /// The interface language the UI fonts were installed for (it orders the CJK fallbacks).
     fonts_lang: String,
@@ -402,5 +403,32 @@ pub(crate) mod test_window {
         h.drag_at(pos);
         h.drop_at(pos);
         h.run_steps(4);
+    }
+}
+
+/// NadsPDF: what the host's mode bar draws for the embedded interface.
+impl DesignApp {
+    /// The menus as a row of titles (File, Edit, Layout, Type, Object, Table, View, Window, Help).
+    pub fn embedded_menu_bar(&mut self, ui: &mut egui::Ui) {
+        ui.style_mut().visuals.widgets.inactive.weak_bg_fill = egui::Color32::TRANSPARENT;
+        ui.style_mut().visuals.widgets.inactive.bg_stroke = egui::Stroke::NONE;
+        ui.style_mut().visuals.widgets.hovered.bg_stroke = egui::Stroke::NONE;
+        ui.style_mut().spacing.button_padding = egui::vec2(7.0, 3.0);
+        menus::menu_bar(self, ui);
+    }
+
+    /// Every menu under one button titled `label`.
+    pub fn embedded_menu_button(&mut self, ui: &mut egui::Ui, label: &str) {
+        menus::menu_bar_folded(self, ui, label);
+    }
+
+    /// The menus' titles, translated (to measure the row).
+    pub fn embedded_menu_titles(&self) -> Vec<String> {
+        menus::menu_titles(self)
+    }
+
+    /// Quick Apply: search the commands and styles (the host's search box opens it).
+    pub fn open_command_search(&mut self) {
+        let _ = self.run("app.palette", serde_json::json!({}));
     }
 }

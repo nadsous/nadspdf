@@ -286,8 +286,9 @@ fn a_pdf_becomes_artwork_behind_editable_words() {
     let block = |text: &str, rect: [f64; 4], bold: bool, color: [f64; 3]| PdfBlock {
         text: text.into(),
         rect,
-        style: TextStyle { size: 14.0, bold, color },
+        style: TextStyle { size: 14.0, bold, italic: false, color },
         rotation: 0.0,
+        font: "ABCDEF+Helvetica-Bold".into(),
     };
     let pages = [PdfPage {
         width: 300.0,
@@ -317,4 +318,30 @@ fn a_pdf_becomes_artwork_behind_editable_words() {
     assert!(pdf.starts_with(b"%PDF-"));
     assert!(Layout::from_pdf(b"", "x.pdf", &pages).is_err());
     assert!(Layout::from_pdf(&artwork_pdf(), "x.pdf", &[]).is_err());
+}
+
+#[test]
+fn pdf_font_names_are_read_and_matched_to_a_font_that_can_take_new_text() {
+    assert_eq!(strip_subset("ABCDEF+Calibri-Bold"), "Calibri-Bold");
+    assert_eq!(strip_subset("Calibri-Bold"), "Calibri-Bold");
+    assert_eq!(strip_subset("abcdef+X"), "abcdef+X", "a tag is six capitals");
+    assert_eq!(spaced_words("TimesNewRoman"), "Times New Roman");
+    assert_eq!(spaced_words("Arial"), "Arial");
+    let styles: Vec<String> = ["Regular", "Italic", "Bold", "Bold Italic"].iter().map(|s| s.to_string()).collect();
+    assert_eq!(pick_style(&styles, true, true), "Bold Italic");
+    assert_eq!(pick_style(&styles, true, false), "Bold");
+    assert_eq!(pick_style(&styles, false, true), "Italic");
+    assert_eq!(pick_style(&styles, false, false), "Regular");
+    let inter: Vec<String> = ["Regular", "Medium", "SemiBold"].iter().map(|s| s.to_string()).collect();
+    assert_eq!(pick_style(&inter, true, false), "SemiBold", "the nearest weight there is");
+    assert_eq!(pick_style(&[], true, false), "Regular");
+    // Fonts NadsPDF itself carries match on every machine.
+    let (family, _) = match_font("XYZABC+JetBrainsMono-Regular", false, false);
+    assert_eq!(family, "JetBrains Mono");
+    let (family, _) = match_font("SomeUnknownMono", false, false);
+    assert_eq!(family, "JetBrains Mono", "a monospace face for a monospace font");
+    let (family, _) = match_font("NoSuchFontAnywhere-Bold", true, false);
+    assert!(["Source Sans 3", "Inter", "Arial"].contains(&family.as_str()), "{family}");
+    let (family, _) = match_font("", false, false);
+    assert!(!family.is_empty());
 }

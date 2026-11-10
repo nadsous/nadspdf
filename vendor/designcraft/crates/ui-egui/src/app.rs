@@ -222,7 +222,10 @@ impl DesignApp {
             eprintln!("root start {:?}", ui.available_rect_before_wrap());
         }
         if !presenting {
-            chrome::app_bar(self, ui);
+            // NadsPDF: embedded, the menus are in NadsPDF's mode bar (`embedded_menu_bar`).
+            if !self.embedded {
+                chrome::app_bar(self, ui);
+            }
             if dbg {
                 eprintln!("after app bar {:?}", ui.available_rect_before_wrap());
             }

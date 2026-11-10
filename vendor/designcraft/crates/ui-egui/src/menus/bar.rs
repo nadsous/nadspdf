@@ -93,6 +93,21 @@ pub fn menu_bar(app: &mut DesignApp, ui: &mut egui::Ui) {
     }
 }
 
+/// NadsPDF: every menu under one button titled `label` (a window too narrow for the row).
+pub fn menu_bar_folded(app: &mut DesignApp, ui: &mut egui::Ui, label: &str) {
+    let lang = app.ui.language.clone();
+    menu_button(ui, label, |ui| {
+        for (menu, entries) in menu_tree() {
+            menu_button(ui, crate::rtl::widget(ui, crate::i18n::tr(&lang, menu)), |ui| menu_column(app, ui, &[(menu, entries)]));
+        }
+    });
+}
+
+/// NadsPDF: the menus' titles, translated, in order (the host measures the row with them).
+pub fn menu_titles(app: &DesignApp) -> Vec<String> {
+    menu_tree().into_iter().map(|(menu, _)| crate::i18n::tr(&app.ui.language, menu).to_owned()).collect()
+}
+
 /// One menu's rows, as the menu bar and the canvas context menus show them: runs of items, each
 /// with the menu path its rows are hidden by (Edit › Menus).
 pub(super) fn menu_column<P: AsRef<str>>(app: &mut DesignApp, ui: &mut egui::Ui, runs: &[(P, Vec<Item>)]) {

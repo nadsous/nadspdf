@@ -14,6 +14,7 @@ designcraft-engine = { path = "../../vendor/designcraft/crates/engine" }
 designcraft-pdf = { path = "../../vendor/designcraft/crates/pdf" }
 designcraft-render = { path = "../../vendor/designcraft/crates/render" }
 designcraft-format = { path = "../../vendor/designcraft/crates/format" }
+designcraft-fonts = { path = "../../vendor/designcraft/crates/fonts" }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
 

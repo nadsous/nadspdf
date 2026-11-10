@@ -157,9 +157,11 @@ def render_doc(size: int) -> Image.Image:
     return img.resize((size, size), Image.LANCZOS)
 
 
-# The page layout document icon (.nadsmep, the Mise en page tab's files): the same sheet, in a
-# yellow-to-orange gradient with a white layout grid, and the nads mark alone in white.
-LAYOUT_TOP, LAYOUT_BOTTOM, LAYOUT_EDGE, LAYOUT_FOLD = (255, 214, 64), (255, 112, 24), "#D9620F", "#FFE7A3"
+# The page layout document icon (.nadsmep, the Mise en page tab's files): a white sheet with a
+# light grey layout grid, and the nads mark alone in a bright orange gradient (amber to coral).
+LAYOUT_PAGE, LAYOUT_EDGE, LAYOUT_GRID = "#FFFFFF", "#D4D4DA", (226, 226, 232)
+LAYOUT_FOLD, LAYOUT_FOLD_EDGE = "#FFE1C7", "#F3B183"
+MARK_FROM, MARK_TO = (255, 184, 28), (255, 72, 32)
 GRID_STEP = 64
 
 
@@ -186,56 +188,57 @@ def layout_doc_svg() -> str:
         grid.append(f'<line x1="180" y1="{y}" x2="844" y2="{y}"/>')
     return "\n".join([
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">',
-        '<defs><linearGradient id="g" x1="0" y1="0" x2="0.6" y2="1">'
-        f'<stop offset="0" stop-color="rgb{LAYOUT_TOP}"/><stop offset="1" stop-color="rgb{LAYOUT_BOTTOM}"/></linearGradient>'
+        '<defs><linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">'
+        f'<stop offset="0" stop-color="rgb{MARK_FROM}"/><stop offset="1" stop-color="rgb{MARK_TO}"/></linearGradient>'
         f'<clipPath id="page"><polygon points="{pts(PAGE)}"/></clipPath></defs>',
-        f'<polygon points="{pts(PAGE)}" fill="url(#g)"/>',
-        f'<g clip-path="url(#page)" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="10">{"".join(grid)}</g>',
-        f'<polygon points="{pts(PAGE)}" fill="none" stroke="{LAYOUT_EDGE}" stroke-width="24" stroke-linejoin="round"/>',
-        f'<polygon points="{pts(FOLD)}" fill="{LAYOUT_FOLD}" stroke="{LAYOUT_EDGE}" stroke-width="24" stroke-linejoin="round"/>',
-        f'<path fill="#FFFFFF" fill-rule="evenodd" d="{"".join(d)}"/>',
+        f'<polygon points="{pts(PAGE)}" fill="{LAYOUT_PAGE}"/>',
+        f'<g clip-path="url(#page)" stroke="rgb{LAYOUT_GRID}" stroke-width="8">{"".join(grid)}</g>',
+        f'<polygon points="{pts(PAGE)}" fill="none" stroke="{LAYOUT_EDGE}" stroke-width="20" stroke-linejoin="round"/>',
+        f'<polygon points="{pts(FOLD)}" fill="{LAYOUT_FOLD}" stroke="{LAYOUT_FOLD_EDGE}" stroke-width="20" stroke-linejoin="round"/>',
+        f'<path fill="url(#mark)" fill-rule="evenodd" d="{"".join(d)}"/>',
         "</svg>",
     ]) + "\n"
 
 
 def render_layout_doc(size: int) -> Image.Image:
+    from PIL import ImageChops
+
     ss = 4
     big = size * ss
     k = big / 1024.0
     page = [(x * k, y * k) for x, y in PAGE]
-    # The gradient, top-left yellow to bottom-right orange, cut to the sheet.
-    grad = Image.new("RGBA", (big, big))
-    gp = grad.load()
-    for yy in range(big):
-        for xx in range(0, big):
-            t = min(1.0, max(0.0, (yy + 0.6 * xx) / (1.6 * big)))
-            gp[xx, yy] = tuple(round(a + (b - a) * t) for a, b in zip(LAYOUT_TOP, LAYOUT_BOTTOM)) + (255,)
     sheet = Image.new("L", (big, big), 0)
     ImageDraw.Draw(sheet).polygon(page, fill=255)
     img = Image.new("RGBA", (big, big), (0, 0, 0, 0))
-    img.paste(grad, (0, 0), sheet)
-    # The grid: every 64 units, every 128 at 24 px and below so it stays a grid, not a blur.
+    img.paste(Image.new("RGBA", (big, big), LAYOUT_PAGE), (0, 0), sheet)
+    # The grid: every 64 units, every 128 at 24 px and below so it stays a grid, not a grey wash.
     step = GRID_STEP if size > 24 else GRID_STEP * 2
     lines = Image.new("L", (big, big), 0)
     ld = ImageDraw.Draw(lines)
-    w = max(1, round(10 * k))
+    w = max(1, round(8 * k))
     for x in range(180 + step, 844, step):
-        ld.line([(x * k, 60 * k), (x * k, 964 * k)], fill=115, width=w)
+        ld.line([(x * k, 60 * k), (x * k, 964 * k)], fill=255, width=w)
     for y in range(60 + step, 964, step):
-        ld.line([(180 * k, y * k), (844 * k, y * k)], fill=115, width=w)
-    from PIL import ImageChops
-    img.paste(Image.new("RGBA", (big, big), (255, 255, 255, 255)), (0, 0), ImageChops.multiply(lines, sheet))
+        ld.line([(180 * k, y * k), (844 * k, y * k)], fill=255, width=w)
+    img.paste(Image.new("RGBA", (big, big), LAYOUT_GRID + (255,)), (0, 0), ImageChops.multiply(lines, sheet))
     draw = ImageDraw.Draw(img)
-    edge = max(1, round(24 * k))
+    edge = max(1, round(20 * k))
     draw.polygon(page, outline=LAYOUT_EDGE, width=edge)
-    draw.polygon([(x * k, y * k) for x, y in FOLD], fill=LAYOUT_FOLD, outline=LAYOUT_EDGE, width=edge)
+    draw.polygon([(x * k, y * k) for x, y in FOLD], fill=LAYOUT_FOLD, outline=LAYOUT_FOLD_EDGE, width=edge)
+    # The mark, filled with the diagonal amber-to-coral gradient.
+    grad = Image.new("RGBA", (big, big))
+    gp = grad.load()
+    for yy in range(big):
+        for xx in range(big):
+            t = min(1.0, max(0.0, (xx + yy) / (2.0 * big)))
+            gp[xx, yy] = tuple(round(a + (b - a) * t) for a, b in zip(MARK_FROM, MARK_TO)) + (255,)
     mask = Image.new("L", (big, big), 0)
     md = ImageDraw.Draw(mask)
     for outer, holes in mark_shapes(big):
         md.polygon(outer, fill=255)
         for h in holes:
             md.polygon(h, fill=0)
-    img.paste(Image.new("RGBA", (big, big), (255, 255, 255, 255)), (0, 0), mask)
+    img.paste(grad, (0, 0), mask)
     return img.resize((size, size), Image.LANCZOS)
 
 

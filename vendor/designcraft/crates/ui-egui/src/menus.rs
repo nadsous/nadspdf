@@ -16,7 +16,7 @@ mod tables;
 mod tree;
 mod ui_commands;
 
-pub use bar::{menu_bar, menu_button};
+pub use bar::{menu_bar, menu_bar_folded, menu_button, menu_titles};
 #[cfg(test)]
 use bar::{menu_bar_submenu, menu_column};
 #[cfg(test)]

@@ -155,6 +155,8 @@ pub struct PdfBlock {
     pub style: TextStyle,
     /// Counterclockwise angle of its baseline (degrees).
     pub rotation: f64,
+    /// The PDF font's name (`/BaseFont`, with a subset's `ABCDEF+` prefix or not).
+    pub font: String,
 }
 
 /// The most text frames one conversion makes, so a page of thousands of tiny words stays usable.
@@ -166,6 +168,7 @@ pub struct TextStyle {
     /// Points.
     pub size: f64,
     pub bold: bool,
+    pub italic: bool,
     /// sRGB, 0..=1.
     pub color: [f64; 3],
 }
@@ -465,15 +468,16 @@ impl Layout {
         self.run("object.lock", json!({ "ids": [id] })).map(|_| ())
     }
 
-    /// A text frame holding `text` in `style` (the interface face, Inter, in its regular or
-    /// semibold weight; the size and colour given). Returns its id.
-    pub fn add_styled_text(&mut self, page: usize, rect: Rect, text: &str, style: &TextStyle) -> Result<u64> {
+    /// A text frame holding `text` in `style`, in the font `match_font` finds for the PDF font
+    /// `font` (that font when it is installed, else the nearest one there is). Returns its id.
+    pub fn add_styled_text(&mut self, page: usize, rect: Rect, text: &str, font: &str, style: &TextStyle) -> Result<u64> {
         let id = self.add_text_frame(page, rect, text)?;
         // The frame takes the text exactly: no inset, so it sits where the PDF drew it.
         let _ = self.run("object.textFrameOptions", json!({ "inset": 0, "ids": [id] }));
+        let (family, face) = match_font(font, style.bold, style.italic);
         let mut attrs = serde_json::Map::new();
-        attrs.insert("fontFamily".into(), json!("Inter"));
-        attrs.insert("fontStyle".into(), json!(if style.bold { "SemiBold" } else { "Regular" }));
+        attrs.insert("fontFamily".into(), json!(family));
+        attrs.insert("fontStyle".into(), json!(face));
         if style.size.is_finite() && FONT_SIZES.contains(&style.size) {
             attrs.insert("size".into(), json!(style.size));
         }
@@ -530,7 +534,7 @@ impl Layout {
                 let height = ((bottom - top) * 1.15).max(size * 1.4);
                 let rect = Rect::new(left, top - size * 0.1, left + width.max(MIN_FRAME), top - size * 0.1 + height.max(MIN_FRAME));
                 // A word the engine can't take (a frame off every page) is left out, not fatal.
-                if l.add_styled_text(i, rect, text, &b.style).is_ok() {
+                if l.add_styled_text(i, rect, text, &b.font, &b.style).is_ok() {
                     made += 1;
                 }
             }
@@ -563,6 +567,94 @@ impl Layout {
 /// How pages are drawn on screen: white paper, no shadow, every object.
 fn render_options() -> designcraft_render::RenderOptions {
     designcraft_render::RenderOptions { paper: true, ..Default::default() }
+}
+
+/// The font text set in the PDF font `ps_name` takes, and its style for `bold` and `italic`:
+///
+/// 1. the font itself, when it is installed (by its PostScript name, then its family name);
+/// 2. the font PDFs name without embedding it (Helvetica, Times, Courier…) as its usual twin;
+/// 3. else the nearest kind there is: a serif, a monospace or a sans-serif face.
+///
+/// A PDF embeds only the letters it uses, so its own copy of a font can't take new text: the
+/// installed font, or the nearest one, keeps the look while every letter can be typed.
+pub fn match_font(ps_name: &str, bold: bool, italic: bool) -> (String, String) {
+    let db = designcraft_fonts::FontDb::global();
+    let name = strip_subset(ps_name.trim());
+    // An installed face by its exact PostScript name: its own family and style.
+    if !name.is_empty()
+        && let Some((family, style)) = db.postscript_face(name)
+    {
+        return (family, style);
+    }
+    let base = name.split(['-', ',', '+']).next().unwrap_or(name);
+    let base = base.trim_end_matches("PSMT").trim_end_matches("MT").trim_end_matches("PS");
+    let spaced = spaced_words(base);
+    let alias = match base.to_ascii_lowercase().as_str() {
+        "helvetica" | "arial" | "arialnarrow" => Some("Arial"),
+        "times" | "timesnewroman" | "timesroman" => Some("Times New Roman"),
+        "courier" | "couriernew" => Some("Courier New"),
+        "symbol" | "zapfdingbats" => None,
+        _ => None,
+    };
+    let lower = name.to_ascii_lowercase();
+    let kind: &[&str] = if ["mono", "courier", "consol", "code", "typewriter"].iter().any(|k| lower.contains(k)) {
+        &["JetBrains Mono", "Consolas", "Courier New"]
+    } else if ["serif", "times", "roman", "garamond", "georgia", "cambria", "palatino", "baskerville", "bodoni", "didot", "book", "minion", "caslon"]
+        .iter()
+        .any(|k| lower.contains(k))
+        && !lower.contains("sans")
+    {
+        &["Source Serif 4", "Georgia", "Times New Roman", "Cambria"]
+    } else {
+        &["Source Sans 3", "Inter", "Arial"]
+    };
+    let family = [spaced.as_str(), base]
+        .into_iter()
+        .chain(alias)
+        .chain(kind.iter().copied())
+        .find(|f| !f.is_empty() && db.has_family(f))
+        .unwrap_or("Inter")
+        .to_owned();
+    let style = pick_style(&db.styles(&family), bold, italic);
+    (family, style)
+}
+
+/// `name` without a subset's tag: six capitals and a plus sign (`ABCDEF+Calibri`).
+fn strip_subset(name: &str) -> &str {
+    match name.split_once('+') {
+        Some((tag, rest)) if tag.len() == 6 && tag.bytes().all(|b| b.is_ascii_uppercase()) => rest,
+        _ => name,
+    }
+}
+
+/// `TimesNewRoman` as `Times New Roman`: a space before a capital that follows a small letter.
+fn spaced_words(name: &str) -> String {
+    let mut out = String::with_capacity(name.len() + 4);
+    let mut prev_lower = false;
+    for c in name.chars() {
+        if c.is_ascii_uppercase() && prev_lower {
+            out.push(' ');
+        }
+        prev_lower = c.is_ascii_lowercase();
+        out.push(c);
+    }
+    out
+}
+
+/// The style of `styles` closest to `bold` and `italic` ("Regular" when the family lists none).
+fn pick_style(styles: &[String], bold: bool, italic: bool) -> String {
+    let wanted: &[&str] = match (bold, italic) {
+        (true, true) => &["Bold Italic", "BoldItalic", "SemiBold Italic", "Semibold Italic", "Bold Oblique", "Bold"],
+        (true, false) => &["Bold", "SemiBold", "Semibold", "Semi Bold", "Medium"],
+        (false, true) => &["Italic", "Oblique", "It", "Regular Italic"],
+        (false, false) => &["Regular", "Book", "Roman", "Normal", "Medium"],
+    };
+    wanted
+        .iter()
+        .find_map(|w| styles.iter().find(|s| s.eq_ignore_ascii_case(w)))
+        .or_else(|| styles.first())
+        .cloned()
+        .unwrap_or_else(|| "Regular".to_owned())
 }
 
 /// Standard base64 (RFC 4648) with padding.
