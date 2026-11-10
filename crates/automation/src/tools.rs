@@ -1738,7 +1738,7 @@ pub fn tools() -> Vec<ToolDef> {
             }),
             &["path"],
         )),
-        t("doc_rasterize_compress", "Rasterize pages (strong compression)", "Write a much smaller copy to `path` by turning every page into a JPEG image, as displayed (comments and form fields included), at its displayed size: the strongest compression, for scans and image-heavy files. Text is no longer selectable or searchable, and links, bookmarks, form fields and encryption are not kept. level: light (150 dpi, quality 80), medium (110 dpi, 65; the default) or strong (80 dpi, 50); dpi (36–600) and quality (1–100) override the level's. Pages that are all grey are stored as greyscale. If the copy wouldn't be smaller, nothing is written and `written` is false. Refused when the document's security doesn't allow copying. The open document is unchanged.")
+        t("doc_rasterize_compress", "Rasterize pages (strong compression)", "Write a much smaller copy to `path` by turning every page into a JPEG image, as displayed (comments and form fields included), at its displayed size: the strongest compression, for scans and image-heavy files. Text is no longer selectable or searchable, and links, bookmarks, form fields and encryption are not kept. level: light (200 dpi, quality 85), medium (150 dpi, 75; the default) or strong (110 dpi, 60, still readable); dpi (36–600) and quality (1–100) override the level's. Pages that are all grey are stored as greyscale. If the copy wouldn't be smaller, nothing is written and `written` is false. Refused when the document's security doesn't allow copying. The open document is unchanged.")
             .cmd("optimize.rasterize")
             .with(schema(
                 json!({

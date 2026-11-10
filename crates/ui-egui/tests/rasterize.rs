@@ -77,7 +77,7 @@ fn rasterizing_a_small_text_file_saves_nothing() {
     assert!(app.optimize_run.is_none());
     assert!(!out.exists());
     assert!(
-        app.toast.as_ref().is_some_and(|t| t.0.starts_with("Rasterizing wouldn't make this file smaller")),
+        app.toast.as_ref().is_some_and(|t| t.0.starts_with("This PDF is mostly text") && t.0.contains(" to ")),
         "{:?}",
         app.toast.as_ref().map(|t| &t.0)
     );

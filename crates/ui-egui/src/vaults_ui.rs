@@ -213,10 +213,8 @@ impl PdfCraftApp {
     pub fn add_files_to_vault_dialog(&mut self, id: u64) {
         #[cfg(not(target_arch = "wasm32"))]
         {
-            let dialog = rfd::AsyncFileDialog::new()
-                .set_title(tl!("Add files…").to_string())
-                .add_filter("PDF", &["pdf"])
-                .add_filter(tl!("Images, text and documents (converted to PDF)"), &crate::create_ui::CONVERTIBLE);
+            let dialog = rfd::AsyncFileDialog::new().set_title(tl!("Add files…").to_string());
+            let dialog = Self::with_open_filters(dialog);
             self.ask(crate::pickers::Ask::Files(dialog), None, move |app, paths| {
                 let paths: Vec<String> = paths.iter().map(|p| p.to_string_lossy().into_owned()).collect();
                 app.add_to_vault(id, &paths);

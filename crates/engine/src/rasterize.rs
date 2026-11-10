@@ -23,12 +23,13 @@ const MAX_OUTPUT: usize = 2 << 30;
 /// The three ready-made strengths.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum RasterLevel {
-    /// 150 dpi, JPEG quality 80: comfortable to read and print.
+    /// 200 dpi, JPEG quality 85: as sharp as the original on screen and on paper.
     Light,
-    /// 110 dpi, quality 65.
+    /// 150 dpi, quality 75: body text stays sharp on screen.
     #[default]
     Medium,
-    /// 80 dpi, quality 50: smallest, for on-screen reading.
+    /// 110 dpi, quality 60: smallest, still readable at 10 pt. Lower settings (80 dpi, quality
+    /// 50, the earlier Strong) blur body text: the copy must stay readable.
     Strong,
 }
 
@@ -59,9 +60,9 @@ impl RasterLevel {
 
     pub fn settings(self) -> RasterSettings {
         match self {
-            RasterLevel::Light => RasterSettings { dpi: 150.0, quality: 80 },
-            RasterLevel::Medium => RasterSettings { dpi: 110.0, quality: 65 },
-            RasterLevel::Strong => RasterSettings { dpi: 80.0, quality: 50 },
+            RasterLevel::Light => RasterSettings { dpi: 200.0, quality: 85 },
+            RasterLevel::Medium => RasterSettings { dpi: 150.0, quality: 75 },
+            RasterLevel::Strong => RasterSettings { dpi: 110.0, quality: 60 },
         }
     }
 }
@@ -77,7 +78,7 @@ pub struct RasterSettings {
 
 impl RasterSettings {
     fn clamped(self) -> Self {
-        let dpi = if self.dpi.is_finite() { self.dpi.clamp(36.0, 600.0) } else { 110.0 };
+        let dpi = if self.dpi.is_finite() { self.dpi.clamp(36.0, 600.0) } else { RasterLevel::default().settings().dpi };
         Self { dpi, quality: self.quality.clamp(1, 100) }
     }
 }
@@ -183,12 +184,14 @@ mod tests {
             assert_eq!(RasterLevel::from_id(l.id()), Some(l));
         }
         assert_eq!(RasterLevel::from_id("max"), None);
+        // Every level keeps 10 pt body text readable.
+        assert!(s.iter().all(|s| s.dpi >= 110.0 && s.quality >= 60), "{s:?}");
     }
 
     #[test]
     fn hostile_settings_are_clamped() {
         let s = RasterSettings { dpi: f64::NAN, quality: 0 }.clamped();
-        assert_eq!((s.dpi, s.quality), (110.0, 1));
+        assert_eq!((s.dpi, s.quality), (150.0, 1));
         let s = RasterSettings { dpi: 1e9, quality: 255 }.clamped();
         assert_eq!((s.dpi, s.quality), (600.0, 100));
     }

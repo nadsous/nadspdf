@@ -297,13 +297,28 @@ fn tool_row(ui: &mut egui::Ui, t: &Tokens, g: &ToolGroup, is_pinned: bool) -> (e
     (theme::hand(resp).on_hover_text(tip), pin_clicked)
 }
 
+/// The sections a group's panel lists. NadsPDF: the Convert tab (the Export group) starts with
+/// Create a PDF from, so a Word, Excel or text file is converted from where people look for it;
+/// it used to offer only PDF → other formats.
+fn panel_sections(g: &'static ToolGroup) -> Vec<&'static catalog::ToolSection> {
+    let mut out = Vec::new();
+    if g.id == "export"
+        && let Some(create) = catalog::group("create")
+    {
+        out.extend(create.sections.iter());
+    }
+    out.extend(g.sections.iter());
+    out
+}
+
 /// Draw the detail view for one tool group, dispatching its commands and tool-specific panels.
 fn tool_detail(app: &mut PdfCraftApp, ui: &mut egui::Ui, t: &Tokens, g: &'static ToolGroup) {
     if g.id == "edit" {
         edit_panel(app, ui, t, g);
         return;
     }
-    let (back, close) = panel_header(ui, t, g.label, Some(("chevron-left", tl!("Back to all tools"))));
+    let title = if g.id == "export" { "Convert" } else { g.label };
+    let (back, close) = panel_header(ui, t, title, Some(("chevron-left", tl!("Back to all tools"))));
     if back {
         app.left = LeftPanel::AllTools;
         app.enter_mode(crate::Mode::AllTools);
@@ -356,7 +371,7 @@ fn tool_detail(app: &mut PdfCraftApp, ui: &mut egui::Ui, t: &Tokens, g: &'static
     egui::ScrollArea::vertical().auto_shrink([false, false]).max_height(list_h).show(ui, |ui| {
         clear_of_scrollbar(ui);
         ui.add_space(2.0);
-        for s in g.sections {
+        for s in panel_sections(g) {
             widgets::section_title(ui, tl!(s.title));
             for item in s.items {
                 if g.id == "fill_sign" && (item.command.starts_with("sign.fill.signature") || item.command.starts_with("sign.fill.initials")) {

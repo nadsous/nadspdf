@@ -305,15 +305,17 @@ impl PdfCraftApp {
         };
         let after = bytes.len();
         if kind == crate::optimize_ui::OptimizeKind::Rasterize && after >= before {
+            // Say why, with both sizes: a text PDF (a converted Word document) only grows as
+            // pictures, and "compression doesn't work" was all people could tell before.
             self.notify_fmt(
-                "Rasterizing wouldn't make this file smaller ({size}). No copy was saved.",
-                &[("size", &crate::panels::human_size(before))],
+                "This PDF is mostly text, which already takes little room: as pictures it would grow from {before} to {after}. No copy was saved.",
+                &[("before", &crate::panels::human_size(before)), ("after", &crate::panels::human_size(after))],
             );
             return;
         }
         if kind == crate::optimize_ui::OptimizeKind::Reduce && after >= before {
             self.notify_fmt(
-                "This file is already as small as it can be made ({size}). No copy was saved.",
+                "This file is already as small as it can be made ({size}): it has no large images to shrink. No copy was saved.",
                 &[("size", &crate::panels::human_size(before))],
             );
             return;

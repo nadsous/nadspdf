@@ -308,3 +308,8 @@ watermark text	CONFIDENTIAL	CONFIDENTIEL
 	To do	À faire
 	What it is for (optional)	À quoi il sert (facultatif)
 	What to remember about this file	Ce qu’il faut retenir de ce fichier
+	PDF, Word, Excel, images and text	PDF, Word, Excel, images et texte
+	Single file	Un fichier (Word, Excel, texte, image…)
+	This PDF is mostly text, which already takes little room: as pictures it would grow from {before} to {after}. No copy was saved.	Ce PDF est surtout du texte, qui prend déjà peu de place : en images, il passerait de {before} à {after}. Aucune copie n’a été enregistrée.
+	This file is already as small as it can be made ({size}): it has no large images to shrink. No copy was saved.	Ce fichier est déjà aussi léger que possible ({size}) : il ne contient pas de grandes images à réduire. Aucune copie n’a été enregistrée.
+	Icons	Icônes

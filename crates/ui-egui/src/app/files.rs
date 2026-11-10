@@ -938,21 +938,28 @@ impl PdfCraftApp {
     /// The File ▸ Open picker: PDFs, and images and text that become PDFs.
     #[cfg(not(target_arch = "wasm32"))]
     pub(super) fn open_picker() -> rfd::AsyncFileDialog {
-        rfd::AsyncFileDialog::new()
+        Self::with_open_filters(rfd::AsyncFileDialog::new())
+    }
+
+    /// The open filters, everything that opens first: a picker shows only its first filter's
+    /// files, and with PDF first a Word document was hidden in File ▸ Open and Create PDF from
+    /// file, so converting it looked broken.
+    pub(crate) fn with_open_filters(dialog: rfd::AsyncFileDialog) -> rfd::AsyncFileDialog {
+        dialog
+            .add_filter_any_case(tl!("PDF, Word, Excel, images and text"), &Self::openable_extensions())
             .add_filter_any_case("PDF", &["pdf"])
             .add_filter_any_case(tl!("Images, text and documents (converted to PDF)"), &create_ui::CONVERTIBLE)
+    }
+
+    /// Every extension File ▸ Open accepts: PDF and what is converted.
+    pub(crate) fn openable_extensions() -> Vec<&'static str> {
+        std::iter::once("pdf").chain(create_ui::CONVERTIBLE.iter().copied()).collect()
     }
 
     pub fn open_dialog(&mut self) {
         self.startup_superseded = true;
         #[cfg(not(target_arch = "wasm32"))]
-        self.pick(
-            pickers::PickFor::Open,
-            rfd::AsyncFileDialog::new()
-                .add_filter_any_case("PDF", &["pdf"])
-                .add_filter_any_case(tl!("Images, text and documents (converted to PDF)"), &create_ui::CONVERTIBLE),
-            true,
-        );
+        self.pick(pickers::PickFor::Open, Self::with_open_filters(rfd::AsyncFileDialog::new()), true);
         // Browsers pick files asynchronously; the bytes arrive through `inbox`.
         #[cfg(target_arch = "wasm32")]
         {
@@ -961,12 +968,7 @@ impl PdfCraftApp {
             let read = super::input::WebRead::start(&self.web_reads);
             wasm_bindgen_futures::spawn_local(async move {
                 let _read = read;
-                if let Some(h) = rfd::AsyncFileDialog::new()
-                    .add_filter_any_case("PDF", &["pdf"])
-                    .add_filter_any_case(tl!("Images, text and documents (converted to PDF)"), &create_ui::CONVERTIBLE)
-                    .pick_file()
-                    .await
-                {
+                if let Some(h) = Self::with_open_filters(rfd::AsyncFileDialog::new()).pick_file().await {
                     let bytes = h.read().await;
                     if let Ok(mut q) = inbox.lock() {
                         q.push((h.file_name(), bytes));
