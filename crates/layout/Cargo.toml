@@ -1,5 +1,5 @@
 [package]
-name = "nadspdf-layout"
+name = "pdfcraft-layout"
 description = "NadsPDF Mise en page: page layout (frames, threaded text, styles) on DesignCraft's engine"
 version.workspace = true
 edition.workspace = true
@@ -12,3 +12,6 @@ workspace = true
 [dependencies]
 designcraft-engine = { path = "../../vendor/designcraft/crates/engine" }
 designcraft-pdf = { path = "../../vendor/designcraft/crates/pdf" }
+designcraft-render = { path = "../../vendor/designcraft/crates/render" }
+serde_json = { workspace = true }
+thiserror = { workspace = true }

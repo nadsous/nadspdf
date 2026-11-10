@@ -74,6 +74,8 @@ pub const TABLE: &[(&str, Class)] = &[
     ("print", Class::Layer(4)),
     ("media", Class::Layer(4)),
     ("ai", Class::Layer(4)),
+    // NadsPDF: Mise en page (page layout on DesignCraft's engine, vendor/designcraft).
+    ("layout", Class::Layer(4)),
     // L5 interaction
     ("viewport", Class::Layer(5)),
     ("tools", Class::Layer(5)),
