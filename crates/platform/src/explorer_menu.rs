@@ -85,8 +85,9 @@ impl Verb {
 
 /// The types the app converts to PDF as it opens them (`pdfcraft_engine::CONVERTIBLE`; a test in
 /// the desktop app keeps the two in step).
-pub const CONVERTIBLE: [&str; 20] = [
-    "png", "jpg", "jpeg", "tif", "tiff", "gif", "bmp", "jp2", "j2k", "jpx", "txt", "text", "docx", "xlsx", "xlsm", "ods", "csv", "tsv", "html", "htm",
+pub const CONVERTIBLE: [&str; 21] = [
+    "png", "jpg", "jpeg", "tif", "tiff", "gif", "bmp", "jp2", "j2k", "jpx", "pcx", "txt", "text", "docx", "xlsx", "xlsm", "ods", "csv", "tsv",
+    "html", "htm",
 ];
 
 /// One registry value: `name` `None` is the key's default value. Every value is a string.

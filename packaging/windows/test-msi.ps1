@@ -73,15 +73,16 @@ $status = Read-Row 'SELECT `Text` FROM `Control` WHERE `Dialog_` = ''InstallProg
 Assert-Equal $status[0] 'Patientez pendant la mise en place de NadsPDF.' 'Persistent progress message'
 Assert-NoRow 'SELECT `Event` FROM `EventMapping` WHERE `Dialog_` = ''InstallProgress'' AND `Control_` = ''Status''' 'progress text subscription'
 
-# Plain (non-advertised) shortcuts to nadspdf.exe, each in its own component; the desktop one is
-# gated by INSTALLDESKTOPSHORTCUT, which is secure so the UI choice reaches the
+# Plain (non-advertised) shortcuts to nadspdf.exe, each in its own component and with no Icon
+# table entry, so the shell takes the exe's own icon and a pin keeps it across updates. The
+# desktop one is gated by INSTALLDESKTOPSHORTCUT, which is secure so the UI choice reaches the
 # elevated install.
 foreach ($entry in @(@('StartMenuShortcut', 'ProgramMenuFolder', 'PdfcraftStartMenuShortcut', ''),
                      @('DesktopShortcut', 'DesktopFolder', 'PdfcraftDesktopShortcut', 'INSTALLDESKTOPSHORTCUT = 1'))) {
   $row = Read-Row ('SELECT `Directory_`, `Target`, `Icon_`, `WkDir`, `Component_` FROM `Shortcut` WHERE `Shortcut` = ''' + $entry[0] + '''') 5
   Assert-Equal $row[0] $entry[1] "$($entry[0]) directory"
   Assert-Equal $row[1] '[#PdfcraftExe]' "$($entry[0]) target"
-  Assert-Equal $row[2] 'PdfcraftIcon.ico' "$($entry[0]) icon"
+  Assert-Equal $row[2] '' "$($entry[0]) icon"
   Assert-Equal $row[3] 'INSTALLFOLDER' "$($entry[0]) working directory"
   Assert-Equal $row[4] $entry[2] "$($entry[0]) component"
   $component = Read-Row ('SELECT `Directory_`, `Condition` FROM `Component` WHERE `Component` = ''' + $entry[2] + '''') 2
@@ -134,7 +135,7 @@ Assert-Equal $scope[0] '1' 'Per-machine shortcut scope'
 # registration (crates/platform/src/explorer_menu.rs). Several selected files each start
 # nadspdf.exe, which the single-instance hand-off gathers into one window (one Combine files list
 # for --combine). No file type's default app is changed.
-$convertible = @('png', 'jpg', 'jpeg', 'tif', 'tiff', 'gif', 'bmp', 'jp2', 'j2k', 'jpx', 'txt', 'text', 'docx', 'xlsx', 'xlsm', 'ods', 'csv', 'tsv', 'html', 'htm')
+$convertible = @('png', 'jpg', 'jpeg', 'tif', 'tiff', 'gif', 'bmp', 'jp2', 'j2k', 'jpx', 'pcx', 'txt', 'text', 'docx', 'xlsx', 'xlsm', 'ods', 'csv', 'tsv', 'html', 'htm')
 $verbs = @(
   @('NadsPDF.Convert', $convertible, 'Convertir en PDF avec NadsPDF', 'Document', '"[#PdfcraftExe]" "%1"'),
   @('NadsPDF.Combine', (@('pdf') + $convertible), 'Fusionner avec NadsPDF', 'Player', '"[#PdfcraftExe]" --combine "%1"'),

@@ -73,8 +73,7 @@ impl PdfCraftApp {
         {
             let path = |v: &crate::DocView| self.session.get(v.id).and_then(|d| d.path.as_deref()).map(absolute);
             let files = self
-                .views
-                .iter()
+                .first_views()
                 .filter_map(|v| Some(SessionFile { path: path(v)?, page: v.current, group: self.tab_groups.group_of(v.id) }))
                 .take(MAX_FILES)
                 .collect();

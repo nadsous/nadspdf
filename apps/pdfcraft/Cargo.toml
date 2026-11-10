@@ -20,6 +20,8 @@ rustls-native-certs = "0.8"
 # Help ▸ Check for updates (issue #28): one HTTPS request to GitHub, over rustls with the OS's
 # trusted roots. No bundled root list (webpki-roots and webpki-root-certs are CDLA-licensed).
 pdfcraft-ui-egui = { workspace = true }
+# `owner_only` (the --control file is restricted to its user on Windows, #3922) and NadsPDF's
+# File Explorer menu.
 pdfcraft-platform = { workspace = true }
 # `build_info`: the version and compile-time build label for `--version` and the log.
 pdfcraft-engine = { workspace = true }
@@ -76,6 +78,10 @@ windows = { version = "0.62", default-features = false, features = ["std", "UI_V
 uds_windows = "=1.2.1"
 # Checks a downloaded update's installer against the SHA-256 GitHub publishes for it (src/updates.rs).
 sha2 = "0.11"
+# Full-resolution taskbar and Alt+Tab icon (`ICON_BIG`, issue #3818). Set both window icons
+# directly so eframe cannot replace ICON_BIG with a system-sized copy. Already in the tree
+# through eframe and covered by the workspace's winit patch.
+winit = { version = "0.30", default-features = false }
 
 [build-dependencies]
 # Icon + VERSIONINFO for pdfcraft.exe; build.rs only uses it when targeting Windows.
