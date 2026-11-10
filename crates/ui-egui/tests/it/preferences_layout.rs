@@ -93,14 +93,15 @@ fn the_dialog_opens_at_its_full_size_and_does_not_grow_afterwards() {
 
 #[test]
 fn a_very_tall_window_does_not_leave_a_blank_gap_above_ok() {
-    // The settings are some 1 400 pt tall; in a taller window the scroll area is not stretched
-    // past them.
-    let mut h = harness(2600.0);
+    // NadsPDF's settings are some 2 700 pt tall; in a taller window the scroll area is not
+    // stretched past them.
+    const TALL: f32 = 3600.0;
+    let mut h = harness(TALL);
     h.run_steps(6);
     let ok = h.get_by_label("OK").rect();
     // NadsPDF's last card ends with the note on websites' icons.
     let last = h.get_by_label_contains("a coloured initial stands in").rect();
-    assert!(on_screen(ok, 2600.0) && on_screen(last, 2600.0), "{last:?} {ok:?}");
+    assert!(on_screen(ok, TALL) && on_screen(last, TALL), "{last:?} {ok:?}");
     assert!(ok.min.y - last.max.y < 120.0, "a gap of {} pt between the last setting and OK", ok.min.y - last.max.y);
 }
 

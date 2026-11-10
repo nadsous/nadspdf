@@ -312,7 +312,10 @@ pub(crate) fn notice_bar(ui: &mut egui::Ui, t: &Tokens, icon: &str, icon_color: 
     /// few characters, thousands of points tall, and push the hotbar off the screen. Such a width
     /// is below the smallest supported window, so the single row stays as it was.
     const STACK_ABOVE: f32 = 100.0;
-    egui::Frame::NONE.fill(t.accent_soft).inner_margin(egui::Margin::symmetric(14, 7)).show(ui, |ui| {
+    // A narrow bar keeps less margin, so a button as wide as Security settings still fits the
+    // smallest window beside NadsPDF's tool panel.
+    let margin = if (STACK_ABOVE + 28.0..STACK_BELOW + 28.0).contains(&ui.available_width()) { 6 } else { 14 };
+    egui::Frame::NONE.fill(t.accent_soft).inner_margin(egui::Margin::symmetric(margin, 7)).show(ui, |ui| {
         let width = ui.available_width();
         if (STACK_ABOVE..STACK_BELOW).contains(&width) {
             // A narrow document area (a half-width window): the message takes the full width and
@@ -322,10 +325,19 @@ pub(crate) fn notice_bar(ui: &mut egui::Ui, t: &Tokens, icon: &str, icon_color: 
                 icons::paint(ui, Rect::from_center_size(slot.center(), vec2(ICON, ICON)), icon, ICON, icon_color);
                 ui.add(egui::Label::new(egui::RichText::new(text).color(t.text)).wrap());
             });
-            // The buttons wrap onto further rows when even the full width is too narrow for them all.
-            ui.allocate_ui_with_layout(vec2(width, ROW), egui::Layout::right_to_left(egui::Align::Center).with_main_wrap(true), |ui| {
-                ui.set_min_height(ROW);
-                buttons(ui);
+            // The buttons wrap onto further rows when even the full width is too narrow for them all,
+            // under the message rather than under the icon when there is room for that.
+            let indent = if width >= 160.0 { ICON + ui.spacing().item_spacing.x } else { 0.0 };
+            ui.horizontal(|ui| {
+                ui.add_space(indent);
+                ui.allocate_ui_with_layout(
+                    vec2((width - indent).max(0.0), ROW),
+                    egui::Layout::right_to_left(egui::Align::Center).with_main_wrap(true),
+                    |ui| {
+                        ui.set_min_height(ROW);
+                        buttons(ui);
+                    },
+                );
             });
             return;
         }

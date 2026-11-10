@@ -844,6 +844,11 @@ fn vertical_gradient(painter: &egui::Painter, rect: Rect, top: Color32, bottom: 
 
 /// Least space between the modes and the search box.
 const MODE_BAR_GAP: f32 = 16.0;
+/// What the mode bar's right end needs besides the search box: four document buttons in their
+/// pill group and the gap before it.
+const MODE_BAR_RIGHT: f32 = 4.0 * widgets::PILL_HEIGHT + 3.0 * 8.0 + 2.0 * 6.0 + 8.0;
+/// Narrowest search field the mode bar shows; below it the field becomes a search button.
+const MODE_BAR_SEARCH_MIN: f32 = 140.0;
 
 pub fn mode_bar(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
     let t = Tokens::get(ui.ctx());
@@ -859,7 +864,11 @@ pub fn mode_bar(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
         }
         let modes: Vec<(Mode, &str, &str)> = MODES.into_iter().filter(|&(mode, _, _)| app.offered_mode(mode) == mode).collect();
         let pills: Vec<(&str, bool)> = modes.iter().map(|&(mode, _, label)| (tl!(label), app.mode == mode)).collect();
-        let modes_width = widgets::mode_pills_width(ui, &pills);
+        // A narrow window (#1913): the modes fold into one pill named after the current mode, so
+        // the command search keeps its room instead of running under them.
+        let current = tl!(modes.iter().find(|(m, _, _)| *m == app.mode).map_or("Read", |&(_, _, label)| label));
+        let fold = widgets::mode_pills_width(ui, &pills) + MODE_BAR_GAP + MODE_BAR_RIGHT + MODE_BAR_SEARCH_MIN > bar.width();
+        let modes_width = if fold { widgets::mode_pills_width(ui, &[(current, true)]) } else { widgets::mode_pills_width(ui, &pills) };
         // The modes sit at the left end; the search box and the document buttons at the right end,
         // the search box no wider than the room the modes leave it.
         let modes_right = bar.left() + modes_width;
@@ -895,19 +904,37 @@ pub fn mode_bar(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                 });
             });
             let room = ui.available_rect_before_wrap().right() - modes_right - MODE_BAR_GAP;
-            if widgets::search_box(ui, tl!("Find tools and commands"), room.clamp(200.0, 340.0)).clicked() {
+            // Too narrow for the field: a button opens the same command search.
+            let opened = if room >= MODE_BAR_SEARCH_MIN {
+                widgets::search_box(ui, tl!("Find tools and commands"), room.min(340.0)).clicked()
+            } else {
+                icons::button(ui, "search", widgets::PILL_HEIGHT, false, tl!("Find tools and commands")).clicked()
+            };
+            if opened {
                 app.palette_open = true;
             }
         });
         let slot = Rect::from_min_size(bar.left_top(), vec2(modes_width, bar.height()));
         ui.scope_builder(egui::UiBuilder::new().max_rect(slot).layout(Layout::left_to_right(Align::Center)), |ui| {
-            widgets::pill_group(ui, |ui| {
-                for &(mode, icon, label) in &modes {
-                    if widgets::mode_pill(ui, icon, tl!(label), app.mode == mode).clicked() {
-                        app.switch_mode(mode, true);
+            if fold {
+                let resp = widgets::pill_group(ui, |ui| widgets::mode_pill(ui, "chevron-down", current, true));
+                egui::Popup::menu(&resp).show(|ui| {
+                    ui.set_min_width(160.0);
+                    for &(mode, _, label) in &modes {
+                        if ui.add(egui::Button::selectable(app.mode == mode, tl!(label))).clicked() {
+                            app.switch_mode(mode, true);
+                        }
                     }
-                }
-            });
+                });
+            } else {
+                widgets::pill_group(ui, |ui| {
+                    for &(mode, icon, label) in &modes {
+                        if widgets::mode_pill(ui, icon, tl!(label), app.mode == mode).clicked() {
+                            app.switch_mode(mode, true);
+                        }
+                    }
+                });
+            }
         });
     });
 }

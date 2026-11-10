@@ -1228,9 +1228,10 @@ fn a_file_combine_does_not_take_is_left_out_of_a_drop_and_named() {
     h.input_mut().dropped_files.extend(dropped);
     h.run_steps(3);
     std::fs::remove_file(&path).ok();
-    assert_eq!(combine_names(&h), ["first.pdf", "one.pdf", "scan"]);
+    // NadsPDF converts Word documents, so Combine takes them too; the zip is left out.
+    assert_eq!(combine_names(&h), ["first.pdf", "report.docx", "one.pdf", "scan"]);
     let zip = path.file_name().unwrap().to_string_lossy().into_owned();
-    h.get_by_label(&format!("Not added: report.docx, {zip}. Combine takes PDFs, images and text files."));
+    h.get_by_label(&format!("Not added: {zip}. Combine takes PDFs, images, text files and Word or Excel documents."));
 }
 
 #[test]
@@ -2119,6 +2120,9 @@ fn drag_tab(h: &mut Harness<'static, PdfCraftApp>, name: &str, to: egui::Pos2) {
 /// The windows NadsPDF was asked to open: (file, where).
 type Opened = std::sync::Arc<std::sync::Mutex<Vec<(String, Option<[f32; 2]>)>>>;
 
+/// Below the window: where a tab is torn off into a new window (on the page, split view takes it).
+const OUT_OF_THE_WINDOW: egui::Pos2 = egui::pos2(700.0, 5000.0);
+
 fn record_new_windows(app: &mut PdfCraftApp) -> Opened {
     let opened = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
     let log = opened.clone();
@@ -2146,8 +2150,9 @@ fn a_tab_dragged_out_of_the_strip_opens_in_a_new_window() {
     drag_tab(&mut h, "b.pdf", along);
     assert!(log.lock().unwrap().is_empty());
     assert_eq!(h.state().views.len(), 2);
-    // Into the page: b.pdf opens in its own window and its tab here closes.
-    drag_tab(&mut h, "b.pdf", egui::pos2(700.0, 500.0));
+    // Out of the window (on the page, split view takes the tab): b.pdf opens in its own window
+    // and its tab here closes.
+    drag_tab(&mut h, "b.pdf", OUT_OF_THE_WINDOW);
     let got = log.lock().unwrap().clone();
     assert_eq!(got.len(), 1, "{got:?}");
     assert_eq!(got[0].0, r"C:\docs\b.pdf");
@@ -2173,12 +2178,12 @@ fn unsaved_or_never_saved_documents_stay_and_ask_to_be_saved() {
         app.open_bytes("edited.pdf", Some(r"C:\docs\edited.pdf".into()), FIXTURE.to_vec()).unwrap();
     });
     let log = opened.lock().unwrap()[0].clone();
-    drag_tab(&mut h, "new.pdf", egui::pos2(700.0, 500.0));
+    drag_tab(&mut h, "new.pdf", OUT_OF_THE_WINDOW);
     h.get_by_label_contains("Save this PDF before opening it in a new window");
     h.state_mut().active = Some(1);
     h.state_mut().execute("page.rotate");
     h.run_steps(3);
-    drag_tab(&mut h, "edited.pdf (edited)", egui::pos2(700.0, 500.0));
+    drag_tab(&mut h, "edited.pdf (edited)", OUT_OF_THE_WINDOW);
     h.get_by_label_contains("Save your changes before opening this PDF in a new window");
     assert!(log.lock().unwrap().is_empty());
     assert_eq!(h.state().views.len(), 2);

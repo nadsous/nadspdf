@@ -296,7 +296,10 @@ impl PdfCraftApp {
         let (taken, refused): (Vec<_>, Vec<_>) = files.into_iter().partition(|f| takes(&f.name, &f.bytes));
         if !refused.is_empty() {
             let names: Vec<&str> = refused.iter().map(|f| f.name.as_str()).collect();
-            self.notify_fmt("Not added: {names}. Combine takes PDFs, images and text files.", &[("names", &names.join(", "))]);
+            self.notify_fmt(
+                "Not added: {names}. Combine takes PDFs, images, text files and Word or Excel documents.",
+                &[("names", &names.join(", "))],
+            );
         }
         if !taken.is_empty() {
             self.stage_combine_with(taken);

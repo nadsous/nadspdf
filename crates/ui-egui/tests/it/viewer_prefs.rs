@@ -59,12 +59,12 @@ fn settle(h: &mut Harness<'static, PdfCraftApp>) {
     h.run_steps(2);
 }
 
-/// Which of the toolbar (the command search), the menu (the menu bar's File menu) and the window
-/// controls (the rail's fit button) are on screen.
+/// Which of the toolbar (the command search), the menu (NadsPDF's: the nads mark in the tab
+/// strip, labelled Menu) and the window controls (the rail's fit button) are on screen.
 fn shown(h: &Harness<'static, PdfCraftApp>) -> (bool, bool, bool) {
     (
         h.query_by_label("Find tools and commands").is_some(),
-        h.query_by(|n| n.role() == egui::accesskit::Role::MenuItem && n.label().as_deref() == Some("File")).is_some(),
+        h.query_by(|n| n.role() == egui::accesskit::Role::MenuItem && n.label().as_deref() == Some("Menu")).is_some(),
         h.query_by_label("Toggle fit page / fit width").is_some(),
     )
 }
@@ -155,7 +155,8 @@ fn hiding_the_window_controls_leaves_the_document_the_whole_width() {
     // The document also asks for the page thumbnails panel, which is hidden with the rest.
     let mut h = harness(|_| {}, &["/PageMode /UseThumbs /ViewerPreferences << /HideWindowUI true >>"]);
     let width = |h: &Harness<'static, PdfCraftApp>| h.state().views[0].viewport_rect().width();
-    assert!(width(&h) > 1390.0, "{}", width(&h));
+    // NadsPDF keeps the nads frame's margin around the page area (8 points each side).
+    assert!(width(&h) > 1400.0 - 2.0 * 8.0 - 1.0, "{}", width(&h));
     h.key_press(egui::Key::F8);
     settle(&mut h);
     // The rail and the Pages panel are back beside the document.

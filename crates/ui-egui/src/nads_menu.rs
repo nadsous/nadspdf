@@ -22,9 +22,10 @@ fn label(english: &'static str) -> String {
 
 impl PdfCraftApp {
     /// The nads mark and its menu (`size`: the strip's button size). Hidden when the native macOS
-    /// menu bar has the menus.
+    /// menu bar has the menus, and when the active document hides the menu bar (`HideMenubar`,
+    /// ISO 32000-2 Table 147; F8 brings it back): the mark is NadsPDF's menu bar.
     pub(crate) fn nads_menu(&mut self, ui: &mut egui::Ui, size: f32) {
-        if self.native_menu.is_some() {
+        if self.native_menu.is_some() || self.hidden_interface().menubar {
             return;
         }
         let t = Tokens::get(ui.ctx());
