@@ -18,5 +18,9 @@ mod tests {
     fn the_sample_exports_a_pdf() {
         let pdf = super::sample_pdf().unwrap_or_default();
         assert!(pdf.starts_with(b"%PDF-"), "{} bytes", pdf.len());
+        // To look at it: NADSPDF_LAYOUT_SAMPLE=out.pdf cargo test -p nadspdf-layout
+        if let Some(path) = std::env::var_os("NADSPDF_LAYOUT_SAMPLE") {
+            std::fs::write(path, &pdf).unwrap_or_default();
+        }
     }
 }

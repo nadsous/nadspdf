@@ -1,0 +1,337 @@
+//! Interactive PDF forms (Buttons and Forms: text fields, check boxes, combo and list boxes,
+//! signature fields) and media (placed video and sound). krilla writes neither, so they're added
+//! as an incremental update: widget and screen annotations on their pages, the page `/Annots`, the
+//! catalog `/AcroForm`, and the media files embedded for rendition actions.
+
+use std::fmt::Write as _;
+
+use designcraft_doc::{Document, FieldKind, FormField, Item, MediaOptions};
+
+use crate::export::Sheet;
+use crate::transitions::{bracketed, int_after, object, rfind};
+
+/// A field placed on an output page: (page index, PDF rectangle, field, border width, 0 when the
+/// item has no stroke).
+pub(crate) type Placed = (usize, [f64; 4], FormField, f64);
+
+/// A placed video or sound on an output page: (page index, PDF rectangle, file name, MIME type,
+/// bytes, options).
+pub(crate) type PlacedMedia = (usize, [f64; 4], String, String, std::sync::Arc<Vec<u8>>, MediaOptions);
+
+/// Every item of the exported pages that goes into the PDF, with its PDF rectangle (origin bottom
+/// left).
+fn visit(doc: &Document, sheets: &[Sheet], mut f: impl FnMut(usize, [f64; 4], &Item)) {
+    for (pi, sh) in sheets.iter().enumerate() {
+        for (xf, it) in crate::export::exported_items(doc, sh.spread) {
+            let r = xf.transform_rect_bbox(it.bounds()).intersect(sh.bleed);
+            if r.width() <= 0.0 || r.height() <= 0.0 {
+                continue;
+            }
+            let h = sh.media.height();
+            f(pi, [r.x0 - sh.media.x0, h - (r.y1 - sh.media.y0), r.x1 - sh.media.x0, h - (r.y0 - sh.media.y0)], it);
+        }
+    }
+}
+
+/// The form fields of every exported page.
+pub(crate) fn collect(doc: &Document, sheets: &[Sheet]) -> Vec<Placed> {
+    let mut out = Vec::new();
+    visit(doc, sheets, |pi, r, it| {
+        if let Some(f) = &it.form_field {
+            let bw = if it.stroke.is_none() || !it.stroke.weight.is_finite() { 0.0 } else { it.stroke.weight };
+            out.push((pi, r, f.clone(), bw));
+        }
+    });
+    out
+}
+
+/// The video and sound of every exported page (those whose file is in the document).
+pub(crate) fn collect_media(doc: &Document, sheets: &[Sheet]) -> Vec<PlacedMedia> {
+    let mut out = Vec::new();
+    visit(doc, sheets, |pi, r, it| {
+        if let (Some(m), designcraft_doc::Content::Graphic(g)) = (&it.media, &it.content)
+            && let Some(a) = doc.assets.get(&g.asset).filter(|a| !a.data.is_empty())
+        {
+            out.push((pi, r, a.name.clone(), a.mime.clone(), a.data.clone(), m.clone()));
+        }
+    });
+    out
+}
+
+/// A PDF name's characters, with everything outside the regular set written `#xx`.
+///
+/// ISO 32000-1 7.3.5: a name may hold only the regular characters, and `#` introduces a two-digit
+/// hex escape. A media type comes from a placed file's own metadata, and only `/` was escaped, so
+/// a type holding a space, a delimiter or `#` -- `video/mp4;x=(a)` -- wrote a name that ends
+/// early and leaves the rest as stray tokens in the PDF's structure (#1582).
+fn pdf_name(s: &str) -> String {
+    let regular = |b: u8| b.is_ascii_alphanumeric() || matches!(b, b'+' | b'-' | b'.' | b'_' | b'~' | b'*' | b'@' | b'$' | b'&' | b'!' | b'^' | b'|');
+    let mut o = String::new();
+    for b in s.bytes() {
+        if regular(b) {
+            o.push(b as char);
+        } else {
+            o.push_str(&format!("#{b:02X}"));
+        }
+    }
+    o
+}
+
+/// A PDF text string: literal for ASCII, UTF-16BE otherwise.
+fn pdf_string(s: &str) -> String {
+    if s.is_ascii() {
+        let mut o = String::from("(");
+        for c in s.chars() {
+            if matches!(c, '(' | ')' | '\\') {
+                o.push('\\');
+            }
+            o.push(c);
+        }
+        o.push(')');
+        return o;
+    }
+    let mut o = String::from("<FEFF");
+    for u in s.encode_utf16() {
+        let _ = write!(o, "{u:04X}");
+    }
+    o.push('>');
+    o
+}
+
+/// A checkbox appearance's border: the item's stroke weight, inset by half of it so it stays
+/// inside the box; nothing for an unstroked item.
+fn checkbox_border(bw: f64, w: f64, h: f64) -> String {
+    if bw > 0.0 {
+        format!("0.45 G {bw:.2} w {i:.2} {i:.2} {:.2} {:.2} re S", (w - bw).max(0.0), (h - bw).max(0.0), i = bw / 2.0)
+    } else {
+        String::new()
+    }
+}
+
+/// Add `fields` and `media` to `pdf` (page indices in output order). `None` when the file's
+/// structure isn't the simple kind this understands.
+pub(crate) fn add_fields(pdf: &[u8], fields: &[Placed], media: &[PlacedMedia]) -> Option<Vec<u8>> {
+    if fields.is_empty() && media.is_empty() {
+        return Some(pdf.to_vec());
+    }
+    let t_at = rfind(pdf, b"trailer")?;
+    let trailer = String::from_utf8_lossy(&pdf[t_at..]).to_string();
+    let size = int_after(&trailer, "/Size")?;
+    let root = int_after(&trailer, "/Root")?;
+    let prev = int_after(&trailer, "startxref")?;
+    let info = int_after(&trailer, "/Info");
+    let id = trailer.find("/ID").and_then(|i| trailer[i..].find(']').map(|j| trailer[i..i + j + 1].to_string()));
+    let cat = String::from_utf8_lossy(&pdf[object(pdf, root)?]).to_string();
+    let pages_id = int_after(&cat, "/Pages")?;
+    let pages = String::from_utf8_lossy(&pdf[object(pdf, pages_id)?]).to_string();
+    let kids_str = &pages[pages.find("/Kids")? + 5..];
+    let kids_str = bracketed(kids_str)?;
+    let nums: Vec<usize> = kids_str.split_whitespace().filter_map(|t| t.parse().ok()).collect();
+    let kids: Vec<usize> = nums.chunks(2).map(|c| c[0]).collect();
+
+    let mut out = pdf.to_vec();
+    if !out.ends_with(b"\n") {
+        out.push(b'\n');
+    }
+    let mut entries: Vec<(usize, usize)> = Vec::new();
+    let mut next = size;
+    let mut put = |out: &mut Vec<u8>, id: usize, body: &[u8]| {
+        entries.push((id, out.len()));
+        out.extend_from_slice(format!("{id} 0 obj\n").as_bytes());
+        out.extend_from_slice(body);
+        out.extend_from_slice(b"\nendobj\n");
+    };
+    let mut per_page: Vec<Vec<usize>> = vec![Vec::new(); kids.len()];
+    // Media: the file embedded, a rendition of it, and a screen annotation that plays it (on
+    // click, and on page open when asked).
+    let mut embedded: std::collections::HashMap<(*const Vec<u8>, &str), usize> = std::collections::HashMap::new();
+    for (page, r, name, mime, data, m) in media {
+        let Some(&page_ref) = kids.get(*page) else { continue };
+        // One embedded file per asset: placements of the same asset share it (a copy of the whole
+        // asset per placement multiplied a large one by its placements).
+        let file = *embedded.entry((std::sync::Arc::as_ptr(data), mime.as_str())).or_insert_with(|| {
+            let file = next;
+            next += 1;
+            let mut body = format!("<</Type/EmbeddedFile/Subtype/{}/Length {}>>\nstream\n", pdf_name(mime), data.len()).into_bytes();
+            body.extend_from_slice(data);
+            body.extend_from_slice(b"\nendstream");
+            put(&mut out, file, &body);
+            file
+        });
+        let (spec, rendition, screen) = (next, next + 1, next + 2);
+        next += 3;
+        put(&mut out, spec, format!("<</Type/Filespec/F{}/UF{}/EF<</F {file} 0 R>>>>", pdf_string(name), pdf_string(name)).as_bytes());
+        // Play parameters: player controls, and a repeat count of 0 (forever) when looping.
+        let params = format!("<</BE<</C {}/RC {}>>>>", m.controls, if m.looping { 0 } else { 1 });
+        put(
+            &mut out,
+            rendition,
+            format!(
+                "<</Type/Rendition/S/MR/N{}/C<</Type/MediaClip/S/MCD/N{}/CT{}/D {spec} 0 R/P<</TF(TEMPACCESS)>>>>/P{params}>>",
+                pdf_string(name),
+                pdf_string(name),
+                pdf_string(mime)
+            )
+            .as_bytes(),
+        );
+        let play = format!("<</S/Rendition/OP 0/AN {screen} 0 R/R {rendition} 0 R>>");
+        let on_open = if m.play_on_page_load { format!("/AA<</PO{play}>>") } else { String::new() };
+        put(
+            &mut out,
+            screen,
+            format!(
+                "<</Type/Annot/Subtype/Screen/Rect[{:.2} {:.2} {:.2} {:.2}]/P {page_ref} 0 R/F 4/T{}/A{play}{on_open}>>",
+                r[0],
+                r[1],
+                r[2],
+                r[3],
+                pdf_string(name)
+            )
+            .as_bytes(),
+        );
+        per_page[*page].push(screen);
+    }
+    let font = next;
+    if !fields.is_empty() {
+        next += 1;
+        put(&mut out, font, b"<</Type/Font/Subtype/Type1/BaseFont/Helvetica/Encoding/WinAnsiEncoding>>");
+    }
+    let mut all = Vec::new();
+    for (page, r, f, bw) in fields {
+        let Some(&page_ref) = kids.get(*page) else { continue };
+        let rect = format!("[{:.2} {:.2} {:.2} {:.2}]", r[0], r[1], r[2], r[3]);
+        let (w, h) = (r[2] - r[0], r[3] - r[1]);
+        let fs = if f.font_size > 0.0 { f.font_size } else { 0.0 };
+        let (bc, bs) = if *bw > 0.0 { ("/BC[0.45 0.45 0.45]", format!("/BS<</W {bw:.2}>>")) } else { ("", "/BS<</W 0>>".to_string()) };
+        let common = format!(
+            "/Type/Annot/Subtype/Widget/T{}/Rect{rect}/F 4/P {page_ref} 0 R/MK<<{bc}/BG[1 1 1]>>{bs}/DA(/Helv {fs:.1} Tf 0 g)",
+            pdf_string(&f.name)
+        );
+        let req = if f.required { 2 } else { 0 };
+        let body = match f.kind {
+            FieldKind::TextField => {
+                let flags = req | if f.multiline { 4096 } else { 0 };
+                format!("<<{common}/FT/Tx/Ff {flags}/V{}/DV{}>>", pdf_string(&f.value), pdf_string(&f.value))
+            }
+            FieldKind::CheckBox => {
+                // Appearances: an empty box, and a box with a check mark.
+                let border = checkbox_border(*bw, w, h);
+                let check = format!(
+                    "{border} 0 g {:.2} w 1 J 1 j {:.2} {:.2} m {:.2} {:.2} l {:.2} {:.2} l S",
+                    (w.min(h) * 0.12).max(0.8),
+                    w * 0.22,
+                    h * 0.52,
+                    w * 0.42,
+                    h * 0.28,
+                    w * 0.78,
+                    h * 0.76
+                );
+                let (on, off) = (next, next + 1);
+                next += 2;
+                for (oid, content) in [(on, check), (off, border)] {
+                    put(
+                        &mut out,
+                        oid,
+                        format!("<</Type/XObject/Subtype/Form/BBox[0 0 {w:.2} {h:.2}]/Length {}>>\nstream\n{content}\nendstream", content.len())
+                            .as_bytes(),
+                    );
+                }
+                let state = if f.value.is_empty() || f.value == "Off" { "Off" } else { "On" };
+                format!("<<{common}/FT/Btn/Ff {req}/V/{state}/AS/{state}/AP<</N<</On {on} 0 R/Off {off} 0 R>>>>>>")
+            }
+            FieldKind::ComboBox | FieldKind::ListBox => {
+                let flags = req | if f.kind == FieldKind::ComboBox { 131072 } else { 0 };
+                let opts: Vec<String> = f.options.iter().map(|o| pdf_string(o)).collect();
+                format!("<<{common}/FT/Ch/Ff {flags}/Opt[{}]/V{}>>", opts.join(" "), pdf_string(&f.value))
+            }
+            FieldKind::Signature => format!("<<{common}/FT/Sig>>"),
+        };
+        let fid = next;
+        next += 1;
+        put(&mut out, fid, body.as_bytes());
+        per_page[*page].push(fid);
+        all.push(fid);
+    }
+    // Pages list their widgets.
+    for (k, ids) in per_page.iter().enumerate() {
+        if ids.is_empty() {
+            continue;
+        }
+        let refs: String = ids.iter().map(|i| format!(" {i} 0 R")).collect();
+        let body = String::from_utf8_lossy(&pdf[object(pdf, kids[k])?]).to_string();
+        let new = if let Some(a) = body.find("/Annots[") {
+            let close = a + body[a..].find(']')?;
+            format!("{}{refs}{}", &body[..close], &body[close..])
+        } else if let Some(arr_id) = int_after(&body, "/Annots") {
+            // An indirect array: re-state it with the widgets added.
+            let arr = String::from_utf8_lossy(&pdf[object(pdf, arr_id)?]).to_string();
+            let close = arr.rfind(']')?;
+            put(&mut out, arr_id, format!("{}{refs}{}", arr[..close].trim(), &arr[close..]).trim().as_bytes());
+            body.clone()
+        } else {
+            let close = body.rfind(">>")?;
+            format!("{}/Annots[{}]{}", &body[..close], refs.trim(), &body[close..])
+        };
+        if new != body {
+            put(&mut out, kids[k], new.trim().as_bytes());
+        }
+    }
+    // The catalog's form.
+    if !all.is_empty() {
+        let refs: Vec<String> = all.iter().map(|i| format!("{i} 0 R")).collect();
+        let close = cat.rfind(">>")?;
+        let acro = format!("/AcroForm<</Fields[{}]/NeedAppearances true/DA(/Helv 0 Tf 0 g)/DR<</Font<</Helv {font} 0 R>>>>>>", refs.join(" "));
+        put(&mut out, root, format!("{}{acro}{}", cat[..close].trim(), &cat[close..]).trim().as_bytes());
+    }
+    let xref_at = out.len();
+    entries.sort();
+    let mut x = String::from("xref\n");
+    for (oid, off) in &entries {
+        let _ = write!(x, "{oid} 1\n{off:010} 00000 n\r\n");
+    }
+    let info = info.map(|i| format!("/Info {i} 0 R")).unwrap_or_default();
+    let id = id.unwrap_or_default();
+    let _ = write!(x, "trailer\n<</Size {next}/Root {root} 0 R{info}{id}/Prev {prev}>>\nstartxref\n{xref_at}\n%%EOF\n");
+    out.extend_from_slice(x.as_bytes());
+    Some(out)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// A media type comes from a placed file's own metadata and was written into a PDF name with
+    /// only `/` escaped, so a type holding a delimiter ended the name early and left the rest as
+    /// tokens in the file's structure (#1582).
+    #[test]
+    fn a_pdf_name_escapes_every_irregular_byte() {
+        assert_eq!(pdf_name("video/mp4"), "video#2Fmp4");
+        assert_eq!(pdf_name("a b"), "a#20b");
+        assert_eq!(pdf_name("x<</Type/Catalog>>"), "x#3C#3C#2FType#2FCatalog#3E#3E");
+        assert_eq!(pdf_name("a%comment"), "a#25comment");
+        assert_eq!(pdf_name("a#1"), "a#231");
+        assert_eq!(pdf_name("a(b)"), "a#28b#29");
+        assert_eq!(pdf_name("[1 0 R]"), "#5B1#200#20R#5D");
+        assert_eq!(pdf_name("application-x_test.v2"), "application-x_test.v2");
+        assert_eq!(pdf_name("\u{e9}"), "#C3#A9");
+    }
+
+    /// Placements of one asset share one embedded file (`/EmbeddedFile`), each with its own screen annotation.
+    #[test]
+    fn placements_of_one_asset_embed_it_once() {
+        let mut pdf = b"%PDF-1.4\n1 0 obj\n<</Type/Catalog/Pages 2 0 R>>\nendobj\n2 0 obj\n<</Type/Pages/Kids[3 0 R]/Count 1>>\nendobj\n3 0 obj\n<</Type/Page/Parent 2 0 R/MediaBox[0 0 100 100]>>\nendobj\n".to_vec();
+        let xref = pdf.len();
+        pdf.extend_from_slice(format!("xref\n0 4\n0000000000 65535 f \ntrailer\n<</Size 4/Root 1 0 R>>\nstartxref\n{xref}\n%%EOF\n").as_bytes());
+        let data = std::sync::Arc::new(vec![7u8; 5000]);
+        let other = std::sync::Arc::new(vec![9u8; 3000]);
+        let m = |d: &std::sync::Arc<Vec<u8>>| {
+            (0, [0.0, 0.0, 10.0, 10.0], "a.mp4".to_string(), "video/mp4".to_string(), d.clone(), MediaOptions::default())
+        };
+        let media = [m(&data), m(&data), m(&data), m(&other)];
+        let out = add_fields(&pdf, &[], &media).unwrap();
+        let count = |needle: &[u8]| out.windows(needle.len()).filter(|w| *w == needle).count();
+        assert_eq!(count(b"/Type/EmbeddedFile"), 2);
+        assert_eq!(count(b"/Subtype/Screen"), 4);
+        assert_eq!(count(&[7u8; 5000]), 1);
+    }
+}

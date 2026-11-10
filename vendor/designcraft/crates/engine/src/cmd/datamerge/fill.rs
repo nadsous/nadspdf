@@ -1,0 +1,641 @@
+//! Fill one data-merge record into a document, and copy template items for later records.
+//!
+//! Placeholders are addressed through an id map so each record's copy can be filled from the
+//! unfilled template. A placeholder whose frame or story is not in the map is left as it is.
+
+use std::collections::HashMap;
+use std::path::{Path, PathBuf};
+use std::sync::Arc;
+
+use designcraft_doc::{
+    Asset, AssetId, Content, DataField, Fill, Fitting, Graphic, Hyperlink, HyperlinkDest, HyperlinkSource, Item, ItemId, MergeOptions,
+    PlaceholderAnchor, PlaceholderRole, Shape, SpreadRef, Story, StoryId,
+};
+use designcraft_geom::{Affine, Rect, Vec2};
+
+use super::parse::image_candidates;
+use crate::EngineError;
+
+#[derive(Clone, Debug, Default)]
+pub struct Maps {
+    pub items: HashMap<ItemId, ItemId>,
+    pub stories: HashMap<StoryId, StoryId>,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct MissingImage {
+    pub record: u32,
+    pub field: String,
+    pub path: String,
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct FillReport {
+    pub missing: Vec<MissingImage>,
+    pub warnings: Vec<String>,
+}
+
+/// Document-spread items and their stories, each mapped to itself.
+pub fn identity_map(doc: &designcraft_doc::Document) -> Maps {
+    let mut maps = Maps::default();
+    for sp in &doc.spreads {
+        for it in &sp.items {
+            it.walk(&mut |i| {
+                maps.items.insert(i.id, i.id);
+                if let Content::Text(tf) = &i.content {
+                    maps.stories.insert(tf.story, tf.story);
+                }
+            });
+        }
+    }
+    maps
+}
+
+/// Deep-copy one top-level item. Children stay in their own space; only this item is translated.
+pub fn copy_item(
+    dst: &mut designcraft_doc::Document,
+    src: &designcraft_doc::Document,
+    it: &Item,
+    to: SpreadRef,
+    off: Vec2,
+    maps: &mut Maps,
+) -> Result<(), EngineError> {
+    let mut copy = it.clone();
+    copy.xf = Affine::translate(off) * copy.xf;
+    renumber(dst, src, &mut copy, maps);
+    if dst.layer(copy.layer).is_none() {
+        copy.layer = dst.default_layer();
+    }
+    dst.insert_item(to, copy, None)?;
+    Ok(())
+}
+
+fn renumber(dst: &mut designcraft_doc::Document, src: &designcraft_doc::Document, it: &mut Item, maps: &mut Maps) {
+    renumber_in(dst, src, it, maps, true);
+}
+
+/// `adopt` is false inside a story copy, whose asset references the copy has already adopted.
+fn renumber_in(dst: &mut designcraft_doc::Document, src: &designcraft_doc::Document, it: &mut Item, maps: &mut Maps, adopt: bool) {
+    let old = it.id;
+    let new_id = ItemId(dst.alloc());
+    maps.items.insert(old, new_id);
+    it.id = new_id;
+    if adopt
+        && let Some(m) = it.media.as_mut()
+        && let Some(p) = m.poster
+    {
+        m.poster = dst.adopt_asset(src, p).or(Some(p));
+    }
+    match &mut it.content {
+        Content::Text(tf) => {
+            let new_sid = if let Some(n) = maps.stories.get(&tf.story) {
+                *n
+            } else {
+                let n = StoryId(dst.alloc());
+                let mut st = src.story(tf.story).cloned().unwrap_or_else(|| Story::new(n));
+                st.id = n;
+                let mut assets = HashMap::new();
+                for a in designcraft_doc::story_asset_refs(&st) {
+                    if let Some(na) = dst.adopt_asset(src, a)
+                        && na != a
+                    {
+                        assets.insert(a, na);
+                    }
+                }
+                designcraft_doc::remap_story_assets(&mut st, &assets);
+                st.frames.clear();
+                // Mapped first: the map is the seen-set that stops story recursion.
+                maps.stories.insert(tf.story, n);
+                renumber_anchored(dst, src, &mut st, maps);
+                dst.stories.insert(n, Arc::new(st));
+                n
+            };
+            tf.story = new_sid;
+            if let Some(st) = dst.story_mut(new_sid) {
+                st.frames.push(new_id);
+            }
+        }
+        Content::Graphic(g) => {
+            if adopt && let Some(a) = dst.adopt_asset(src, g.asset) {
+                g.asset = a;
+            }
+        }
+        Content::Group { items } => {
+            for child in items.iter_mut() {
+                renumber_in(dst, src, Arc::make_mut(child), maps, adopt);
+            }
+        }
+        Content::Unassigned => {}
+    }
+}
+
+/// Fresh ids for the objects anchored in story copy `st`, its table cells, footnotes and endnotes (#1522).
+fn renumber_anchored(dst: &mut designcraft_doc::Document, src: &designcraft_doc::Document, st: &mut Story, maps: &mut Maps) {
+    let mut fresh = |t: &mut Story| {
+        for o in &mut t.objects {
+            renumber_in(dst, src, &mut Arc::make_mut(o).item, maps, false);
+        }
+    };
+    st.for_each_text_mut(&mut fresh);
+    for n in &mut st.endnotes {
+        Arc::make_mut(n).text.for_each_text_mut(&mut fresh);
+    }
+}
+
+struct Rep {
+    story: StoryId,
+    start: usize,
+    end: usize,
+    text: String,
+}
+
+/// Where `fill_row` looks for linked images: the merge options and the two search folders.
+#[derive(Clone, Copy)]
+pub struct Sources<'a> {
+    pub options: &'a MergeOptions,
+    pub data_dir: Option<&'a Path>,
+    pub doc_dir: Option<&'a Path>,
+    /// Images this merge has already read, by the path they resolved to.
+    ///
+    /// Every record used to stat and read its image again, so a 100,000-row sheet naming the same
+    /// file read it 100,000 times -- up to 256 MiB each, around 25 TB of I/O for one merge
+    /// (#1595). Shared by `&`, so the cache is behind a `RefCell`.
+    pub images: &'a ImageCache,
+}
+
+/// Image files read during one merge: the bytes by path, and the total read so far.
+#[derive(Default)]
+pub struct ImageCache {
+    inner: std::cell::RefCell<ImageCacheInner>,
+}
+
+#[derive(Default)]
+struct ImageCacheInner {
+    files: std::collections::HashMap<PathBuf, std::sync::Arc<Vec<u8>>>,
+    bytes: usize,
+}
+
+/// Bytes of distinct image files one merge keeps. Past this the cache stops growing and files are
+/// read as before, so a merge over many large images is slow rather than out of memory.
+const MAX_CACHED_IMAGE_BYTES: usize = 256 << 20;
+
+impl ImageCache {
+    /// The bytes of `path`, reading it once per merge. `read` is called only on a miss.
+    fn get_or_read(&self, path: &Path, read: impl FnOnce() -> Option<Vec<u8>>) -> Option<std::sync::Arc<Vec<u8>>> {
+        if let Some(found) = self.inner.borrow().files.get(path) {
+            return Some(found.clone());
+        }
+        let bytes = std::sync::Arc::new(read()?);
+        let mut inner = self.inner.borrow_mut();
+        if inner.bytes.saturating_add(bytes.len()) <= MAX_CACHED_IMAGE_BYTES {
+            inner.bytes = inner.bytes.saturating_add(bytes.len());
+            inner.files.insert(path.to_path_buf(), bytes.clone());
+        }
+        Some(bytes)
+    }
+}
+
+/// Replacements and hyperlinks collected while walking the placeholders of one record.
+#[derive(Default)]
+struct Pending {
+    reps: Vec<Rep>,
+    links: Vec<(PlaceholderAnchor, HyperlinkDest, String)>,
+    parent: bool,
+    report: FillReport,
+}
+
+/// Fill `row` (0-based) into the items `maps` points at. `record` is the 1-based source row.
+pub fn fill_row(
+    doc: &mut designcraft_doc::Document,
+    fields: &[DataField],
+    row: &[String],
+    record: u32,
+    maps: &Maps,
+    sources: &Sources,
+) -> FillReport {
+    let mut pending = Pending::default();
+    let placeholders = doc.data_merge.placeholders.clone();
+    for ph in &placeholders {
+        if !fields.iter().any(|f| f.name == ph.field) {
+            continue;
+        }
+        let cell = cell_of(fields, row, &ph.field).to_string();
+        match &ph.anchor {
+            PlaceholderAnchor::Text { story, start, end } => plan_text(doc, maps, ph, (*story, *start, *end), cell, &mut pending),
+            PlaceholderAnchor::Item { .. } => plan_item(doc, maps, ph, &cell, record, sources, &mut pending),
+        }
+    }
+    let Pending { mut reps, links, parent, mut report } = pending;
+    typed_reps(doc, fields, row, maps, &placeholders, &mut reps);
+    apply_reps(doc, &reps);
+    for (anchor, dest, field) in links {
+        let anchor = match anchor {
+            PlaceholderAnchor::Text { story, start, end } => {
+                let (start, end) = adjust_range(story, start, end, &reps);
+                PlaceholderAnchor::Text { story, start, end }
+            }
+            other => other,
+        };
+        if !create_link(doc, anchor, dest) {
+            report.warnings.push(format!("Record {record}, field {field}: the hyperlink could not be created."));
+        }
+    }
+    if parent {
+        report.warnings.push("A parent-page placeholder was left unfilled.".into());
+    }
+    report
+}
+
+fn plan_text(
+    doc: &designcraft_doc::Document,
+    maps: &Maps,
+    ph: &designcraft_doc::Placeholder,
+    (story, start, end): (StoryId, usize, usize),
+    cell: String,
+    pending: &mut Pending,
+) {
+    let Some(&mapped) = maps.stories.get(&story) else {
+        if anchor_is_parent(doc, &ph.anchor) {
+            pending.parent = true;
+        }
+        return;
+    };
+    match ph.role {
+        PlaceholderRole::Text => pending.reps.push(Rep { story: mapped, start, end, text: cell }),
+        PlaceholderRole::Hyperlink => {
+            if let Some(dest) = classify_link(&cell) {
+                pending.links.push((PlaceholderAnchor::Text { story: mapped, start, end }, dest, ph.field.clone()));
+            }
+        }
+        PlaceholderRole::Image | PlaceholderRole::Qr => {}
+    }
+}
+
+fn plan_item(
+    doc: &mut designcraft_doc::Document,
+    maps: &Maps,
+    ph: &designcraft_doc::Placeholder,
+    cell: &str,
+    record: u32,
+    sources: &Sources,
+    pending: &mut Pending,
+) {
+    let PlaceholderAnchor::Item { id } = &ph.anchor else { return };
+    let Some(&mapped) = maps.items.get(id) else {
+        if anchor_is_parent(doc, &ph.anchor) {
+            pending.parent = true;
+        }
+        return;
+    };
+    match ph.role {
+        PlaceholderRole::Image => place_image(doc, mapped, &ph.field, cell, record, sources, &mut pending.report),
+        PlaceholderRole::Qr => place_qr(doc, mapped, &ph.field, cell, record, &mut pending.report),
+        PlaceholderRole::Hyperlink => {
+            if let Some(dest) = classify_link(cell) {
+                pending.links.push((PlaceholderAnchor::Item { id: mapped }, dest, ph.field.clone()));
+            }
+        }
+        PlaceholderRole::Text => {}
+    }
+}
+
+fn typed_reps(
+    doc: &designcraft_doc::Document,
+    fields: &[DataField],
+    row: &[String],
+    maps: &Maps,
+    placeholders: &[designcraft_doc::Placeholder],
+    reps: &mut Vec<Rep>,
+) {
+    let mut stories: Vec<(StoryId, StoryId)> = maps.stories.iter().map(|(a, b)| (*a, *b)).collect();
+    stories.sort_by_key(|(a, _)| a.0);
+    stories.dedup();
+    for (original, mapped) in stories {
+        let Some(st) = doc.story(mapped) else { continue };
+        let covers: Vec<(usize, usize)> = placeholders
+            .iter()
+            .filter_map(|ph| match (&ph.role, &ph.anchor) {
+                (PlaceholderRole::Text, PlaceholderAnchor::Text { story, start, end }) if *story == original => Some((*start, *end)),
+                _ => None,
+            })
+            .collect();
+        for (start, end, name) in find_markers(&st.text) {
+            if covers.iter().any(|(a, b)| start < *b && end > *a) {
+                continue;
+            }
+            if !fields.iter().any(|f| f.name == name) {
+                continue;
+            }
+            reps.push(Rep { story: mapped, start, end, text: cell_of(fields, row, &name).to_string() });
+        }
+    }
+}
+
+fn find_markers(text: &str) -> Vec<(usize, usize, String)> {
+    let mut out = Vec::new();
+    let mut i = 0;
+    while i < text.len() {
+        if text[i..].starts_with("<<")
+            && let Some(rel) = text[i + 2..].find(">>")
+        {
+            let name = &text[i + 2..i + 2 + rel];
+            if !name.is_empty() && !name.contains(['<', '>', '\n']) {
+                let end = i + 2 + rel + 2;
+                out.push((i, end, name.to_string()));
+                i = end;
+                continue;
+            }
+        }
+        i += text[i..].chars().next().map(char::len_utf8).unwrap_or(1);
+    }
+    out
+}
+
+fn apply_reps(doc: &mut designcraft_doc::Document, reps: &[Rep]) {
+    let mut stories: Vec<StoryId> = reps.iter().map(|r| r.story).collect();
+    stories.sort();
+    stories.dedup();
+    for sid in stories {
+        let mut mine: Vec<&Rep> = reps.iter().filter(|r| r.story == sid).collect();
+        mine.sort_by_key(|r| std::cmp::Reverse(r.start));
+        let Some(st) = doc.story_mut(sid) else { continue };
+        for r in mine {
+            if r.start <= r.end && r.end <= st.text.len() {
+                st.replace(r.start..r.end, &r.text);
+            }
+        }
+    }
+}
+
+fn adjust_range(story: StoryId, start: usize, end: usize, reps: &[Rep]) -> (usize, usize) {
+    let mut mine: Vec<&Rep> = reps.iter().filter(|r| r.story == story).collect();
+    mine.sort_by_key(|r| r.start);
+    let mut s = start;
+    let mut e = end;
+    for r in mine {
+        let old = r.end.saturating_sub(r.start);
+        let new = r.text.len();
+        let delta = new as isize - old as isize;
+        if r.end <= start {
+            s = add_delta(s, delta);
+            e = add_delta(e, delta);
+        } else if r.start == start && r.end == end {
+            e = s.saturating_add(new);
+        } else if r.start >= end {
+        } else if r.end <= end {
+            e = add_delta(e, delta);
+        }
+    }
+    (s, e)
+}
+
+pub fn add_delta(pos: usize, delta: isize) -> usize {
+    if delta >= 0 { pos.saturating_add(delta as usize) } else { pos.saturating_sub(delta.unsigned_abs()) }
+}
+
+fn create_link(doc: &mut designcraft_doc::Document, anchor: PlaceholderAnchor, dest: HyperlinkDest) -> bool {
+    let source = match anchor {
+        PlaceholderAnchor::Item { id } => {
+            if doc.item(id).is_none() {
+                return false;
+            }
+            HyperlinkSource::Item { id }
+        }
+        PlaceholderAnchor::Text { story, start, end } => {
+            let Some(st) = doc.story(story) else { return false };
+            if start > end || end > st.text.len() {
+                return false;
+            }
+            HyperlinkSource::Text { story, start, end }
+        }
+    };
+    let id = doc.alloc();
+    let name = dest.label();
+    doc.hyperlinks.push(Hyperlink { id, name, source, dest });
+    true
+}
+
+fn place_image(doc: &mut designcraft_doc::Document, item: ItemId, field: &str, cell: &str, record: u32, sources: &Sources, report: &mut FillReport) {
+    let Sources { options, data_dir, doc_dir, images } = *sources;
+    let cands = image_candidates(cell, data_dir, doc_dir);
+    let found = cands.iter().find_map(|p| {
+        // Read once per merge: many records naming one file is the normal case, and reading it
+        // per record is the amplification (#1595).
+        let bytes = images.get_or_read(p, || {
+            // Refuse huge files before reading them; a too-large image counts as missing.
+            let len = crate::io::metadata(p).ok()?.len();
+            if len == 0 || len > super::MAX_IMAGE_FILE_BYTES {
+                return None;
+            }
+            crate::io::read_file(p).ok().filter(|b| !b.is_empty())
+        })?;
+        Some((p.clone(), bytes))
+    });
+    let Some((path, bytes)) = found else {
+        if let Some(it) = doc.item_mut(item) {
+            it.content = Content::Unassigned;
+        }
+        report.missing.push(MissingImage { record, field: field.to_string(), path: cell.to_string() });
+        report.warnings.push(format!("Record {record}, field {field}: missing image {cell}."));
+        return;
+    };
+    let Some(((pw, ph), (nw, nh))) = designcraft_render::image_size(&bytes).zip(designcraft_render::natural_size(&bytes, 0)) else {
+        if let Some(it) = doc.item_mut(item) {
+            it.content = Content::Unassigned;
+        }
+        report.missing.push(MissingImage { record, field: field.to_string(), path: cell.to_string() });
+        report.warnings.push(format!("Record {record}, field {field}: missing image {cell}."));
+        return;
+    };
+    let Some(inner) = doc.item(item).map(|it| it.inner_bounds()) else {
+        report.warnings.push(format!("Record {record}, field {field}: missing image {cell}."));
+        report.missing.push(MissingImage { record, field: field.to_string(), path: cell.to_string() });
+        return;
+    };
+    let mode = fitting_of(&options.fitting);
+    let mut g = Graphic {
+        layer_options: None,
+        asset: AssetId(0),
+        size: (nw, nh),
+        xf: Affine::translate((inner.x0, inner.y0)),
+        auto_fit: mode,
+        fit_align: 0,
+        crop: [0.0; 4],
+        wrap: Default::default(),
+        clip: None,
+        fill: Default::default(),
+    };
+    if let Some(xf) = g.fitted(inner, mode) {
+        g.xf = xf;
+    }
+    if options.center && nw > 0.0 && nh > 0.0 {
+        let bb = g.xf.transform_rect_bbox(Rect::new(0.0, 0.0, nw, nh));
+        let c = inner.center();
+        let m = bb.center();
+        g.xf = Affine::translate((c.x - m.x, c.y - m.y)) * g.xf;
+    }
+    // Reject geometry that cannot be represented before an asset is allocated for it.
+    if super::super::file::validate_placement((nw, nh), inner, g.xf, "data.merge").is_err() {
+        if let Some(it) = doc.item_mut(item) {
+            it.content = Content::Unassigned;
+        }
+        report.missing.push(MissingImage { record, field: field.to_string(), path: cell.to_string() });
+        report.warnings.push(format!("Record {record}, field {field}: image {cell} exceeds finite geometry limits."));
+        return;
+    }
+    let fresh = AssetId(doc.alloc());
+    let name = path.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_else(|| field.to_string());
+    let link = options.link_images.then(|| path.to_string_lossy().into_owned());
+    g.asset = doc.add_asset(Asset {
+        id: fresh,
+        name,
+        mime: designcraft_render::image_mime(&bytes).to_string(),
+        link,
+        // The cached buffer is shared with every other record naming this file, rather than
+        // copied per record (#1595).
+        data: bytes,
+        pixels: Some((pw, ph)),
+        ..Default::default()
+    });
+    if let Some(it) = doc.item_mut(item) {
+        it.content = Content::Graphic(g);
+    }
+}
+
+fn place_qr(doc: &mut designcraft_doc::Document, item: ItemId, field: &str, cell: &str, record: u32, report: &mut FillReport) {
+    if cell.is_empty() {
+        report.warnings.push(format!("Record {record}, field {field}: the QR cell is empty."));
+        return;
+    }
+    let Some(it) = doc.item(item).cloned() else {
+        report.warnings.push(format!("Record {record}, field {field}: the QR content does not fit."));
+        return;
+    };
+    let Some(path) = designcraft_geom::qr::qr_path(cell, it.inner_bounds()) else {
+        report.warnings.push(format!("Record {record}, field {field}: the QR content does not fit."));
+        return;
+    };
+    let id = ItemId(doc.alloc());
+    let mut code = Item::new(id, it.layer, Shape::Path, path);
+    code.fill = Fill::swatch(designcraft_color::swatch::BLACK);
+    code.alt_text = format!("QR code: {cell}");
+    if let Some(frame) = doc.item_mut(item) {
+        frame.content = Content::Group { items: vec![Arc::new(code)] };
+    }
+}
+
+fn fitting_of(s: &str) -> Fitting {
+    match s {
+        "fillProportionally" => Fitting::FillProportionally,
+        "fitContentToFrame" => Fitting::FitContentToFrame,
+        "none" => Fitting::None,
+        _ => Fitting::FitProportionally,
+    }
+}
+
+fn classify_link(cell: &str) -> Option<HyperlinkDest> {
+    let value = cell.trim();
+    if value.is_empty() {
+        return None;
+    }
+    // An explicit scheme must be a web or mail one; `javascript:`, `file:` and the like stay text.
+    if let Some((scheme, _)) = value.split_once(':') {
+        let is_scheme = scheme.chars().next().is_some_and(|c| c.is_ascii_alphabetic())
+            && scheme.chars().all(|c| c.is_ascii_alphanumeric() || matches!(c, '+' | '-' | '.'));
+        if is_scheme {
+            let scheme = scheme.to_ascii_lowercase();
+            return matches!(scheme.as_str(), "http" | "https" | "ftp" | "mailto").then(|| HyperlinkDest::Url(value.to_string()));
+        }
+    }
+    if value.contains("://") || value.chars().any(char::is_whitespace) {
+        return Some(HyperlinkDest::Url(value.to_string()));
+    }
+    if value.matches('@').count() == 1 && !value.contains(':') {
+        return Some(HyperlinkDest::Email(value.to_string()));
+    }
+    Some(HyperlinkDest::Url(value.to_string()))
+}
+
+fn anchor_is_parent(doc: &designcraft_doc::Document, anchor: &PlaceholderAnchor) -> bool {
+    match anchor {
+        PlaceholderAnchor::Item { id } => matches!(doc.find(*id).map(|l| l.spread), Some(SpreadRef::Parent(_))),
+        PlaceholderAnchor::Text { story, .. } => {
+            let Some(st) = doc.story(*story) else { return false };
+            !st.frames.is_empty() && st.frames.iter().all(|fid| matches!(doc.find(*fid).map(|l| l.spread), Some(SpreadRef::Parent(_))))
+        }
+    }
+}
+
+fn cell_of<'a>(fields: &[DataField], row: &'a [String], name: &str) -> &'a str {
+    fields.iter().position(|f| f.name == name).and_then(|i| row.get(i)).map(String::as_str).unwrap_or("")
+}
+
+#[cfg(test)]
+mod link_tests {
+    use super::*;
+
+    #[test]
+    fn only_web_and_mail_schemes_become_links() {
+        for ok in ["https://example.com", "HTTP://example.com", "ftp://files.example.com", "mailto:a@example.com", "www.example.com"] {
+            assert!(matches!(classify_link(ok), Some(HyperlinkDest::Url(_))), "{ok}");
+        }
+        assert!(matches!(classify_link("a@example.com"), Some(HyperlinkDest::Email(_))));
+        for bad in ["javascript:alert(1)", "file:///etc/passwd", "data:text/html,hi", "vbscript:x", ""] {
+            assert!(classify_link(bad).is_none(), "{bad}");
+        }
+    }
+}
+
+#[cfg(test)]
+mod image_path_tests {
+    use std::path::Path;
+
+    use super::image_candidates;
+
+    /// A merge image field names a file, and a field that names **another computer** must resolve
+    /// to nothing: a UNC path is how a hostile data file turns a merge into an outbound SMB
+    /// connection, and on Windows that means handing over NTLM credentials. This ran only on
+    /// unix, so the refusal was unverified on the one platform where UNC means anything (#1601).
+    #[test]
+    fn an_image_cell_never_resolves_to_another_computer() {
+        let (data, doc) = (Path::new("/work/data"), Path::new("/work/doc"));
+        for cell in [r"\\192.0.2.1\share\x.png", "file://192.0.2.1/s/x.png", "//192.0.2.1/s/x.png", "https://example.com/x.png"] {
+            assert!(image_candidates(cell, Some(data), Some(doc)).is_empty(), "{cell}");
+        }
+        // A field naming nothing resolves to nothing, whatever the platform.
+        assert!(image_candidates("", Some(data), Some(doc)).is_empty(), "an empty cell");
+        assert!(image_candidates("img/x.png", None, None).is_empty(), "not beside the working directory");
+    }
+
+    /// The Windows shapes `craft-docpath` refuses, asserted where they have meaning: the extended
+    /// UNC prefix, a device namespace path, and a legacy device name (with an extension, since a
+    /// reserved name is reserved whatever follows it).
+    #[cfg(windows)]
+    #[test]
+    fn windows_device_and_network_paths_are_refused() {
+        let (data, doc) = (Path::new(r"C:\work\data"), Path::new(r"C:\work\doc"));
+        for cell in [r"\\?\UNC\192.0.2.1\share\x.png", r"\\.\pipe\x", r"\\?\GLOBALROOT\Device\HarddiskVolume1\x", "CON", "NUL.png"] {
+            assert!(image_candidates(cell, Some(data), Some(doc)).is_empty(), "{cell}");
+        }
+    }
+
+    /// An extended-length path is not one of them: `\\?\C:\x` names a local file, the same one
+    /// `C:\x` names, and `craft-docpath`'s own suite classifies it `PathKind::Local`. A data file
+    /// could already give the plain spelling, so refusing this one would shut out long paths
+    /// without shutting anything out (noted in review).
+    #[cfg(windows)]
+    #[test]
+    fn an_extended_length_drive_path_is_a_local_file() {
+        let (data, doc) = (Path::new(r"C:\work\data"), Path::new(r"C:\work\doc"));
+        assert!(!image_candidates(r"\\?\C:\secret\x.png", Some(data), Some(doc)).is_empty());
+    }
+
+    /// Resolution beside the data and the document, with absolute paths this platform means.
+    #[cfg(unix)]
+    #[test]
+    fn an_image_cell_resolves_beside_the_data_then_the_document() {
+        let (data, doc) = (Path::new("/work/data"), Path::new("/work/doc"));
+        let found = image_candidates("img/x.png", Some(data), Some(doc));
+        assert_eq!(found, [data.join("img").join("x.png"), doc.join("img").join("x.png")]);
+    }
+}

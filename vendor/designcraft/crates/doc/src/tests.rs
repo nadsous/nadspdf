@@ -1,0 +1,568 @@
+use designcraft_geom::Rect;
+
+use super::*;
+use crate::build::NewDocument;
+
+fn doc() -> Document {
+    Document::new(&NewDocument { pages: 2, ..Default::default() })
+}
+
+#[test]
+fn threading_moves_frames_and_text() {
+    let mut d = doc();
+    let lid = d.default_layer();
+    let (a, sa) = d.add_text_frame(SpreadRef::Doc(0), Rect::new(10.0, 10.0, 100.0, 100.0), lid, "first", ParaFormat::default()).unwrap();
+    let (b, sb) = d.add_text_frame(SpreadRef::Doc(0), Rect::new(110.0, 10.0, 200.0, 100.0), lid, "second", ParaFormat::default()).unwrap();
+    d.thread(a, b).unwrap();
+    d.check().unwrap();
+    assert!(d.story(sb).is_none());
+    let st = d.story(sa).unwrap();
+    assert_eq!(st.text, "first\nsecond");
+    assert_eq!(st.frames, vec![a, b]);
+    assert_eq!(d.next_frame(a), Some(b));
+    assert_eq!(d.prev_frame(b), Some(a));
+    d.unthread_after(a).unwrap();
+    d.check().unwrap();
+    assert_eq!(d.story(sa).unwrap().frames, vec![a]);
+    assert_ne!(d.item(b).unwrap().text_frame().unwrap().story, sa);
+}
+
+#[test]
+fn thread_to_empty_frame_converts_it() {
+    let mut d = doc();
+    let lid = d.default_layer();
+    let (a, sa) = d.add_text_frame(SpreadRef::Doc(0), Rect::new(10.0, 10.0, 100.0, 100.0), lid, "x", ParaFormat::default()).unwrap();
+    let id = ItemId(d.alloc());
+    let it = Item::new(id, lid, Shape::Rectangle, designcraft_geom::shapes::rectangle(Rect::new(0.0, 200.0, 50.0, 300.0)));
+    d.insert_item(SpreadRef::Doc(0), it, None).unwrap();
+    d.thread(a, id).unwrap();
+    assert!(d.item(id).unwrap().is_text_frame());
+    assert_eq!(d.story(sa).unwrap().frames, vec![a, id]);
+    d.check().unwrap();
+    assert!(d.thread(a, a).is_err());
+}
+
+#[test]
+fn threading_merges_tables_notes_and_endnotes() {
+    let mut d = doc();
+    let lid = d.default_layer();
+    let (a, sa) = d.add_text_frame(SpreadRef::Doc(0), Rect::new(10.0, 10.0, 100.0, 100.0), lid, "first", ParaFormat::default()).unwrap();
+    let (b, sb) = d.add_text_frame(SpreadRef::Doc(0), Rect::new(110.0, 10.0, 200.0, 100.0), lid, "second", ParaFormat::default()).unwrap();
+    for (sid, note) in [(sa, "Note A"), (sb, "Note B")] {
+        let st = d.story_mut(sid).unwrap();
+        st.insert_note(3, note, ParaFormat::default());
+        // Both stories hold a table with id 1.
+        let n = st.len();
+        st.insert_table(n, crate::table::Table::new(1, 2, 2, 0, 0, 80.0));
+    }
+    let st = d.story_mut(sb).unwrap();
+    st.insert_endnote(2, "End B", ParaFormat::default());
+    st.insert(1, &crate::NOTE_MARK.to_string());
+    d.thread(a, b).unwrap();
+    d.check().unwrap();
+    let st = d.story(sa).unwrap();
+    assert!(d.story(sb).is_none());
+    assert_eq!(st.tables.len(), 2);
+    assert_eq!(st.notes.len(), 2);
+    assert_eq!(st.notes[1].text.text, "Note B");
+    assert_eq!(st.endnotes.len(), 1);
+    assert_eq!(st.endnotes[0].text.text, "End B");
+    assert_eq!(st.editorial.len(), 1);
+}
+
+#[test]
+fn empty_frame_threaded_before_a_story_joins_it_at_the_front() {
+    let mut d = doc();
+    let lid = d.default_layer();
+    let (a, sa) = d.add_text_frame(SpreadRef::Doc(0), Rect::new(10.0, 10.0, 100.0, 100.0), lid, "", ParaFormat::default()).unwrap();
+    let (b, sb) = d.add_text_frame(SpreadRef::Doc(0), Rect::new(110.0, 10.0, 200.0, 100.0), lid, "Hello", ParaFormat::default()).unwrap();
+    d.thread_keeping_story(a, b).unwrap();
+    d.check().unwrap();
+    assert!(d.story(sa).is_none());
+    let st = d.story(sb).unwrap();
+    assert_eq!(st.frames, vec![a, b]);
+    assert_eq!(st.text, "Hello");
+}
+
+#[test]
+fn empty_story_takes_the_threaded_text_without_a_blank_paragraph() {
+    let mut d = doc();
+    let lid = d.default_layer();
+    let (a, _) = d.add_text_frame(SpreadRef::Doc(0), Rect::new(10.0, 10.0, 100.0, 100.0), lid, "", ParaFormat::default()).unwrap();
+    let (a2, _) = d.add_text_frame(SpreadRef::Doc(0), Rect::new(10.0, 110.0, 100.0, 200.0), lid, "", ParaFormat::default()).unwrap();
+    d.thread(a, a2).unwrap();
+    let (b, _) = d.add_text_frame(SpreadRef::Doc(0), Rect::new(110.0, 10.0, 200.0, 100.0), lid, "Hello", ParaFormat::default()).unwrap();
+    d.thread(a2, b).unwrap();
+    d.check().unwrap();
+    let st = d.story(d.item(a).unwrap().text_frame().unwrap().story).unwrap();
+    assert_eq!(st.frames, vec![a, a2, b]);
+    assert_eq!(st.text, "Hello");
+}
+
+#[test]
+fn threading_from_an_empty_frame_makes_it_a_text_frame() {
+    let mut d = doc();
+    let lid = d.default_layer();
+    let id = ItemId(d.alloc());
+    let it = Item::new(id, lid, Shape::Rectangle, designcraft_geom::shapes::rectangle(Rect::new(0.0, 200.0, 50.0, 300.0)));
+    d.insert_item(SpreadRef::Doc(0), it, None).unwrap();
+    let (b, _) = d.add_text_frame(SpreadRef::Doc(0), Rect::new(110.0, 10.0, 200.0, 100.0), lid, "Hello", ParaFormat::default()).unwrap();
+    d.thread(id, b).unwrap();
+    d.check().unwrap();
+    let st = d.story(d.item(id).unwrap().text_frame().unwrap().story).unwrap();
+    assert_eq!(st.frames, vec![id, b]);
+    assert_eq!(st.text, "Hello");
+}
+
+#[test]
+fn removing_a_frame_from_its_thread_keeps_the_text_in_the_others() {
+    let mut d = doc();
+    let lid = d.default_layer();
+    let (a, sa) = d.add_text_frame(SpreadRef::Doc(0), Rect::new(10.0, 10.0, 100.0, 100.0), lid, "words", ParaFormat::default()).unwrap();
+    let (b, _) = d.add_text_frame(SpreadRef::Doc(0), Rect::new(110.0, 10.0, 200.0, 100.0), lid, "", ParaFormat::default()).unwrap();
+    let (c, _) = d.add_text_frame(SpreadRef::Doc(0), Rect::new(210.0, 10.0, 300.0, 100.0), lid, "", ParaFormat::default()).unwrap();
+    d.thread(a, b).unwrap();
+    d.thread(b, c).unwrap();
+    d.remove_from_thread(b).unwrap();
+    d.check().unwrap();
+    assert_eq!(d.story(sa).unwrap().frames, vec![a, c]);
+    assert_eq!(d.story(sa).unwrap().text, "words");
+    let own = d.item(b).unwrap().text_frame().unwrap().story;
+    assert_ne!(own, sa);
+    assert!(d.story(own).unwrap().text.is_empty());
+    // A frame alone in its story has no thread to leave.
+    assert!(d.remove_from_thread(b).is_err());
+}
+
+#[test]
+fn a_frame_removed_from_a_vertical_thread_stays_vertical() {
+    let mut d = doc();
+    let lid = d.default_layer();
+    let (a, sa) = d.add_text_frame(SpreadRef::Doc(0), Rect::new(10.0, 10.0, 100.0, 100.0), lid, "縦書き", ParaFormat::default()).unwrap();
+    let (b, _) = d.add_text_frame(SpreadRef::Doc(0), Rect::new(110.0, 10.0, 200.0, 100.0), lid, "", ParaFormat::default()).unwrap();
+    d.story_mut(sa).unwrap().vertical = true;
+    d.thread(a, b).unwrap();
+    d.remove_from_thread(b).unwrap();
+    d.check().unwrap();
+    assert!(d.frame_vertical(d.item(a).unwrap()));
+    assert!(d.frame_vertical(d.item(b).unwrap()), "the removed frame keeps the story's direction");
+}
+
+#[test]
+fn a_frame_removed_from_a_right_to_left_thread_keeps_its_column_order() {
+    let mut d = doc();
+    let lid = d.default_layer();
+    let (a, sa) = d.add_text_frame(SpreadRef::Doc(0), Rect::new(10.0, 10.0, 100.0, 100.0), lid, "نص", ParaFormat::default()).unwrap();
+    let (b, _) = d.add_text_frame(SpreadRef::Doc(0), Rect::new(110.0, 10.0, 200.0, 100.0), lid, "", ParaFormat::default()).unwrap();
+    d.story_mut(sa).unwrap().direction = crate::TextDirection::RightToLeft;
+    d.thread(a, b).unwrap();
+    d.remove_from_thread(b).unwrap();
+    d.check().unwrap();
+    let own = d.item(b).unwrap().text_frame().unwrap().story;
+    assert_eq!(d.story(own).unwrap().direction, crate::TextDirection::RightToLeft);
+}
+
+#[test]
+fn frames_keep_their_story_direction_through_threading() {
+    let mut d = doc();
+    let lid = d.default_layer();
+    let r = |x: f64| Rect::new(x, 10.0, x + 50.0, 100.0);
+    let vertical = |d: &Document, f: ItemId| d.item(f).is_some_and(|i| d.frame_vertical(i));
+    let (a, sa) = d.add_text_frame(SpreadRef::Doc(0), r(0.0), lid, "縦", ParaFormat::default()).unwrap();
+    let (b, _) = d.add_text_frame(SpreadRef::Doc(0), r(60.0), lid, "", ParaFormat::default()).unwrap();
+    d.story_mut(sa).unwrap().vertical = true;
+    // A horizontal frame threaded onto a vertical story turns vertical.
+    d.thread(a, b).unwrap();
+    assert!(vertical(&d, a) && vertical(&d, b));
+    // Threading the vertical story's second frame after a horizontal frame: it turns horizontal,
+    // and the frame left before it stays vertical.
+    let (h, _) = d.add_text_frame(SpreadRef::Doc(0), r(120.0), lid, "横", ParaFormat::default()).unwrap();
+    d.thread(h, b).unwrap();
+    assert!(vertical(&d, a) && !vertical(&d, b) && !vertical(&d, h));
+    // Breaking a vertical thread leaves the frames after the break vertical.
+    let (c, _) = d.add_text_frame(SpreadRef::Doc(0), r(180.0), lid, "", ParaFormat::default()).unwrap();
+    d.thread(a, c).unwrap();
+    d.unthread_after(a).unwrap();
+    assert!(vertical(&d, a) && vertical(&d, c));
+    assert_ne!(d.item(c).unwrap().text_frame().unwrap().story, sa);
+    d.check().unwrap();
+}
+
+#[test]
+fn frames_keep_their_column_direction_through_threading() {
+    use crate::TextDirection::{LeftToRight, RightToLeft};
+    let mut d = doc();
+    let lid = d.default_layer();
+    let r = |x: f64| Rect::new(x, 10.0, x + 50.0, 100.0);
+    let direction = |d: &Document, f: ItemId| d.story(d.item(f).unwrap().text_frame().unwrap().story).unwrap().direction;
+    let (a, sa) = d.add_text_frame(SpreadRef::Doc(0), r(0.0), lid, "نص", ParaFormat::default()).unwrap();
+    let (b, _) = d.add_text_frame(SpreadRef::Doc(0), r(60.0), lid, "", ParaFormat::default()).unwrap();
+    d.story_mut(sa).unwrap().direction = RightToLeft;
+    d.thread(a, b).unwrap();
+    assert_eq!((direction(&d, a), direction(&d, b)), (RightToLeft, RightToLeft));
+    // Threading the right-to-left story's second frame after a left-to-right frame: the frame
+    // left before it stays right to left.
+    let (h, _) = d.add_text_frame(SpreadRef::Doc(0), r(120.0), lid, "abc", ParaFormat::default()).unwrap();
+    d.thread(h, b).unwrap();
+    assert_eq!((direction(&d, a), direction(&d, b), direction(&d, h)), (RightToLeft, LeftToRight, LeftToRight));
+    // Breaking a right-to-left thread leaves the frames after the break right to left.
+    let (c, _) = d.add_text_frame(SpreadRef::Doc(0), r(180.0), lid, "", ParaFormat::default()).unwrap();
+    d.thread(a, c).unwrap();
+    d.unthread_after(a).unwrap();
+    assert_ne!(d.item(c).unwrap().text_frame().unwrap().story, sa);
+    assert_eq!((direction(&d, a), direction(&d, c)), (RightToLeft, RightToLeft));
+    d.check().unwrap();
+}
+
+#[test]
+fn removing_last_frame_deletes_story() {
+    let mut d = doc();
+    let lid = d.default_layer();
+    let (a, sa) = d.add_text_frame(SpreadRef::Doc(0), Rect::new(10.0, 10.0, 100.0, 100.0), lid, "x", ParaFormat::default()).unwrap();
+    d.remove_item(a).unwrap();
+    assert!(d.story(sa).is_none());
+    d.check().unwrap();
+}
+
+#[test]
+fn hit_testing_respects_layers() {
+    let mut d = doc();
+    let lid = d.default_layer();
+    let (a, _) = d.add_text_frame(SpreadRef::Doc(0), Rect::new(10.0, 10.0, 100.0, 100.0), lid, "x", ParaFormat::default()).unwrap();
+    assert_eq!(d.hit_item(0, designcraft_geom::Point::new(50.0, 50.0), 2.0), Some(a));
+    assert_eq!(d.hit_item(0, designcraft_geom::Point::new(300.0, 300.0), 2.0), None);
+    d.layer_mut(lid).unwrap().locked = true;
+    assert_eq!(d.hit_item(0, designcraft_geom::Point::new(50.0, 50.0), 2.0), None);
+}
+
+#[test]
+fn parent_hit_testing_respects_layers() {
+    let mut d = doc();
+    let lid = d.default_layer();
+    let (a, _) = d.add_text_frame(SpreadRef::Parent(0), Rect::new(10.0, 10.0, 100.0, 100.0), lid, "x", ParaFormat::default()).unwrap();
+    let at = designcraft_geom::Point::new(50.0, 50.0);
+    assert_eq!(d.hit_parent_item(SpreadRef::Parent(0), at, 2.0), Some(a));
+    d.layer_mut(lid).unwrap().visible = false;
+    assert_eq!(d.hit_parent_item(SpreadRef::Parent(0), at, 2.0), None);
+    d.layer_mut(lid).unwrap().visible = true;
+    d.layer_mut(lid).unwrap().locked = true;
+    assert_eq!(d.hit_parent_item(SpreadRef::Parent(0), at, 2.0), None);
+}
+
+#[test]
+fn page_numbers_saturate_at_the_largest_start() {
+    // A start number from a file or an old command: page 2 overflowed (a panic in debug builds).
+    let mut d = crate::Document::new(&crate::build::NewDocument { pages: 3, facing_pages: false, ..Default::default() });
+    d.sections = vec![crate::Section {
+        start: 0,
+        start_number: Some(u32::MAX),
+        style: Default::default(),
+        prefix: String::new(),
+        marker: String::new(),
+        include_prefix: false,
+        layout: None,
+    }];
+    assert_eq!((0..3).map(|i| d.page_number(i)).collect::<Vec<_>>(), [u32::MAX; 3]);
+    d.sections.push(crate::Section { start: 2, start_number: None, ..d.sections[0].clone() });
+    assert_eq!(d.page_number(2), u32::MAX, "a section continuing it saturates too");
+}
+
+#[test]
+fn page_names_follow_sections() {
+    let mut d = Document::new(&NewDocument { pages: 6, ..Default::default() });
+    assert_eq!(d.page_name(0), "1");
+    d.sections.push(Section {
+        start: 2,
+        start_number: Some(1),
+        style: NumberStyle::LowerRoman,
+        prefix: "A-".into(),
+        marker: String::new(),
+        layout: None,
+        include_prefix: true,
+    });
+    assert_eq!(d.page_name(1), "2");
+    assert_eq!(d.page_name(2), "A-i");
+    assert_eq!(d.page_name(4), "A-iii");
+    // A section that continues numbering.
+    d.sections.push(Section {
+        start: 5,
+        start_number: None,
+        style: NumberStyle::Arabic,
+        prefix: String::new(),
+        layout: None,
+        marker: String::new(),
+        include_prefix: false,
+    });
+    assert_eq!(d.page_name(5), "4");
+}
+
+/// A section restarting at 1 on page 2 leaves two odd (right) pages in a row; each gets its own
+/// spread instead of sharing one with the odd page on the left.
+#[test]
+fn consecutive_right_pages_get_separate_spreads() {
+    let mut d = Document::new(&NewDocument { pages: 4, ..Default::default() });
+    d.sections.push(Section {
+        start: 1,
+        start_number: Some(1),
+        style: NumberStyle::Arabic,
+        layout: None,
+        prefix: String::new(),
+        marker: String::new(),
+        include_prefix: false,
+    });
+    d.repaginate();
+    let sides: Vec<Vec<PageSide>> = d.spreads.iter().map(|s| s.pages.iter().map(|p| p.side).collect()).collect();
+    assert_eq!(sides, vec![vec![PageSide::Right], vec![PageSide::Right], vec![PageSide::Left, PageSide::Right]]);
+    let flat: Vec<PageSide> = sides.into_iter().flatten().collect();
+    for (i, side) in flat.iter().enumerate() {
+        assert_eq!(*side == PageSide::Right, d.page_number(i) % 2 == 1, "page {i}");
+    }
+    d.check().unwrap();
+}
+
+#[test]
+fn hostile_section_start_numbers_saturate() {
+    let mut d = Document::new(&NewDocument { pages: 3, ..Default::default() });
+    let first = d.sections.iter_mut().find(|s| s.start == 0).unwrap();
+    first.start_number = Some(u32::MAX);
+    let continuing = Section { start: 2, start_number: None, ..first.clone() };
+    d.sections.push(continuing);
+    assert_eq!(d.page_number(1), u32::MAX);
+    assert_eq!(d.page_number(2), u32::MAX);
+    assert_eq!(d.page_name(2), u32::MAX.to_string());
+}
+
+#[test]
+fn document_serde_roundtrip() {
+    let mut d = doc();
+    let lid = d.default_layer();
+    d.add_text_frame(SpreadRef::Doc(0), Rect::new(10.0, 10.0, 100.0, 100.0), lid, "héllo\nworld", ParaFormat::default()).unwrap();
+    let s = serde_json::to_string(&d).unwrap();
+    let back: Document = serde_json::from_str(&s).unwrap();
+    assert_eq!(d, back);
+    back.check().unwrap();
+}
+
+/// A file can set `next_id` to `u64::MAX`; the next allocated id then overflowed (IDML export
+/// adds to it too). Such a document is rejected when it is checked on load.
+#[test]
+fn next_id_near_the_top_is_rejected() {
+    let mut d = Document::new(&crate::build::NewDocument::default());
+    d.check().unwrap();
+    d.next_id = u64::MAX;
+    assert!(d.check().is_err());
+    d.next_id = crate::MAX_NEXT_ID;
+    d.check().unwrap();
+}
+
+/// A placed PDF saved before its crop choice was stored loads with the crop box (the whole page),
+/// and that default isn't written out.
+#[test]
+fn placed_pdf_without_a_crop_choice_loads_with_the_crop_box() {
+    let a: Asset = serde_json::from_str(r#"{"id": 7, "name": "a.pdf", "mime": "application/pdf", "page": 1}"#).unwrap();
+    assert_eq!((a.pdf_crop, a.pdf_box, a.shown_box()), (PdfCrop::Crop, None, None));
+    let json = serde_json::to_string(&a).unwrap();
+    assert!(!json.contains("pdfCrop") && !json.contains("pdfBox"), "{json}");
+    let trim = Asset { pdf_crop: PdfCrop::Trim, pdf_box: Some([0.1, 0.1, 0.9, 0.9]), ..a };
+    let back: Asset = serde_json::from_str(&serde_json::to_string(&trim).unwrap()).unwrap();
+    assert_eq!((back.pdf_crop, back.shown_box()), (PdfCrop::Trim, Some([0.1, 0.1, 0.9, 0.9])));
+    // A box with no area shows the whole page.
+    assert_eq!(Asset { pdf_box: Some([0.5, 0.5, 0.5, 0.9]), ..back }.shown_box(), None);
+}
+
+#[test]
+fn adjust_text_ranges_tracks_and_prunes_hyperlinks_and_placeholders() {
+    let mut d = doc();
+    let sid = StoryId(1);
+    d.hyperlinks.push(Hyperlink {
+        id: 10,
+        name: "Link".into(),
+        source: HyperlinkSource::Text { story: sid, start: 10, end: 20 },
+        dest: HyperlinkDest::Url("https://example.com".into()),
+    });
+    d.data_merge.placeholders.push(crate::Placeholder {
+        id: 20,
+        source_id: 1,
+        field: "Name".into(),
+        role: crate::PlaceholderRole::Text,
+        anchor: crate::PlaceholderAnchor::Text { story: sid, start: 10, end: 20 },
+    });
+
+    // 1. Insert before range (at 5, length 3) -> both move by 3: 13..23
+    d.adjust_text_ranges(sid, 5..5, 3);
+    assert_eq!(d.hyperlinks[0].source, HyperlinkSource::Text { story: sid, start: 13, end: 23 });
+    assert_eq!(d.data_merge.placeholders[0].anchor, crate::PlaceholderAnchor::Text { story: sid, start: 13, end: 23 });
+
+    // 2. Pure insert at start (at 13, length 2) -> shifts forward: 15..25
+    d.adjust_text_ranges(sid, 13..13, 2);
+    assert_eq!(d.hyperlinks[0].source, HyperlinkSource::Text { story: sid, start: 15, end: 25 });
+
+    // 3. Insert inside range (at 18, length 4) -> end expands: 15..29
+    d.adjust_text_ranges(sid, 18..18, 4);
+    assert_eq!(d.hyperlinks[0].source, HyperlinkSource::Text { story: sid, start: 15, end: 29 });
+
+    // 4. Typing at the very end of the range (at 29, length 3) -> does not expand range
+    d.adjust_text_ranges(sid, 29..29, 3);
+    assert_eq!(d.hyperlinks[0].source, HyperlinkSource::Text { story: sid, start: 15, end: 29 });
+
+    // 5. Insert after range (at 35, length 5) -> no change
+    d.adjust_text_ranges(sid, 35..35, 5);
+    assert_eq!(d.hyperlinks[0].source, HyperlinkSource::Text { story: sid, start: 15, end: 29 });
+
+    // 6. Delete before range (0..5, length 0) -> shifts back by 5: 10..24
+    d.adjust_text_ranges(sid, 0..5, 0);
+    assert_eq!(d.hyperlinks[0].source, HyperlinkSource::Text { story: sid, start: 10, end: 24 });
+
+    // 7. Delete inside range (12..16, length 0) -> end shrinks by 4: 10..20
+    d.adjust_text_ranges(sid, 12..16, 0);
+    assert_eq!(d.hyperlinks[0].source, HyperlinkSource::Text { story: sid, start: 10, end: 20 });
+
+    // 8. Delete across start boundary (8..14, length 0) -> surviving start is 8, end is 14
+    d.adjust_text_ranges(sid, 8..14, 0);
+    assert_eq!(d.hyperlinks[0].source, HyperlinkSource::Text { story: sid, start: 8, end: 14 });
+
+    // 9. Delete entire range (5..20, length 0) -> pruned
+    d.adjust_text_ranges(sid, 5..20, 0);
+    assert!(d.hyperlinks.is_empty());
+    assert!(d.data_merge.placeholders.is_empty());
+}
+
+#[test]
+fn adjust_text_ranges_preserves_zero_length_ranges_and_drops_inverted() {
+    let mut d = doc();
+    let sid = StoryId(1);
+    // Zero-length placeholder (e.g. created at caret)
+    d.data_merge.placeholders.push(crate::Placeholder {
+        id: 1,
+        source_id: 1,
+        field: "CaretPh".into(),
+        role: crate::PlaceholderRole::Hyperlink,
+        anchor: crate::PlaceholderAnchor::Text { story: sid, start: 10, end: 10 },
+    });
+    // Inverted hyperlink from corrupt input
+    d.hyperlinks.push(Hyperlink {
+        id: 2,
+        name: "Inverted".into(),
+        source: HyperlinkSource::Text { story: sid, start: 25, end: 15 },
+        dest: HyperlinkDest::Url("https://example.com".into()),
+    });
+
+    // 1. Inverted range is pruned on edit
+    d.adjust_text_ranges(sid, 0..0, 2);
+    assert!(d.hyperlinks.is_empty(), "inverted range must be dropped");
+
+    // 2. Zero-length placeholder shifts when text is inserted before it (at 0, len 5) -> 15..15
+    assert_eq!(d.data_merge.placeholders[0].anchor, crate::PlaceholderAnchor::Text { story: sid, start: 12, end: 12 });
+    d.adjust_text_ranges(sid, 0..0, 5);
+    assert_eq!(d.data_merge.placeholders[0].anchor, crate::PlaceholderAnchor::Text { story: sid, start: 17, end: 17 });
+
+    // 3. Zero-length placeholder shifts when text is deleted before it (0..7) -> 10..10
+    d.adjust_text_ranges(sid, 0..7, 0);
+    assert_eq!(d.data_merge.placeholders[0].anchor, crate::PlaceholderAnchor::Text { story: sid, start: 10, end: 10 });
+
+    // 4. Deleting text enclosing the zero-length placeholder collapses it to the deletion start without pruning
+    d.adjust_text_ranges(sid, 5..15, 0);
+    assert_eq!(d.data_merge.placeholders[0].anchor, crate::PlaceholderAnchor::Text { story: sid, start: 5, end: 5 });
+}
+
+#[test]
+fn move_text_ranges_tracks_hyperlinks_and_placeholders() {
+    let mut d = doc();
+    let sid = StoryId(1);
+    d.hyperlinks.push(Hyperlink {
+        id: 1,
+        name: "Inside".into(),
+        source: HyperlinkSource::Text { story: sid, start: 22, end: 28 },
+        dest: HyperlinkDest::Url("https://example.com/inside".into()),
+    });
+    d.hyperlinks.push(Hyperlink {
+        id: 2,
+        name: "Between".into(),
+        source: HyperlinkSource::Text { story: sid, start: 5, end: 10 },
+        dest: HyperlinkDest::Url("https://example.com/between".into()),
+    });
+
+    // Move block 20..30 to position 0 (before both links).
+    // The moved block (length 10) lands at 0..10.
+    // The link inside (22..28, relative offset +2..+8) becomes 2..8.
+    // The link originally at 5..10 shifts forward by 10 to 15..20.
+    d.move_text_ranges(sid, 20..30, 0);
+
+    let inside = d.hyperlinks.iter().find(|h| h.id == 1).unwrap();
+    let between = d.hyperlinks.iter().find(|h| h.id == 2).unwrap();
+    assert_eq!(inside.source, HyperlinkSource::Text { story: sid, start: 2, end: 8 });
+    assert_eq!(between.source, HyperlinkSource::Text { story: sid, start: 15, end: 20 });
+    assert_eq!(d.hyperlinks[0].id, 1, "original list order in doc.hyperlinks must be preserved");
+    assert_eq!(d.hyperlinks[1].id, 2);
+}
+
+#[test]
+fn set_story_text_prunes_story_hyperlinks_and_placeholders() {
+    let mut d = doc();
+    let lid = d.default_layer();
+    let (_, sid1) = d.add_text_frame(SpreadRef::Doc(0), Rect::new(10.0, 10.0, 100.0, 100.0), lid, "initial one", ParaFormat::default()).unwrap();
+    let (_, sid2) = d.add_text_frame(SpreadRef::Doc(0), Rect::new(110.0, 10.0, 200.0, 100.0), lid, "initial two", ParaFormat::default()).unwrap();
+
+    d.hyperlinks.push(Hyperlink {
+        id: 1,
+        name: "Link1".into(),
+        source: HyperlinkSource::Text { story: sid1, start: 0, end: 7 },
+        dest: HyperlinkDest::Url("https://example.com/1".into()),
+    });
+    d.hyperlinks.push(Hyperlink {
+        id: 2,
+        name: "Link2".into(),
+        source: HyperlinkSource::Text { story: sid2, start: 0, end: 7 },
+        dest: HyperlinkDest::Url("https://example.com/2".into()),
+    });
+    d.data_merge.placeholders.push(crate::Placeholder {
+        id: 10,
+        source_id: 1,
+        field: "Ph1".into(),
+        role: crate::PlaceholderRole::Text,
+        anchor: crate::PlaceholderAnchor::Text { story: sid1, start: 0, end: 7 },
+    });
+    d.data_merge.placeholders.push(crate::Placeholder {
+        id: 20,
+        source_id: 1,
+        field: "Ph2".into(),
+        role: crate::PlaceholderRole::Text,
+        anchor: crate::PlaceholderAnchor::Text { story: sid2, start: 0, end: 7 },
+    });
+
+    d.set_story_text(sid1, "Replacement story text").unwrap();
+
+    // sid1 hyperlinks and placeholders must be pruned
+    assert!(d.hyperlinks.iter().all(|h| match &h.source {
+        HyperlinkSource::Text { story, .. } => *story != sid1,
+        _ => true,
+    }));
+    assert!(d.data_merge.placeholders.iter().all(|ph| match &ph.anchor {
+        crate::PlaceholderAnchor::Text { story, .. } => *story != sid1,
+        _ => true,
+    }));
+
+    // sid2 hyperlinks and placeholders must be preserved
+    assert_eq!(d.hyperlinks.len(), 1);
+    assert_eq!(d.hyperlinks[0].id, 2);
+    assert_eq!(d.data_merge.placeholders.len(), 1);
+    assert_eq!(d.data_merge.placeholders[0].id, 20);
+}
+
+/// Exceptions are read in one pass: breaks are char positions of the lowercased word, a break
+/// at the start, at the end or twice in a row counts once or not at all, and a long exception
+/// full of breaks takes no longer than its length.
+#[test]
+fn hyphenation_exceptions_are_read_in_one_pass() {
+    let mut d = Document::new(&NewDocument::default());
+    d.hyphenation_exceptions = vec!["~Ty~~po~graph~y~".into(), "İs~tanbul".into()];
+    let map = d.hyphenation_exception_map();
+    assert_eq!(map["typography"], [2, 4, 9]);
+    // `İ` lowercases to two chars: positions count the lowercased word.
+    assert_eq!(map["i\u{307}stanbul"], [3]);
+    d.hyphenation_exceptions = vec!["a~".repeat(200_000)];
+    let t = std::time::Instant::now();
+    let map = d.hyphenation_exception_map();
+    assert!(t.elapsed() < std::time::Duration::from_secs(2), "{:?}", t.elapsed());
+    assert_eq!(map.values().next().map(Vec::len), Some(199_999));
+}

@@ -10,5 +10,5 @@ publish = false
 workspace = true
 
 [dependencies]
-designcraft-engine = { git = "https://github.com/storytold/designcraft", rev = "0078f832a7ab8fee64f091b01fed151a512a5901" }
-designcraft-pdf = { git = "https://github.com/storytold/designcraft", rev = "0078f832a7ab8fee64f091b01fed151a512a5901" }
+designcraft-engine = { path = "../../vendor/designcraft/crates/engine" }
+designcraft-pdf = { path = "../../vendor/designcraft/crates/pdf" }

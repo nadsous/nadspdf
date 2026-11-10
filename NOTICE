@@ -29,6 +29,13 @@ list (author, source, license) is in ATTRIBUTION.md.
   pinned in .github/workflows/ also include Noto Sans Thai (in the web build too), Copyright 2022
   The Noto Project Authors (https://github.com/notofonts/thai), under SIL OFL 1.1; its licence is
   fonts/noto-sans-thai/OFL.txt in the craft-fonts build input.
+- DesignCraft (vendor/designcraft/, https://github.com/storytold/designcraft), Copyright (c) 2026
+  ArtCraft Team and the DesignCraft contributors — MIT OR Apache-2.0. The page layout engine of
+  the Mise en page mode, adapted as vendor/designcraft/NADSPDF.md describes; its own NOTICE is
+  vendor/designcraft/NOTICE. With it, craft-libs' craft-pdf (vendor/craft-pdf/) and krilla, under
+  MIT OR Apache-2.0. Builds made with craft-fonts also embed Source Sans 3 and Source Serif 4 under
+  the SIL Open Font License 1.1 (fonts/source-sans-3/OFL.txt and fonts/source-serif-4/OFL.txt in
+  the craft-fonts build input).
 - hayro (rendering, via crates.io) — Apache-2.0 OR MIT. Its `embed-fonts` feature bundles the Foxit
   standard-14 Type 1 fonts under BSD-3-Clause ("Copyright 2014 PDFium Authors"), and hayro-cmap bundles
   Adobe CMap resources under BSD-3-Clause.

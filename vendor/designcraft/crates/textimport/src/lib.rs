@@ -1,0 +1,169 @@
+//! Text import (File › Place of text files): plain text, Word documents (`.docx`) and RTF become
+//! a frameless [`Story`] with paragraph and character styles, local bold/italic/underline/size,
+//! footnotes, tables and bullets/numbering (Word), ready to flow into text frames.
+//!
+//! Word styles are imported by name (their font, size, bold/italic and space before/after become
+//! the style definition, like InDesign's "Use Word styles" import option). RTF keeps bold,
+//! italic, underline, size and paragraph breaks.
+#![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
+#![forbid(unsafe_code)]
+
+mod docx;
+mod docx_numbering;
+pub mod export;
+mod rtf;
+pub mod tagged;
+mod xlsx;
+
+/// Data-merge row cap (header not included). More than this is an error.
+pub const DATA_MERGE_MAX_ROWS: usize = 100_000;
+/// Data-merge column cap. More than this is an error.
+pub const DATA_MERGE_MAX_COLS: usize = 200;
+
+/// Worksheet rows for data merge. Empty cells inside the header width are kept.
+/// `sheet` names a worksheet; `None` is the first sheet in workbook order.
+/// Place keeps [`xlsx::import`], which drops empty cells.
+pub fn xlsx_records(bytes: &[u8], sheet: Option<&str>) -> Result<Vec<Vec<String>>, ImportError> {
+    xlsx::records(bytes, sheet)
+}
+
+use designcraft_doc::{CharAttrs, ParaAttrs, Story};
+
+/// Characters kept of a style name read from a file: each paragraph that uses a style carries a
+/// copy of its name, so a long one would be multiplied by the paragraph count.
+pub(crate) const MAX_NAME_CHARS: usize = 256;
+
+pub(crate) fn capped_name(mut name: String) -> String {
+    if let Some((at, _)) = name.char_indices().nth(MAX_NAME_CHARS) {
+        name.truncate(at);
+    }
+    name
+}
+
+/// Joins UTF-16 code units that arrive one at a time (RTF `\uN`, Tagged Text `<0xNNNN>`) into
+/// characters. A character past U+FFFF comes as two units, a surrogate pair: the first half
+/// waits for the second.
+#[derive(Default)]
+pub(crate) struct Utf16Units {
+    high: Option<u32>,
+}
+
+impl Utf16Units {
+    /// The character that `unit` is or completes. Half a pair without its partner is no character.
+    pub(crate) fn push(&mut self, unit: u32) -> Option<char> {
+        match (self.high.take(), unit) {
+            (Some(high), 0xDC00..=0xDFFF) => char::from_u32(0x10000 + ((high - 0xD800) << 10) + (unit - 0xDC00)),
+            (_, 0xD800..=0xDBFF) => {
+                self.high = Some(unit);
+                None
+            }
+            _ => char::from_u32(unit),
+        }
+    }
+
+    /// Other text came in between: a waiting first half has no partner.
+    pub(crate) fn reset(&mut self) {
+        self.high = None;
+    }
+}
+
+/// A paragraph or character style found in the source.
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct ImportedStyle {
+    pub name: String,
+    pub based_on: Option<String>,
+    pub para: ParaAttrs,
+    pub chars: CharAttrs,
+}
+
+/// The imported text.
+#[derive(Clone, Debug)]
+pub struct Imported {
+    pub story: Story,
+    pub para_styles: Vec<ImportedStyle>,
+    pub char_styles: Vec<ImportedStyle>,
+    /// Anything the import couldn't keep (images, fields, …).
+    pub warnings: Vec<String>,
+}
+
+#[derive(Debug, PartialEq)]
+pub enum ImportError {
+    Unsupported(String),
+    Corrupt(String),
+}
+
+impl std::fmt::Display for ImportError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ImportError::Unsupported(s) => write!(f, "unsupported text file: {s}"),
+            ImportError::Corrupt(s) => write!(f, "can't read the file: {s}"),
+        }
+    }
+}
+
+/// Text files this crate reads, by extension.
+pub fn is_text_file(name: &str) -> bool {
+    let l = name.to_ascii_lowercase();
+    l.ends_with(".txt") || l.ends_with(".text") || l.ends_with(".md") || l.ends_with(".docx") || l.ends_with(".rtf") || l.ends_with(".xlsx")
+}
+
+/// Import `bytes` (format from the file name, else sniffed).
+pub fn import(name: &str, bytes: &[u8]) -> Result<Imported, ImportError> {
+    let l = name.to_ascii_lowercase();
+    if l.ends_with(".xlsx") {
+        return xlsx::import(bytes);
+    }
+    if l.ends_with(".docx") || bytes.starts_with(b"PK\x03\x04") {
+        return docx::import(bytes);
+    }
+    if l.ends_with(".rtf") || bytes.starts_with(b"{\\rtf") {
+        return rtf::import(bytes);
+    }
+    if tagged::is_tagged(bytes) {
+        return tagged::import(bytes);
+    }
+    if l.ends_with(".doc") {
+        return Err(ImportError::Unsupported("legacy Word .doc (save it as .docx)".into()));
+    }
+    Ok(plain(&tagged::decode(bytes)))
+}
+
+/// Plain text: line breaks become paragraphs (CRLF / CR normalised). The private-use characters
+/// (U+E000–U+E1FF) that stories use as markers are dropped, since a stray one would be read as a
+/// marker without its payload.
+pub fn plain(text: &str) -> Imported {
+    let t = text.trim_start_matches('\u{FEFF}').replace("\r\n", "\n").replace('\r', "\n");
+    let t: String = t.chars().filter(|c| !('\u{E000}'..='\u{E1FF}').contains(c)).collect();
+    let story = Story::with_text(designcraft_doc::StoryId(0), &t, Default::default());
+    Imported { story, para_styles: vec![], char_styles: vec![], warnings: vec![] }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn plain_text_paragraphs() {
+        let i = import("a.txt", b"\xEF\xBB\xBFOne\r\nTwo\rThree").unwrap();
+        assert_eq!(i.story.text, "One\nTwo\nThree");
+        assert_eq!(i.story.paras.len(), 3);
+        assert!(is_text_file("Report.DOCX") && !is_text_file("a.png"));
+        assert!(matches!(import("x.doc", b"\xD0\xCF"), Err(ImportError::Unsupported(_))));
+    }
+
+    #[test]
+    fn plain_text_drops_story_markers() {
+        let i = import("a.txt", "a\u{E009}b\u{E000}c\u{E002}d".as_bytes()).unwrap();
+        assert_eq!(i.story.text, "abcd");
+    }
+
+    #[test]
+    fn plain_text_utf16() {
+        let mut le = vec![0xFF, 0xFE];
+        le.extend("Hi there".encode_utf16().flat_map(u16::to_le_bytes));
+        assert_eq!(import("a.txt", &le).unwrap().story.text, "Hi there");
+        let mut be = vec![0xFE, 0xFF];
+        be.extend("Hi there".encode_utf16().flat_map(u16::to_be_bytes));
+        assert_eq!(import("a.txt", &be).unwrap().story.text, "Hi there");
+    }
+}
